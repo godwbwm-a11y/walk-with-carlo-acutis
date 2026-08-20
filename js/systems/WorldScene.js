@@ -176,7 +176,10 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
       if (Math.abs(vx) > 6) p.setFlipX(vx < 0);
       p.setScale(1.12, 1.12 + Math.sin(time / 90) * 0.04);
       p.setRotation(Math.sin(time / 180) * 0.03);
-      if (time - this._stepAt > 330) { this._stepAt = time; AudioSystem.step(); }
+      if (time - this._stepAt > (this.stepGap || 330)) {
+        this._stepAt = time;
+        if (this.stepSound) this.stepSound(); else AudioSystem.step();
+      }
     } else {
       p.setScale(1.12, 1.12);
       p.setRotation(0);

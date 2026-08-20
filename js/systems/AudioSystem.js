@@ -197,6 +197,8 @@ window.AudioSystem = (function () {
     blip:   function () { tone(760, 0.06, 'square', 0.035); },
     charge: function () { tone(300, 0.08, 'square', 0.03); },
     boom:   function () { noiseHit(0.5, 140, 0.7, 0.14); tone(90, 0.4, 'sine', 0.08, 55); },
+    kick:   function () { noiseHit(0.12, 220, 1.6, 0.12); tone(150, 0.1, 'sine', 0.07, 90); },
+    bikeTick: function () { noiseHit(0.05, 1600, 3.5, 0.035); },
     alarm:  function () {
       tone(880, 0.16, 'square', 0.05);
       setTimeout(function () { tone(880, 0.16, 'square', 0.05); }, 240);

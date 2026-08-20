@@ -18,6 +18,7 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
 
     this.stage = -1;
     this.isNight = false;
+    this.riding = false;
 
     this.buildSky();
     this.buildStreet();
@@ -27,6 +28,7 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     this.createStops();
 
     this.createPlayer(150, 604);
+    this.createBall();
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.stick = new Joystick(this);
     this.createActionButton();
@@ -34,7 +36,7 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, ' ').setVisible(false);
 
-    this.physics.world.setBounds(40, 556, WORLD_W - 80, 100);
+    this.physics.world.setBounds(30, 552, WORLD_W - 60, 178);   // 인도 아래쪽까지 내려갈 수 있습니다
 
     UI.fadeIn(this, 1600, [250, 246, 236]);
     this.setInputLocked(true);
@@ -213,19 +215,13 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
       }
     });
     this.addInteractable({
-      id: 'md_ball', x: 860, y: 636, texture: 'soccer_ball', label: '축구공', scale: 1.2,
-      onInteract: (it) => {
-        this.look('ball', 'md_ball');
-        if (it.image) this.tweens.add({ targets: it.image, x: it.image.x + 40, angle: 360, duration: 700, yoyo: true });
-      }
-    });
-    this.addInteractable({
       id: 'md_poster', x: 1340, y: 584, texture: 'poster_wall', label: '포스터', scale: 1.15, markerY: 512,
       onInteract: () => this.look('poster', 'md_poster')
     });
-    this.addInteractable({
-      id: 'md_bike', x: 1780, y: 616, texture: 'bike_city', label: '자전거', scale: 1.15,
-      onInteract: () => this.look('bike', 'md_bike')
+    this.bikeItem = this.addInteractable({
+      id: 'md_bike', x: 1780, y: 622, texture: 'bike_city', label: '자전거 타기',
+      scale: 1.15, range: 76, markerY: 580,
+      onInteract: () => this.mountBike()
     });
     this.addInteractable({
       id: 'md_fountain', x: 2252, y: 570, label: '분수', range: 76, markerY: 502,
@@ -260,6 +256,121 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     this.addInteractable({
       id: 'md_window', x: 1950, y: 566, label: '창문', range: 64, marker: false,
       onInteract: () => this.look('window', 'md_window')
+    });
+  }
+
+  /* ── 축구공 — 발에 닿으면 굴러갑니다 ────────── */
+  createBall() {
+    this.ball = this.physics.add.image(860, 664, 'soccer_ball').setScale(1.2).setDepth(664);
+    this.ball.body.setCircle(11, 1, 1);
+    this.ball.setBounce(0.7).setDrag(150).setAngularDrag(150).setCollideWorldBounds(true);
+    this.physics.add.collider(this.player, this.ball, () => this.kickBall());
+  }
+
+  kickBall() {
+    const now = this.time.now;
+    if (now - (this._kickAt || 0) < 170) return;
+    this._kickAt = now;
+
+    const a = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.ball.x, this.ball.y);
+    const v = this.player.body.velocity;
+    const run = Math.sqrt(v.x * v.x + v.y * v.y);
+    const power = 165 + run * (this.riding ? 1.15 : 0.95);
+    this.ball.setVelocity(Math.cos(a) * power, Math.sin(a) * power);
+    this.ball.setAngularVelocity(Phaser.Math.Between(-380, 380));
+    AudioSystem.kick();
+
+    if (!this._ballTouched) {
+      this._ballTouched = true;
+      this.noteFound('md_ball');
+      AudioSystem.found();
+      this.floatText(this.ball.x, this.ball.y - 44, CARLO_DAY.objects.ball[1]);
+    }
+  }
+
+  /* ── 자전거 ─────────────────────────────────── */
+  mountBike() {
+    if (this.riding) return;
+    this.riding = true;
+    this.walkSpeed = 188;
+    this.stepGap = 380;
+    this.stepSound = function () { AudioSystem.bikeTick(); };
+
+    this.bikeItem.enabled = false;
+    if (this.bikeItem.image) this.bikeItem.image.setVisible(false);
+    if (this.bikeItem.marker) this.bikeItem.marker.setVisible(false);
+
+    this.rideSprite = this.add.image(this.player.x, this.player.y + 7, 'bike_city')
+      .setScale(1.15).setDepth(this.player.y - 1);
+    AudioSystem.select();
+    this.noteFound('md_bike');
+    this.notice('자전거를 탔다. 다시 누르면 내립니다.');
+  }
+
+  dismountBike() {
+    if (!this.riding) return;
+    this.riding = false;
+    this.walkSpeed = 104;
+    this.stepGap = 0;
+    this.stepSound = null;
+
+    if (this.rideSprite) { this.rideSprite.destroy(); this.rideSprite = null; }
+
+    /* 세워 둔 자리에 다시 놓입니다 */
+    const bx = Phaser.Math.Clamp(this.player.x + 30, 60, this.WORLD_W - 60);
+    const by = Phaser.Math.Clamp(this.player.y, 570, 716);
+    this.bikeItem.x = bx; this.bikeItem.y = by;
+    if (this.bikeItem.image) {
+      this.bikeItem.image.setPosition(bx, by).setDepth(by).setVisible(true);
+    }
+    if (this.bikeItem.marker) this.bikeItem.marker.destroy();
+    this.bikeItem.marker = UI.marker(this, bx, by - 46).setDepth(700);
+    this.bikeItem.marker.setAlpha(0.9);
+    this.bikeItem.enabled = true;
+
+    AudioSystem.back();
+    this.notice('자전거에서 내렸다.');
+  }
+
+  /* 자전거를 탄 채로는 다른 것을 할 수 없습니다 */
+  tryInteract() {
+    if (this.inputLocked) return;
+    if (this.riding) { this.dismountBike(); return; }
+    super.tryInteract();
+  }
+
+  /* ── 화면에 잠깐 떠오르는 안내 ───────────────── */
+  notice(msg) {
+    const W = GAME.WIDTH;
+    if (this._notice) { this._notice.destroy(); this._notice = null; }
+    const c = this.add.container(W / 2, 152).setDepth(886).setScrollFactor(0);
+    const t = this.add.text(0, 0, msg, UI.style(FONT.small, PAL.cream, { align: 'center' })).setOrigin(0.5);
+    const g = this.add.graphics();
+    const w = Math.min(W - 36, t.width + 34);
+    g.fillStyle(0x1c2740, 0.72); g.fillRoundedRect(-w / 2, -19, w, 38, 19);
+    c.add([g, t]);
+    c.setAlpha(0);
+    this._notice = c;
+    this.tweens.add({ targets: c, alpha: 1, duration: 240 });
+    this.time.delayedCall(2400, () => {
+      this.tweens.add({
+        targets: c, alpha: 0, duration: 500,
+        onComplete: () => { c.destroy(); if (this._notice === c) this._notice = null; }
+      });
+    });
+  }
+
+  /* 세상 위에 잠깐 떠올랐다 사라지는 글 */
+  floatText(x, y, msg) {
+    const t = this.add.text(x, y, msg,
+      UI.style(FONT.small, PAL.cream, { align: 'center', wordWrap: { width: 250 } }))
+      .setOrigin(0.5).setDepth(872);
+    const g = this.add.graphics().setDepth(871);
+    g.fillStyle(0x1c2740, 0.66);
+    g.fillRoundedRect(x - t.width / 2 - 13, y - t.height / 2 - 8, t.width + 26, t.height + 16, 15);
+    this.tweens.add({
+      targets: [t, g], alpha: 0, y: '-=28', duration: 1900, delay: 900,
+      onComplete: () => { t.destroy(); g.destroy(); }
     });
   }
 
@@ -678,6 +789,25 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
 
   update(time, delta) {
     this.updateWorld(time, delta);
+
+    if (this.ball) this.ball.setDepth(this.ball.y);
+
+    if (this.riding && this.rideSprite && this.player) {
+      this.rideSprite.setPosition(this.player.x, this.player.y + 7).setDepth(this.player.y - 1);
+      this.rideSprite.setFlipX(this.player.flipX);
+
+      if (this.actionBtn && !this.inputLocked) {
+        this.actionBtn.setVisible(true);
+        this.actionLabel.setVisible(true).setText('내리기');
+      }
+      /* 다른 것에 다가가면, 내려야 한다고 알려줍니다 */
+      if (this.nearTarget && this.nearTarget !== this.bikeItem &&
+          time - (this._rideNoteAt || 0) > 4200) {
+        this._rideNoteAt = time;
+        this.notice('자전거에서 내려야 할 수 있어요.');
+      }
+    }
+
     if (this.clouds) {
       this.clouds.forEach((c, i) => {
         c.x += 0.06 + i * 0.02;
