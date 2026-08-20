@@ -59,24 +59,56 @@ window.PhotoSystem = (function () {
         return;
       }
 
-      /* 아래쪽에 작은 서명 */
-      const barH = Math.max(26, Math.round(cv.height * 0.085));
-      const grd = ctx.createLinearGradient(0, cv.height - barH * 1.6, 0, cv.height);
-      grd.addColorStop(0, 'rgba(16,26,46,0)');
-      grd.addColorStop(1, 'rgba(16,26,46,0.55)');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, cv.height - barH * 1.6, cv.width, barH * 1.6);
-
-      ctx.fillStyle = 'rgba(255,248,236,0.92)';
-      ctx.font = Math.round(barH * 0.46) + "px 'Gowun Dodum','Apple SD Gothic Neo',sans-serif";
-      ctx.textBaseline = 'middle';
-      ctx.fillText('오늘, 카를로 아쿠티스와 함께 걷습니다', Math.round(barH * 0.4), cv.height - barH * 0.55);
-
+      /* 아래쪽에 작은 서명 — 사진 크기에 맞춰 글자를 줄입니다 */
+      const FONT_STACK = "px 'Gowun Dodum','Apple SD Gothic Neo',sans-serif";
       const when = stamp(new Date());
-      ctx.textAlign = 'right';
-      ctx.fillStyle = 'rgba(255,248,236,0.7)';
-      ctx.font = Math.round(barH * 0.38) + "px 'Gowun Dodum','Apple SD Gothic Neo',sans-serif";
-      ctx.fillText(when, cv.width - Math.round(barH * 0.4), cv.height - barH * 0.55);
+      const pad = Math.round(cv.width * 0.035) + 4;
+
+      let title = '오늘, 카를로 아쿠티스와 함께 걷습니다';
+      let titleSize = Math.max(10, Math.min(26, Math.round(cv.width * 0.042)));
+      let timeSize = Math.round(titleSize * 0.82);
+      let showTime = true;
+
+      function widths() {
+        ctx.font = titleSize + FONT_STACK;
+        const t = ctx.measureText(title).width;
+        ctx.font = timeSize + FONT_STACK;
+        const d = ctx.measureText(when).width;
+        return { t: t, d: d };
+      }
+
+      let mw = widths();
+      while (mw.t + mw.d + pad * 3 > cv.width && titleSize > 10) {
+        titleSize -= 1;
+        timeSize = Math.round(titleSize * 0.82);
+        mw = widths();
+      }
+      if (mw.t + mw.d + pad * 3 > cv.width) {        // 그래도 좁으면 시각을 뺍니다
+        showTime = false;
+        if (mw.t + pad * 2 > cv.width) title = '카를로와 함께 걷습니다';
+      }
+
+      const barH = Math.round(titleSize * 2.2);
+      const grd = ctx.createLinearGradient(0, cv.height - barH * 1.7, 0, cv.height);
+      grd.addColorStop(0, 'rgba(16,26,46,0)');
+      grd.addColorStop(1, 'rgba(16,26,46,0.6)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, cv.height - barH * 1.7, cv.width, barH * 1.7);
+
+      const baseY = cv.height - Math.round(barH * 0.5);
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255,248,236,0.92)';
+      ctx.font = titleSize + FONT_STACK;
+      ctx.fillText(title, pad, baseY);
+
+      if (showTime) {
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(255,248,236,0.72)';
+        ctx.font = timeSize + FONT_STACK;
+        ctx.fillText(when, cv.width - pad, baseY);
+      }
+      ctx.textAlign = 'left';
 
       const data = cv.toDataURL('image/jpeg', 0.82);
       if (done) done({ data: data, place: place || '', when: when, w: cv.width, h: cv.height });

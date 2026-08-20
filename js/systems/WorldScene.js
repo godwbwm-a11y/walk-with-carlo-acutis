@@ -6,6 +6,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     opt = opt || {};
     this.inputLocked = false;
     this.interactables = [];
+    this.nearTarget = null;
     this.solids = this.physics.add.staticGroup();
     this.worldW = opt.width || GAME.WIDTH;
     this.worldH = opt.height || GAME.HEIGHT;
@@ -14,6 +15,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.dialogue = new DialogueBox(this);
+    this.events.off('resume', this.onResumeWorld, this);   // 장면을 다시 열 때 중복 등록 방지
     this.events.on('resume', this.onResumeWorld, this);
   }
 

@@ -8,6 +8,9 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     this.from = data.from;
     this.place = data.place || '';
     this.shot = null;
+    /* 이 장면은 다시 열릴 때 같은 객체를 재사용하므로 지난 흔적을 지웁니다 */
+    this.moveZone = null; this.handle = null; this.handleIcon = null;
+    this.preview = null; this.previewKey = null; this.busy = false;
 
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.minW = 150; this.minH = 130;
@@ -29,15 +32,20 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     });
 
     /* 오른쪽 아래 손잡이로 크기 조절 */
-    this.handle = this.add.circle(0, 0, 28, HEX(PAL.cream), 0.96).setDepth(13)
+    this.handle = this.add.circle(0, 0, 30, HEX(PAL.cream), 0.96).setDepth(13)
       .setStrokeStyle(3, HEX(PAL.sunDeep), 0.9).setInteractive({ draggable: true });
     this.handleIcon = this.add.text(0, 0, '⤡', UI.style(22, PAL.sunDeep)).setOrigin(0.5).setDepth(14);
+    this.tweens.add({ targets: this.handle, scale: 1.12, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.handle.on('drag', (p, dx, dy) => {
       const w = Phaser.Math.Clamp(dx - this.frame.x, this.minW, Math.min(this.maxW, W - 12 - this.frame.x));
       const h = Phaser.Math.Clamp(dy - this.frame.y, this.minH, Math.min(this.maxH, this.bottomLimit - this.frame.y));
       this.frame.width = w; this.frame.height = h;
+      this.handle.setScale(1);
       this.redraw();
     });
+
+    /* 프레임에 맞춰 드래그 영역과 손잡이를 자리잡게 합니다 */
+    this.redraw();
 
     this.title = this.add.text(W / 2, 48, '사진 찍기', UI.style(21, PAL.cream)).setOrigin(0.5).setDepth(15);
     this.hint = this.add.text(W / 2, H - 190, '프레임을 끌어 옮기고, 모서리를 잡아 크기를 바꿔보세요.',
@@ -84,11 +92,11 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     b.lineBetween(f.x, f.y + f.height / 3, f.x + f.width, f.y + f.height / 3);
     b.lineBetween(f.x, f.y + f.height * 2 / 3, f.x + f.width, f.y + f.height * 2 / 3);
 
-    if (this.moveZone) {
+    if (this.moveZone && this.moveZone.input) {
       this.moveZone.setPosition(f.x, f.y).setSize(f.width, f.height);
       this.moveZone.input.hitArea.setSize(f.width, f.height);
     }
-    if (this.handle) {
+    if (this.handle && this.handleIcon) {
       this.handle.setPosition(f.x + f.width, f.y + f.height);
       this.handleIcon.setPosition(f.x + f.width, f.y + f.height);
     }
