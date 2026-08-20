@@ -58,6 +58,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day2 = SaveSystem.get('dayCompleted.day2', false);
     const day3 = SaveSystem.get('dayCompleted.day3', false);
     const day4 = SaveSystem.get('dayCompleted.day4', false);
+    const day5 = SaveSystem.get('dayCompleted.day5', false);
     let y = 668;
 
     if (cp && cp.scene) {
@@ -68,6 +69,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.button(this, W / 2, y, 250, 60, 'DAY 3 걷기', () => this.startDay(3), { size: 19 });
     } else if (day3 && !day4) {
       UI.button(this, W / 2, y, 250, 60, 'DAY 4 걷기', () => this.startDay(4), { size: 19 });
+    } else if (day4 && !day5) {
+      UI.button(this, W / 2, y, 250, 60, 'DAY 5 걷기', () => this.startDay(5), { size: 19 });
     } else if (!day1) {
       UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
