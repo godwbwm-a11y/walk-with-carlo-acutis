@@ -60,6 +60,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day4 = SaveSystem.get('dayCompleted.day4', false);
     const day5 = SaveSystem.get('dayCompleted.day5', false);
     const day6 = SaveSystem.get('dayCompleted.day6', false);
+    const day7 = SaveSystem.get('dayCompleted.day7', false);
     let y = 668;
 
     if (cp && cp.scene) {
@@ -74,6 +75,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.button(this, W / 2, y, 250, 60, 'DAY 5 걷기', () => this.startDay(5), { size: 19 });
     } else if (day5 && !day6) {
       UI.button(this, W / 2, y, 250, 60, 'DAY 6 걷기', () => this.startDay(6), { size: 19 });
+    } else if (day6 && !day7) {
+      UI.button(this, W / 2, y, 250, 60, 'DAY 7 걷기', () => this.startDay(7), { size: 19 });
     } else if (!day1) {
       UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
@@ -94,7 +97,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 6 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 7 · 2027 서울 WYD 를 준비하며',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -133,7 +136,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
-    const entry = n === 6 ? { scene: 'Day6IntroScene', data: {} }
+    const entry = n === 7 ? { scene: 'Day7RoomScene', data: {} }
+      : n === 6 ? { scene: 'Day6IntroScene', data: {} }
       : n === 5 ? { scene: 'Day5SubwayScene', data: {} }
       : n === 4 ? { scene: 'Day4RoomScene', data: {} }
       : n === 3 ? { scene: 'Day3RoomScene', data: {} }
@@ -162,29 +166,31 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day3 = SaveSystem.get('dayCompleted.day3', false);
     const day4 = SaveSystem.get('dayCompleted.day4', false);
     const day5done = SaveSystem.get('dayCompleted.day5', false);
+    const day6done = SaveSystem.get('dayCompleted.day6', false);
     const days = [
       { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true, need: '' },
       { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1, need: 'DAY 1' },
       { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2, need: 'DAY 2' },
       { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: day3, need: 'DAY 3' },
       { n: 5, label: 'DAY 5 · 화요일', sub: '“용기를 내어라.”', open: day4, need: 'DAY 4' },
-      { n: 6, label: 'DAY 6 · 수요일', sub: '“이제 너희가 가라.”', open: day5done, need: 'DAY 5' }
+      { n: 6, label: 'DAY 6 · 수요일', sub: '“이제 너희가 가라.”', open: day5done, need: 'DAY 5' },
+      { n: 7, label: 'DAY 7 · 목요일', sub: '“내가 받은 것을 나눈다.”', open: day6done, need: 'DAY 6' }
     ];
 
-    let y = H * 0.205;
+    let y = H * 0.19;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;
       const label = d.open
         ? d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')'
         : d.label + '\n🔒 ' + d.need + ' 을 마치면 열립니다';
-      const b = UI.button(this, W / 2, y, W - 70, 84, label, () => {
+      const b = UI.button(this, W / 2, y, W - 70, 74, label, () => {
         if (!d.open) return;
         layer.destroy(); this.picker = null;
         this.startDay(d.n);
       }, { size: FONT.small, fill: d.open ? PAL.paper : PAL.cream, alpha: d.open ? 1 : 0.6 });
       layer.add(b);
-      y += 86;
+      y += 80;
     });
 
     layer.add(UI.button(this, W / 2, y + 12, 200, 54, '닫기', () => {

@@ -135,7 +135,21 @@ window.COLLECTION = {
     { id: 'b20', day: 6, cat: 'bible', text: '평화가 너희와 함께!\n아버지께서 나를 보내신 것처럼\n나도 너희를 보낸다.',
       from: '요한 20,21', where: '파견미사 뒤 친구들과 헤어졌을 때' },
     { id: 'j8', day: 6, cat: 'journey', text: 'WYD 는 끝났다.\n하지만 이제 내가 살아갈 차례다.',
-      from: '여행의 문장', where: '나의 파견을 정했을 때' }
+      from: '여행의 문장', where: '나의 파견을 정했을 때' },
+
+    /* DAY 7 */
+    { id: 'b21', day: 7, cat: 'bible', text: '저마다 받은 은사에 따라\n서로를 위하여 봉사하십시오.',
+      from: '1베드 4,10', where: '교실에서 친구에게 설명해준 뒤' },
+    { id: 'j9', day: 7, cat: 'journey', text: '잘하는 것이 없어 보이는 날에도\n나눌 것은 있다.',
+      from: '여행의 문장', where: '교실 뒤 게시판을 살펴보았을 때' },
+    { id: 'c14', day: 7, cat: 'carlo', text: '삶은 선물입니다.\n이 세상에 있는 동안 우리는\n사랑을 더욱 키울 수 있기 때문입니다.',
+      from: '성 카를로 아쿠티스', where: '컴퓨터를 끄고 화면이 어두워졌을 때' },
+    { id: 's14', day: 7, cat: 'saints', text: '사랑은 무한히 창의적입니다.',
+      from: '성 빈첸시오 아 바오로', where: '동네 공원 벤치 옆에서' },
+    { id: 'b22', day: 7, cat: 'bible', text: '너희의 빛이 사람들 앞을 비추어,\n그들이 너희의 착한 행실을 보고\n하늘에 계신 너희 아버지를 찬양하게 하여라.',
+      from: '마태 5,16', where: '누군가를 도운 뒤 길가에서' },
+    { id: 'j10', day: 7, cat: 'journey', text: '내가 받은 것은 나만을 위한 것이 아니다.\n누군가에게 닿을 때 선물이 된다.',
+      from: '여행의 문장', where: '석양 아래에서 받은 것과 사람을 이었을 때' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },
