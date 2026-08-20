@@ -46,6 +46,9 @@
       Day5SubwayScene, Day5FestivalScene, Day5ReconcileScene, Day5VocationScene,
       Day5MassScene, Day5ThemeScene, Day5NightScene, Day5NoteScene, Day5EndScene,
       WayScene, HelloScene, RhythmScene, MosaicScene, HeartStopScene, CourageScene,
+      Day6IntroScene, Day6PilgrimageScene, Day6FieldScene, Day6VigilScene,
+      Day6NightScene, Day6DawnScene, Day6MissionScene, Day6NoteScene, Day6EndScene,
+      PilgrimWalkScene, OurSpotScene, StarPrayerScene, StayScene, MorningScene, MissionScene,
       MiracleMapScene, FortressScene, NightShareScene
     ]
   };

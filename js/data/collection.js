@@ -121,7 +121,21 @@ window.COLLECTION = {
     { id: 'b18', day: 5, cat: 'bible', text: '용기를 내어라.\n내가 세상을 이겼다.',
       from: '요한 16,33', where: '개막미사가 끝난 뒤' },
     { id: 'j6', day: 5, cat: 'journey', text: '용기는 두려움이 없는 것이 아니라,\n두려워도 한 걸음 걷는 것이다.',
-      from: '여행의 문장', where: '밤의 서울에서 한 걸음 내디뎠을 때' }
+      from: '여행의 문장', where: '밤의 서울에서 한 걸음 내디뎠을 때' },
+
+    /* DAY 6 */
+    { id: 'b19', day: 6, cat: 'bible', text: '서로 남의 짐을 져 주십시오.',
+      from: '갈라 6,2', where: '순례길에서 누군가의 가방을 함께 들었을 때' },
+    { id: 'j7', day: 6, cat: 'journey', text: '헤어지는 것이 아쉬운 건,\n함께한 시간이 좋았기 때문이다.',
+      from: '여행의 문장', where: '순례길에서 조용해졌을 때' },
+    { id: 'c13', day: 6, cat: 'carlo', text: '삶은 하느님을 모든 것 위에 사랑하고\n이웃을 자기 자신처럼 사랑할 때\n비로소 참으로 아름답습니다.',
+      from: '성 카를로 아쿠티스', where: '철야가 끝난 별 아래에서' },
+    { id: 's13', day: 6, cat: 'saints', text: '저의 소명은 사랑입니다.\n교회의 심장 안에서\n저는 사랑이 되겠습니다.',
+      from: '성녀 아기 예수의 데레사', where: '철야기도를 마쳤을 때' },
+    { id: 'b20', day: 6, cat: 'bible', text: '평화가 너희와 함께!\n아버지께서 나를 보내신 것처럼\n나도 너희를 보낸다.',
+      from: '요한 20,21', where: '파견미사 뒤 친구들과 헤어졌을 때' },
+    { id: 'j8', day: 6, cat: 'journey', text: 'WYD 는 끝났다.\n하지만 이제 내가 살아갈 차례다.',
+      from: '여행의 문장', where: '나의 파견을 정했을 때' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },

@@ -6,9 +6,10 @@
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
 이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**,
-**DAY 4(월요일)**, **DAY 5(화요일 · WYD SEOUL)** 가 들어 있습니다.
+**DAY 4(월요일)**, **DAY 5(화요일 · WYD SEOUL)**, **DAY 6(수요일 · 철야와 파견)** 이
+들어 있습니다.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2~DAY 5는 각각 약 15~25분간 플레이할 수 있습니다.
+DAY 2~DAY 6은 각각 약 15~25분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -158,6 +159,43 @@ DAY 4 에서 고른 나의 좋은 점이 여기서 조용히 쓰입니다.
 
 ---
 
+## DAY 6 · 수요일 — “이제 너희가 가라.”
+
+며칠이 흘렀습니다. 처음에는 이름도 몰랐던 사람들이 이제 서로를 발견하면 손을 흔듭니다.
+그리고 WYD 의 마지막 밤이 다가옵니다.
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | WYD 의 며칠 | 여덟 장의 기억이 여행 노트로 들어갑니다 |
+| 2 | 마지막 밤 | 짐이 커진 사람들. “오늘 밤 밖에서 자잖아.” |
+| 3 | 순례길 | 미니게임 《순례길》 — 물, 지친 친구, 떨어진 깃발, 길 잃은 사람, 무거운 가방 |
+| 4 | 걷는 동안 | 조용해진 길 위에서 “아쉬워도 괜찮아. 좋았다는 뜻이잖아.” |
+| 5 | 중간 쉼터 | 지우는 벌써 집에 가고 싶고, 마리아의 “Almost there!” 는 믿을 수 없습니다 |
+| 6 | 철야 장소 | 미니게임 《우리 자리》 — 하룻밤짜리 동네를 만듭니다 |
+| 7 | 해질녘 | 미니게임 《별 하나, 기도 하나》 — 최대 세 사람, 이름을 적어도 되고 안 적어도 됩니다 |
+| 8 | 성체조배 | 미니게임 《별 아래 머물기》 — 조작 UI 가 전부 사라집니다 |
+| 9 | 별 아래 | “왜 나처럼 해야 해?” → **“너처럼 하면 되지.”** |
+| 10 | 철야 기도 | 미래를 모르는 채로 맡기는 기도 |
+| 11 | 밤 · 새벽 | 배터리 2%, 코골이, 그리고 아침 하늘 |
+| 12 | 아침 | 미니게임 《아침이다!》 — 내 물건 찾기와 자리 정리 |
+| 13 | 파견미사 | 열다섯 컷의 몽타주 |
+| 14 | 헤어짐 | 지우 · 루카 · 마리아 · 레아, 그리고 “이제 시작인데.” |
+| 15 | 파견 | 미니게임 《나의 파견》 — 장소 · 내가 가진 것 · 작은 용기 · 기억할 사람 |
+| 16 | 마지막 대화 | DAY 2~6 이 다섯 문장으로 돌아옵니다 |
+| 17 | 엔딩 | 가방에 하나 새로 들어간 것 — **사명**. 그리고 “이제 네가 가라.” |
+
+미사도 고해성사도 성체조배도 게임이 되지 않습니다. 《별 아래 머물기》 에서는
+조이스틱·상호작용·여행 노트·말씀카드·메뉴가 모두 사라지고, 30초가 지나야
+카를로의 인생 계획이 한 줄 나타납니다. 버튼은 그보다 더 늦게, 아주 작게 나타나고
+시간 제한은 없습니다.
+
+《나의 파견》은 DAY 4 의 좋은 점과 DAY 5 의 작은 용기를 오늘의 삶과 잇습니다.
+결과는 점수도 서약도 아닙니다 — 실천하지 못한 날이 있어도 실패로 처리하지 않습니다.
+
+> **“WYD 는 끝났습니다.” → “이제 시작입니다.”**
+
+---
+
 전투·죽음·시간 제한·경쟁·점수가 없습니다. 기도에는 성공과 실패가 없고,
 플레이어의 선택은 평가되지 않습니다. 미니게임도 마찬가지로, 여러 번
 빗나가면 조금씩 너그러워질 뿐 지는 일은 없습니다.
@@ -268,9 +306,9 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js ~ day05.js, collection.js(말씀),
+js/data/              config.js, day01.js ~ day06.js, collection.js(말씀),
                       chat.js(채팅), carloday.js(카를로의 하루)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5, UI,
+js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5/6, UI,
                       DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
 js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
@@ -283,19 +321,22 @@ js/scenes/day3/       Day3Room, Day3Street, Day3Church, Day3Exit, Day3Park,
 js/scenes/day4/       Day4Room, Day4School, Day4Yard, Day4Street, Day4Note, Day4End
 js/scenes/day5/       Day5Subway, Day5Festival, Day5Reconcile, Day5Vocation,
                       Day5Mass, Day5Theme, Day5Night, Day5Note, Day5End
+js/scenes/day6/       Day6Intro, Day6Pilgrimage, Day6Field, Day6Vigil,
+                      Day6Night, Day6Dawn, Day6Mission, Day6Note, Day6End
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
                       Ready, LookAround, Silence, HeartWord,
                       Feed, Words, Mirror, SeePerson, Gift,
-                      Way, Hello, Rhythm, Mosaic, HeartStop, Courage
+                      Way, Hello, Rhythm, Mosaic, HeartStop, Courage,
+                      PilgrimWalk, OurSpot, StarPrayer, Stay, Morning, Mission
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 48장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
+**말씀 카드 54장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
 아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
 보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
@@ -329,7 +370,7 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-DAY 6 부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
+DAY 7 과 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
 《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
 저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
 DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.

@@ -38,9 +38,17 @@ window.Day2AlbumScene = class Day2AlbumScene extends Phaser.Scene {
         g.fillStyle(HEX(cat.color), 1);
         g.fillRoundedRect(x - cw / 2, y - ch / 2, cw, 26, { tl: 14, tr: 14, bl: 0, br: 0 });
         this.add.text(x, y - ch / 2 + 13, cat.icon + ' ' + cat.name, UI.style(12, PAL.cream)).setOrigin(0.5);
-        this.add.text(x, y + 2, card.text, UI.style(14, PAL.ink, {
+        /* 긴 말씀은 카드 밖으로 넘치지 않도록 글자를 조금 줄입니다 */
+        const body = this.add.text(x, y + 2, card.text, UI.style(14, PAL.ink, {
           align: 'center', lineSpacing: 4, wordWrap: { width: cw - 22 }
         })).setOrigin(0.5);
+        let size = 14;
+        while (body.height > ch - 54 && size > 10) {
+          size--;
+          body.setStyle(UI.style(size, PAL.ink, {
+            align: 'center', lineSpacing: 3, wordWrap: { width: cw - 20 }
+          }));
+        }
         this.add.text(x, y + ch / 2 - 16, '— ' + card.from, UI.style(11, PAL.inkSoft)).setOrigin(0.5);
       } else {
         this.add.text(x, y - 16, '?', UI.style(30, '#6f86ad')).setOrigin(0.5);
