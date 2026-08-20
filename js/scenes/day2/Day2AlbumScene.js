@@ -6,6 +6,8 @@ window.Day2AlbumScene = class Day2AlbumScene extends Phaser.Scene {
   create(data) {
     data = data || {};
     this.day = data.day || 2;
+    this.next = data.next || 'Day2EndScene';
+    this.missedText = data.missed || DAY02.note.albumMissed;
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     AudioSystem.setAmbience('room');
     this.cameras.main.setBackgroundColor('#1b2a4a');
@@ -49,12 +51,12 @@ window.Day2AlbumScene = class Day2AlbumScene extends Phaser.Scene {
     });
 
     const bottom = startY + Math.ceil(cards.length / cols) * (ch + gapY) + 6;
-    this.add.text(W / 2, bottom, DAY02.note.albumMissed, UI.style(FONT.small, '#c9d6ea', {
+    this.add.text(W / 2, bottom, this.missedText, UI.style(FONT.small, '#c9d6ea', {
       align: 'center', lineSpacing: 6, wordWrap: { width: W - 60 }
     })).setOrigin(0.5).setAlpha(0.9);
 
     UI.button(this, W / 2, H - 96, 250, 60, '계속', () => {
-      UI.fadeOut(this, 800, () => this.scene.start('Day2EndScene'), [8, 10, 18]);
+      UI.fadeOut(this, 800, () => this.scene.start(this.next), [8, 10, 18]);
     }, { size: FONT.label, fill: PAL.sun });
 
     UI.fadeIn(this, 700);

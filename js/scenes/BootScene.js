@@ -7,6 +7,7 @@ window.BootScene = class BootScene extends Phaser.Scene {
     SaveSystem.load();
     TextureFactory.createAll(this);
     if (TextureFactory.createDay2) TextureFactory.createDay2(this);
+    if (TextureFactory.createDay3) TextureFactory.createDay3(this);
 
     /* 저사양 기기 배려: 픽셀 비율 상한 */
     this.cameras.main.setBackgroundColor(PAL.night);

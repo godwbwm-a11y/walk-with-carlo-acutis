@@ -5,9 +5,9 @@
 
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
-이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)** 과 **DAY 2(토요일)** 가 들어 있습니다.
+이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)** 이 들어 있습니다.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2는 약 15~20분간 플레이할 수 있습니다.
+DAY 2는 약 15~20분, DAY 3은 약 15~20분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -66,6 +66,30 @@ DAY 2는 약 15~20분간 플레이할 수 있습니다.
 **아무것도 하지 않는 것이 그 자리의 플레이**가 됩니다.
 
 돌은 사라지지 않습니다. 다만 오늘 하나를 혼자 들지 않기로 합니다.
+
+---
+
+## DAY 3 · 주일 — “예수님 곁에 머물기”
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 아침 | 알람 앞에서의 솔직한 선택, 미니게임 《30분 전》 |
+| 2 | 주일의 동네 | 어제 내려놓은 돌이 그 자리에 그대로 있습니다 |
+| 3 | 버스정류장 | 카를로와 다시 만나 미니게임 《기다리는 동안》 |
+| 4 | 성당 마당 | “오늘 만나야 될 사람은 내가 아니야. 예수님 만나고 와.” |
+| 5 | 미사 | 조작도 카드도 점수도 없는 열 컷의 몽타주 |
+| 6 | 미사 후 | 맨 뒤에 앉아 있는 카를로, “그냥 있는 중.” |
+| 7 | 빈 성당 | 미니게임 《아무것도 하지 않기》 — UI가 모두 사라집니다 |
+| 8 | 성당 밖 | 성체 이야기, “천국으로 가는 고속도로” |
+| 9 | 공원 | 미니게임 《마음 한마디》, 그 한마디로 만들어지는 오늘의 기도 |
+| 10 | 집으로 | 말이 없어도 어색하지 않은 걸음, “언제나 예수님과 함께” |
+
+미사 중에는 말씀카드도, 미션도, 버튼도 나오지 않습니다.
+성당에 가까워질수록 게임은 조용해지고, 성체 앞에서는
+**아무것도 하지 않는 것이 그 자리의 플레이**가 됩니다.
+
+《아무것도 하지 않기》에는 성공도 실패도 없습니다. 중간에 화면을 눌러도
+시간이 처음으로 돌아가지 않고, “괜찮아요. 다시 여기 있어 봅시다.” 라고만 합니다.
 
 ---
 
@@ -160,9 +184,9 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js, day02.js, collection.js(말씀),
+js/data/              config.js, day01.js, day02.js, day03.js, collection.js(말씀),
                       chat.js(채팅), carloday.js(카를로의 하루)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2, UI,
+js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3, UI,
                       DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
 js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
@@ -170,16 +194,19 @@ js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
                       PhotoMode, Gallery
 js/scenes/day2/       Day2Room, Day2Phone, Day2Street, Day2Store, Day2Church,
                       Day2Relic, Day2Sunset, Day2Return, Day2Note, Day2Album, Day2End
+js/scenes/day3/       Day3Room, Day3Street, Day3Church, Day3Exit, Day3Park,
+                      Day3Home, Day3Note, Day3End
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
-                      PrepareBag, Orange, Noise, HeavyBag
+                      PrepareBag, Orange, Noise, HeavyBag,
+                      Ready, LookAround, Silence, HeartWord
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 34장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
+**말씀 카드 38장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
 아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
 보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
@@ -213,7 +240,7 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-DAY 3 《예수님 곁에 머물기》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
+DAY 4 《나는 원본이다》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
 《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
 저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
 DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.

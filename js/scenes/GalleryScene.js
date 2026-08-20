@@ -77,7 +77,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
       UI.style(FONT.body, PAL.sun)).setOrigin(0.5, 0));
     y += 44;
 
-    const titles = { 1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일', 99: '카를로의 하루 · 밀라노' };
+    const titles = { 1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일', 3: 'DAY 3 · 주일', 99: '카를로의 하루 · 밀라노' };
 
     COLLECTION.days().forEach((day) => {
       const cards = COLLECTION.byDay(day);

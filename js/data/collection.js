@@ -12,9 +12,9 @@ window.COLLECTION = {
 
   cards: [
     /* ── 카를로 아쿠티스 ─────────────────────── */
-    { id: 'c1', day: 1, cat: 'carlo', text: '항상 예수님과 함께 있는 것,\n이것이 나의 인생 계획입니다.',
+    { id: 'c1', day: 1, also: [3], cat: 'carlo', text: '항상 예수님과 함께 있는 것,\n이것이 나의 인생 계획입니다.',
       from: '성 카를로 아쿠티스', where: '카를로와 메시지를 주고받았을 때' },
-    { id: 'c2', day: 2, cat: 'carlo', text: '성체는 천국으로 가는\n고속도로입니다.',
+    { id: 'c2', day: 2, also: [3], cat: 'carlo', text: '성체는 천국으로 가는\n고속도로입니다.',
       from: '성 카를로 아쿠티스', where: '성당에서 성체등을 바라보았을 때' },
     { id: 'c3', day: 1, cat: 'carlo', text: '모든 사람은 원본으로 태어나지만,\n많은 이가 복사본으로 죽습니다.',
       from: '성 카를로 아쿠티스', where: '성인이 뭐냐고 물어보았을 때' },
@@ -87,16 +87,34 @@ window.COLLECTION = {
     { id: 's9', day: 2, cat: 'saints', text: '기도하고, 바라고,\n걱정하지 마십시오.',
       from: '성 비오 신부', where: '편의점에서 따뜻한 말을 건넸을 때' },
     { id: 'j1', day: 2, cat: 'journey', text: '오늘은 하나면 됐어.',
-      from: '여행의 문장', where: '유해 앞에서 기도를 마쳤을 때' }
+      from: '여행의 문장', where: '유해 앞에서 기도를 마쳤을 때' },
+
+    /* DAY 3 */
+    { id: 'b14', day: 3, cat: 'bible', text: '내 안에 머물러라.\n나도 너희 안에 머무르겠다.',
+      from: '요한 15,4', where: '버스를 기다리던 정류장에서' },
+    { id: 'b15', day: 3, cat: 'bible', text: '내 살을 먹고 내 피를 마시는 사람은\n내 안에 머무르고,\n나도 그 사람 안에 머무른다.',
+      from: '요한 6,56', where: '미사가 끝난 빈 성당에서' },
+    { id: 's10', day: 3, cat: 'saints', text: '당신께서는 제 안에 계셨습니다.\n그런데 저는 밖에서 당신을 찾았습니다.',
+      from: '성 아우구스티노 「고백록」', where: '공원의 작은 책장에서' },
+    { id: 'j2', day: 3, cat: 'journey', text: '그냥 함께 있어도 됩니다.',
+      from: '여행의 문장', where: '아무것도 하지 않고 머물러 본 뒤' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },
 
-  byDay: function (day) { return this.cards.filter(function (c) { return (c.day === undefined ? 1 : c.day) === day; }); },
+  byDay: function (day) {
+    return this.cards.filter(function (c) {
+      const home = (c.day === undefined ? 1 : c.day);
+      return home === day || (c.also && c.also.indexOf(day) !== -1);
+    });
+  },
 
   days: function () {
     const set = {};
-    this.cards.forEach(function (c) { set[c.day === undefined ? 1 : c.day] = true; });
+    this.cards.forEach(function (c) {
+      set[c.day === undefined ? 1 : c.day] = true;
+      if (c.also) c.also.forEach(function (d) { set[d] = true; });
+    });
     return Object.keys(set).map(Number).sort(function (a, b) { return a - b; });
   }
 };

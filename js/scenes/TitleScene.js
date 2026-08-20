@@ -56,12 +56,15 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const cp = SaveSystem.get('checkpoint', null);
     const day1 = SaveSystem.get('dayCompleted.day1', false);
     const day2 = SaveSystem.get('dayCompleted.day2', false);
+    const day3 = SaveSystem.get('dayCompleted.day3', false);
     let y = 668;
 
     if (cp && cp.scene) {
       UI.button(this, W / 2, y, 250, 60, '이어서 걷기', () => this.continueGame(), { size: 19 });
     } else if (day1 && !day2) {
       UI.button(this, W / 2, y, 250, 60, 'DAY 2 걷기', () => this.startDay(2), { size: 19 });
+    } else if (day2 && !day3) {
+      UI.button(this, W / 2, y, 250, 60, 'DAY 3 걷기', () => this.startDay(3), { size: 19 });
     } else if (!day1) {
       UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
@@ -82,7 +85,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 2 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 3 · 2027 서울 WYD 를 준비하며',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -121,8 +124,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
-    const entry = n === 2
-      ? { scene: 'Day2RoomScene', data: {} }
+    const entry = n === 3 ? { scene: 'Day3RoomScene', data: {} }
+      : n === 2 ? { scene: 'Day2RoomScene', data: {} }
       : { scene: 'HomeScene', data: { intro: true } };
     SaveSystem.checkpoint(entry.scene, entry.data);
     UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
@@ -145,10 +148,11 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day1 = SaveSystem.get('dayCompleted.day1', false);
     const days = [
       { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true },
-      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1 }
+      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1 },
+      { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2 }
     ];
 
-    let y = H * 0.42;
+    let y = H * 0.38;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;

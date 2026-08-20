@@ -37,6 +37,9 @@
       Day2ChurchScene, Day2RelicScene, Day2SunsetScene, Day2ReturnScene,
       Day2NoteScene, Day2AlbumScene, Day2EndScene,
       PrepareBagScene, OrangeScene, NoiseScene, HeavyBagScene,
+      Day3RoomScene, Day3StreetScene, Day3ChurchScene, Day3ExitScene,
+      Day3ParkScene, Day3HomeScene, Day3NoteScene, Day3EndScene,
+      ReadyScene, LookAroundScene, SilenceScene, HeartWordScene,
       MiracleMapScene, FortressScene, NightShareScene
     ]
   };
