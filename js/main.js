@@ -25,6 +25,7 @@
       arcade: { gravity: { y: 0 }, debug: false }
     },
     input: { activePointers: 3 },
+    dom: { createContainer: true },      // 기도와 여행 노트에 직접 적을 수 있도록
     scene: [
       BootScene, TitleScene, HomeScene, RoomScene,
       PhoneScene, DreamBeachScene, VistaScene, ChatScene,
@@ -32,6 +33,10 @@
       PrayerScene, JournalScene, PauseScene,
       PhotoMode, GalleryScene,
       WaterPlantScene, HelpMomScene, HomeworkScene, ShelfScene,
+      Day2RoomScene, Day2PhoneScene, Day2StreetScene, Day2StoreScene,
+      Day2ChurchScene, Day2RelicScene, Day2SunsetScene, Day2ReturnScene,
+      Day2NoteScene, Day2AlbumScene, Day2EndScene,
+      PrepareBagScene, OrangeScene, NoiseScene, HeavyBagScene,
       MiracleMapScene, FortressScene, NightShareScene
     ]
   };

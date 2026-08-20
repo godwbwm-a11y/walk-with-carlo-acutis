@@ -640,5 +640,5 @@ window.TextureFactory = (function () {
     });
   }
 
-  return { createAll: createAll, make: make, canvasTex: canvasTex };
+  return { createAll: createAll, make: make, canvasTex: canvasTex, person: person };
 })();

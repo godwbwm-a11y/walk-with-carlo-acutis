@@ -73,15 +73,17 @@ window.DialogueBox = class DialogueBox {
     this._show();
   }
 
+  /* 문자열과 { s, t } 를 섞어서 넘겨도 됩니다 */
   say(textOrArray, onDone) {
-    const arr = (Array.isArray(textOrArray) ? textOrArray : [textOrArray]).map(t => ({ t: t }));
+    const arr = (Array.isArray(textOrArray) ? textOrArray : [textOrArray])
+      .map(t => (typeof t === 'string' ? { t: t } : t));
     this.play(arr, onDone);
   }
 
   _show() {
     const line = this.lines[this.index];
     this._drawName(line.s || '');
-    this.full = line.t || '';
+    this.full = (line && line.t != null) ? String(line.t) : '';
     this.text.setText('');
     this.arrow.setVisible(false);
     this.typing = true;

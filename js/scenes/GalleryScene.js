@@ -77,20 +77,29 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
       UI.style(FONT.body, PAL.sun)).setOrigin(0.5, 0));
     y += 44;
 
-    Object.keys(COLLECTION.cats).forEach((catKey) => {
-      const cat = COLLECTION.cats[catKey];
-      const cards = COLLECTION.cards.filter(c => c.cat === catKey);
+    const titles = { 1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일', 99: '카를로의 하루 · 밀라노' };
 
-      this.content.add(this.add.text(20, y, cat.icon + '  ' + cat.name,
-        UI.style(FONT.small, cat.color)).setOrigin(0, 0));
-      y += 32;
+    COLLECTION.days().forEach((day) => {
+      const cards = COLLECTION.byDay(day);
+      const got = Collection.countOfDay(day);
+
+      const head = this.add.graphics();
+      head.fillStyle(HEX('#22314f'), 1);
+      head.fillRoundedRect(16, y, W - 32, 40, 10);
+      this.content.add(head);
+      this.content.add(this.add.text(30, y + 20, titles[day] || ('DAY ' + day),
+        UI.style(FONT.small, PAL.cream)).setOrigin(0, 0.5));
+      this.content.add(this.add.text(W - 30, y + 20, got + ' / ' + cards.length,
+        UI.style(FONT.small, PAL.sun)).setOrigin(1, 0.5));
+      y += 52;
 
       cards.forEach((card) => {
+        const cat = COLLECTION.cats[card.cat];
         const have = Collection.has(card.id);
         /* 글이 몇 줄이 되든 칸이 함께 늘어나도록 먼저 재어 봅니다 */
         const body = have ? this.add.text(W / 2, 0, card.text,
           UI.style(18, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 76 } })).setOrigin(0.5, 0) : null;
-        const h = have ? Math.max(88, body.height + 54) : 62;
+        const h = have ? Math.max(104, body.height + 76) : 62;
         const g = this.add.graphics();
         g.fillStyle(HEX(have ? PAL.paper : '#2b3b60'), have ? 0.97 : 0.5);
         g.fillRoundedRect(16, y, W - 32, h, 14);
@@ -99,10 +108,12 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
         this.content.add(g);
 
         if (have) {
-          body.setY(y + 18);
+          this.content.add(this.add.text(30, y + 18, cat.icon + ' ' + cat.name,
+            UI.style(12, cat.color)).setOrigin(0, 0.5));
+          body.setY(y + 34);
           this.content.add(body);
-          this.content.add(this.add.text(W - 34, y + h - 26, '— ' + card.from,
-            UI.style(14, PAL.inkSoft)).setOrigin(1, 0));
+          this.content.add(this.add.text(W - 34, y + h - 24, '— ' + card.from,
+            UI.style(14, PAL.inkSoft)).setOrigin(1, 0.5));
         } else {
           this.content.add(this.add.text(W / 2, y + 18, '아직 만나지 못한 말씀',
             UI.style(FONT.small, '#8fa5c8')).setOrigin(0.5, 0));
@@ -111,7 +122,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
         }
         y += h + 12;
       });
-      y += 14;
+      y += 18;
     });
 
     this.finishLayout(y);

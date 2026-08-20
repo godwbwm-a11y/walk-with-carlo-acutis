@@ -41,16 +41,15 @@ window.CHAT = {
       ]
     },
     {
-      id: 'mass', label: '미사는 왜 매주 가야 해?', card: 'c2',
+      id: 'mass', label: '미사는 왜 매주 가야 해?', card: 'c10',
       lines: [
         { who: 'me', t: '솔직히 미사 지루할 때 있어.' },
         { who: 'carlo', t: '알아. 나도 졸았어.' },
         { who: 'me', t: '성인이 졸아도 돼?' },
         { who: 'carlo', t: '성인도 사람인데ㅋㅋ' },
         { who: 'carlo', t: '근데 나는 성체가 진짜 좋았어.' },
-        { who: 'carlo', t: '성체는 천국으로 가는 고속도로거든.' },
-        { who: 'me', t: '고속도로?' },
-        { who: 'carlo', t: '응. 돌아서 갈 필요가 없잖아.' }
+        { who: 'me', t: '왜?' },
+        { who: 'carlo', t: '모실수록 예수님을 조금씩 닮아가는 것 같았거든.' }
       ]
     },
     {
@@ -67,7 +66,7 @@ window.CHAT = {
       ]
     },
     {
-      id: 'net', label: '너 컴퓨터 좋아했다며?', card: 'c4',
+      id: 'net', label: '너 컴퓨터 좋아했다며?', card: 'c11',
       lines: [
         { who: 'me', t: '너 컴퓨터 잘했다며?' },
         { who: 'carlo', t: '좋아했지. 게임도 했고.' },
@@ -77,7 +76,10 @@ window.CHAT = {
         { who: 'carlo', t: '기적들 정리해서 올리는 거.' },
         { who: 'me', t: '왜 그런 걸 해?' },
         { who: 'carlo', t: '내가 대단해 보이려고 한 건 아니고.' },
-        { who: 'carlo', t: '나 말고, 하느님.' }
+        { who: 'carlo', t: '그냥 사람들이 예수님을 알면 좋겠어서.' },
+        { who: 'me', t: '음… 멋있네.' },
+        { who: 'carlo', t: '멋있는 건 잘 모르겠고.' },
+        { who: 'carlo', t: '제일 어려운 건 나 자신을 이기는 거더라.' }
       ]
     }
   ],
