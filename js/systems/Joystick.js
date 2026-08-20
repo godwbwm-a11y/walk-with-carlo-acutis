@@ -77,6 +77,14 @@ window.Joystick = class Joystick {
     g.lineStyle(2, 0xffffff, 0.6); g.strokeCircle(kx, ky, 24);
   }
 
+  /* 다른 화면에 다녀온 뒤 손가락 상태를 지웁니다 */
+  reset() {
+    this.pointerId = null;
+    this.force = 0;
+    this.vector.set(0, 0);
+    if (this.gfx) this.gfx.setVisible(false);
+  }
+
   /* 매 프레임 방향 벡터 (-1 ~ 1) */
   read() {
     if (this.scene.inputLocked) return { x: 0, y: 0 };

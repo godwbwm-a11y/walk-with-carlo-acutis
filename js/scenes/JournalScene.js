@@ -39,9 +39,13 @@ window.JournalScene = class JournalScene extends Phaser.Scene {
     this.add.text(W / 2, H - 168, J.teaser,
       UI.style(FONT.small, '#c9d6ea', { align: 'center', lineSpacing: 6 })).setOrigin(0.5).setAlpha(0.85);
 
-    UI.button(this, W / 2, H - 90, 250, 58, '처음 화면으로', () => {
+    UI.button(this, W / 2 - 66, H - 90, 176, 58, '처음 화면으로', () => {
       UI.fadeOut(this, 600, () => this.scene.start('TitleScene'));
-    }, { size: 18 });
+    }, { size: FONT.small });
+    UI.button(this, W / 2 + 100, H - 90, 108, 58, '보관함', () => {
+      this.scene.launch('GalleryScene', { from: 'JournalScene' });
+      this.scene.pause();
+    }, { size: FONT.small, fill: PAL.cream });
 
     /* 저장 */
     SaveSystem.addJournal({
@@ -52,6 +56,8 @@ window.JournalScene = class JournalScene extends Phaser.Scene {
 
     AudioSystem.chime();
     UI.fadeIn(this, 900);
+
+    this.time.delayedCall(1800, () => Collection.award(this, 'b1'));
 
     /* 반짝이는 작은 빛 */
     this.time.addEvent({

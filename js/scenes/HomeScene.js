@@ -62,9 +62,11 @@ window.HomeScene = class HomeScene extends WorldScene {
       id: 'home_sofa', x: 104, y: 566, texture: 'sofa', label: '앉아보기', scale: 1.2, solid: true, solidW: 96, solidH: 14,
       onInteract: () => this.look('sofa', 'home_sofa')
     });
+    this.addProp(320, 626, 'plant', { scale: 1.2 });
+    this.addProp(360, 640, 'plant', { scale: 0.95 });
     this.addInteractable({
-      id: 'home_plant', x: 344, y: 626, texture: 'plant', label: '살펴보기', scale: 1.2,
-      onInteract: () => this.look('plant', 'home_plant')
+      id: 'home_plant', x: 340, y: 632, label: '물 주기', range: 82, marker: true, markerY: 578,
+      onInteract: () => this.openMiniGame('WaterPlantScene')
     });
 
     /* 엄마 */
@@ -81,7 +83,8 @@ window.HomeScene = class HomeScene extends WorldScene {
     this.physics.world.setBounds(16, 208, GAME.WIDTH - 32, 570);   // 바닥 위에서만 걷습니다
     this.stick = new Joystick(this);
     this.createActionButton();
-    UI.pauseButton(this);
+    this.createPhotoButton('우리 집 거실');
+    this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, D.objective);
 
     UI.fadeIn(this, 800);
@@ -104,8 +107,22 @@ window.HomeScene = class HomeScene extends WorldScene {
 
   talkToMom() {
     const D = DAY01.home;
-    if (this.talked) {
+    if (this.dishesDone) {
       this.dialogue.play([{ s: '엄마', t: '가서 좀 쉬어. 내일 얘기하자.' }]);
+      return;
+    }
+    if (this.talked) {
+      this.dialogue.play([
+        { s: '엄마', t: '아, 설거지 좀 도와줄래?' },
+        { s: '엄마', t: '금방이야.' }
+      ], () => {
+        this.dialogue.choose('', [
+          { key: 'yes', label: '도와드릴게요' },
+          { key: 'no', label: '조금 이따가요' }
+        ], (k) => {
+          if (k === 'yes') this.openMiniGame('HelpMomScene');
+        });
+      });
       return;
     }
     this.dialogue.play(D.family, () => {
@@ -114,12 +131,20 @@ window.HomeScene = class HomeScene extends WorldScene {
         const reply = D.choiceReply[key] || [];
         this.dialogue.play(reply.concat(D.familyEnd), () => {
           this.talked = true;
-          this.momItem.label = '말 걸기';
+          this.momItem.label = '도와드리기';
           this.objective.setText(DAY01.home.objectiveAfter);
           AudioSystem.chime();
+          Collection.award(this, 'b7');
         });
       });
     });
+  }
+
+  onMiniGameDone(key) {
+    if (key === 'HelpMomScene') {
+      this.dishesDone = true;
+      this.momItem.label = '말 걸기';
+    }
   }
 
   enterRoom() {

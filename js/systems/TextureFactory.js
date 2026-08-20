@@ -273,6 +273,42 @@ window.TextureFactory = (function () {
       g.fillStyle(0xffffff, 0.5); g.fillRoundedRect(0, 4, 64, 5, 2.5);
       g.fillStyle(0xffffff, 0.28); g.fillRoundedRect(6, 0, 40, 4, 2);
     });
+    canvasTex(scene, 'nebula', 256, 256, function (ctx, w, h) {
+      const grd = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+      grd.addColorStop(0, 'rgba(255,255,255,0.55)');
+      grd.addColorStop(0.35, 'rgba(255,255,255,0.22)');
+      grd.addColorStop(0.7, 'rgba(255,255,255,0.06)');
+      grd.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grd; ctx.fillRect(0, 0, w, h);
+    });
+    make(scene, 'watering_can', 68, 52, function (g) {
+      g.fillStyle(0x7fa6c4, 1);
+      g.fillRoundedRect(6, 14, 38, 30, 8);
+      g.fillRoundedRect(38, 18, 8, 8, 3);
+      g.fillTriangle(44, 20, 66, 6, 62, 16);
+      g.fillRoundedRect(58, 2, 10, 10, 3);
+      g.lineStyle(5, 0x7fa6c4, 1);
+      g.beginPath(); g.arc(16, 14, 10, Math.PI, Math.PI * 1.9); g.strokePath();
+      g.fillStyle(0x9cc0d8, 1); g.fillRoundedRect(10, 18, 30, 8, 4);
+    });
+    make(scene, 'plate', 96, 96, function (g) {
+      g.fillStyle(0xffffff, 1); g.fillCircle(48, 48, 46);
+      g.fillStyle(0xeef1f4, 1); g.fillCircle(48, 48, 36);
+      g.lineStyle(2, 0xd6dde4, 1); g.strokeCircle(48, 48, 46);
+    });
+    make(scene, 'bible_book', 44, 56, function (g) {
+      g.fillStyle(0x6b3f36, 1); g.fillRoundedRect(0, 0, 44, 56, 4);
+      g.fillStyle(0x8a5347, 1); g.fillRoundedRect(4, 3, 36, 50, 3);
+      g.fillStyle(0xd7c07f, 1);
+      g.fillRoundedRect(20, 12, 4, 30, 1.5); g.fillRoundedRect(13, 20, 18, 4, 1.5);
+      g.fillStyle(0xf3ece2, 1); g.fillRect(40, 5, 4, 46);
+    });
+    make(scene, 'camera_icon', 40, 34, function (g) {
+      g.fillStyle(0xfff8ec, 1); g.fillRoundedRect(0, 6, 40, 26, 6);
+      g.fillRoundedRect(12, 0, 16, 8, 3);
+      g.fillStyle(0x3d2c20, 1); g.fillCircle(20, 19, 9);
+      g.fillStyle(0x8fc0d9, 1); g.fillCircle(20, 19, 6);
+    });
     make(scene, 'card', 300, 84, function (g) {
       g.fillStyle(0xffffff, 0.97); g.fillRoundedRect(0, 0, 300, 84, 16);
       g.fillStyle(0x000000, 0.05); g.fillRoundedRect(0, 76, 300, 8, 8);

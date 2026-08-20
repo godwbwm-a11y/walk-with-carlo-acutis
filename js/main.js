@@ -27,7 +27,10 @@
     input: { activePointers: 3 },
     scene: [
       BootScene, TitleScene, HomeScene, RoomScene,
-      PhoneScene, DreamBeachScene, PrayerScene, JournalScene, PauseScene
+      PhoneScene, DreamBeachScene, VistaScene, ChatScene,
+      PrayerScene, JournalScene, PauseScene,
+      PhotoMode, GalleryScene,
+      WaterPlantScene, HelpMomScene, HomeworkScene, ShelfScene
     ]
   };
 

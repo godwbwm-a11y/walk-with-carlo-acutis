@@ -28,6 +28,20 @@
 | 6 | 오늘의 기도 | 조작이 사라지고 파도만 남는 10초 |
 | 7 | 여행 노트 | 오늘의 마음을 한 장에 기록, DAY 1 완료 |
 
+### 걷다가 할 수 있는 것들
+
+| 무엇 | 어디에서 |
+|---|---|
+| 화분에 물주기 | 거실의 화분 — 물뿌리개를 끌어 천천히 |
+| 설거지 도와드리기 | 가족과 이야기한 뒤 어머니에게 |
+| 숙제하기 | 내 방 책상 — 딴생각이 떠오르면 톡 눌러 옆에 둡니다 |
+| 책장 정리 | 내 방 책장 — 정리하다 보면 오래된 것을 만납니다 |
+| 파도 보기 | 꿈속 해변 — 발 아래로 물이 들어왔다 나갑니다 |
+| 바위에 앉기 | 바다가 넓게 열리고 어선과 갈매기가 지나갑니다 |
+| 하늘 보기 | 은하수가 펼쳐집니다 |
+| 카를로와 메시지 | 벤치 대화 뒤, 채팅으로 신앙을 묻고 답합니다 |
+| 사진 찍기 | 어느 화면에서든 오른쪽 위 사진 버튼 |
+
 전투·죽음·시간 제한·경쟁·점수가 없습니다. 기도에는 성공과 실패가 없고,
 플레이어의 선택은 평가되지 않습니다.
 
@@ -62,14 +76,29 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js(색·글자·규격), day01.js(모든 대사와 문장)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, UI,
-                      DialogueBox, Joystick, WorldScene(걷기 장면 공통)
-js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach,
-                      Prayer, Journal, Pause
+js/data/              config.js, day01.js, collection.js(말씀), chat.js(채팅)
+js/systems/           SaveSystem, AudioSystem, TextureFactory, UI, DialogueBox,
+                      Joystick, Collection, PhotoSystem,
+                      WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
+js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
+                      Chat, Prayer, Journal, Pause, PhotoMode, Gallery
+js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
+
+## 수집과 사진첩
+
+**말씀 카드 20장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀을
+걷고 만나고 물어보는 동안 하나씩 얻습니다. 아직 얻지 못한 카드에는
+어디에서 만날 수 있는지만 살짝 적혀 있습니다.
+
+**사진첩** — 프레임을 끌어 옮기고 크기를 바꾼 뒤 찍습니다.
+사진은 게임 안 사진첩에 담기고(최대 12장), 휴대폰에도 저장할 수 있습니다.
+사진 아래에는 게임 제목과 찍은 시각이 작게 남습니다.
+
+둘 다 제목 화면과 일시정지 화면의 **보관함**에서 볼 수 있습니다.
+모든 기록은 기기 안에만 저장되며 어디로도 전송되지 않습니다.
 
 ## 기술
 

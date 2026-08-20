@@ -38,8 +38,8 @@ window.RoomScene = class RoomScene extends WorldScene {
     this.addProp(52, 186, 'door', { originY: 1, depth: 5, alpha: 0.92, scale: 1.15 });
 
     this.addInteractable({
-      id: 'room_desk', x: 150, y: 330, texture: 'desk', label: '살펴보기', scale: 1.2, solid: true, solidW: 78, solidH: 14,
-      onInteract: () => this.look('desk', 'room_desk')
+      id: 'room_desk', x: 150, y: 330, texture: 'desk', label: '숙제하기', scale: 1.2, solid: true, solidW: 78, solidH: 14,
+      onInteract: () => this.openMiniGame('HomeworkScene')
     });
     this.addProp(198, 318, 'lamp_room', { depth: 322, scale: 1.2 });
 
@@ -62,7 +62,11 @@ window.RoomScene = class RoomScene extends WorldScene {
     });
 
     this.addProp(206, 606, 'rug', { originY: 0.5, depth: 3, scale: 0.86 });
-    this.addProp(348, 300, 'shelf', { scale: 1.2, solid: true, solidW: 52, solidH: 14 });
+    this.addInteractable({
+      id: 'room_shelf', x: 348, y: 300, texture: 'shelf', label: '책장 정리', scale: 1.2,
+      solid: true, solidW: 52, solidH: 14, markerY: 236,
+      onInteract: () => this.openMiniGame('ShelfScene')
+    });
 
     /* 스마트폰 */
     this.phoneItem = this.addInteractable({
@@ -74,7 +78,8 @@ window.RoomScene = class RoomScene extends WorldScene {
     this.physics.world.setBounds(16, 208, GAME.WIDTH - 32, 570);   // 바닥 위에서만 걷습니다
     this.stick = new Joystick(this);
     this.createActionButton();
-    UI.pauseButton(this);
+    this.createPhotoButton('내 방');
+    this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, this.phoneDone ? D.objectiveAfter : D.objective);
 
     if (this.phoneDone) {
@@ -101,7 +106,10 @@ window.RoomScene = class RoomScene extends WorldScene {
     const lines = DAY01.room.objects[key] || ['…'];
     this.noteFound(id);
     AudioSystem.found();
-    this.dialogue.say(lines);
+    const card = { room_rosary: 's3', room_poster: 'b6', room_console: 's7' }[id];
+    this.dialogue.say(lines, () => {
+      if (card) Collection.award(this, card);
+    });
   }
 
   openPhone() {

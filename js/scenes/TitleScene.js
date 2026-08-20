@@ -68,6 +68,10 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.bgmBtn = UI.circleButton(this, 44, 48, 24, '♪', () => this.toggle('bgm'), { size: 18 });
     this.sfxBtn = UI.circleButton(this, 108, 48, 24, '🔔', () => this.toggle('sfx'), { size: 17 });
     this.slash = this.add.graphics().setDepth(50);
+    UI.button(this, W - 66, 48, 104, 48, '보관함', () => {
+      this.scene.launch('GalleryScene', { from: 'TitleScene' });
+      this.scene.pause();
+    }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
     this.add.text(W / 2, H - 34, 'DAY 1 체험판 · 2027 서울 WYD 를 준비하며',

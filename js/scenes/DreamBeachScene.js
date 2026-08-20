@@ -84,7 +84,8 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.stick = new Joystick(this);
     this.createActionButton();
-    UI.pauseButton(this);
+    this.createPhotoButton('꿈속 해변');
+    this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, D.objective);
 
     this.physics.world.setBounds(40, 474, WORLD_W - 80, 186);   // 모래 위, 대화창 위쪽에서만 걷습니다
@@ -104,16 +105,16 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     const D = DAY01.dream;
 
     this.addInteractable({
-      id: 'beach_wave', x: 460, y: 496, label: '파도', range: 70, markerY: 452,
-      onInteract: () => { AudioSystem.wave(); this.look('wave', 'beach_wave'); }
+      id: 'beach_wave', x: 460, y: 496, label: '파도 보기', range: 74, markerY: 452,
+      onInteract: () => { this.noteFound('beach_wave'); this.openVista('wave', 'b3'); }
     });
     this.addInteractable({
       id: 'beach_shell', x: 520, y: 646, texture: 'shell', label: '줍기',
       onInteract: () => this.look('shell', 'beach_shell')
     });
     this.addInteractable({
-      id: 'beach_rock', x: 648, y: 556, label: '앉아보기', range: 62, marker: false,
-      onInteract: () => this.look('rock', 'beach_rock')
+      id: 'beach_rock', x: 648, y: 556, label: '앉아보기', range: 74, markerY: 512,
+      onInteract: () => { this.noteFound('beach_rock'); this.openVista('sea', 's5'); }
     });
     this.cat = this.addInteractable({
       id: 'beach_cat', x: 980, y: 650, texture: 'cat', label: '고양이',
@@ -127,8 +128,8 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
       onInteract: () => this.look('lamp', 'beach_lamp')
     });
     this.addInteractable({
-      id: 'beach_star', x: 760, y: 506, label: '하늘 보기', range: 78, marker: false,
-      onInteract: () => this.look('star', 'beach_star')
+      id: 'beach_star', x: 760, y: 506, label: '하늘 보기', range: 78, markerY: 452,
+      onInteract: () => { this.noteFound('beach_star'); this.openVista('galaxy', 'b8'); }
     });
     this.addInteractable({
       id: 'beach_foot', x: 240, y: 612, label: '발자국', range: 66, marker: false,
@@ -212,10 +213,36 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
         this.dialogue.choose('', D.reasons, (key) => {
           SaveSystem.set('reflections.dislikeReason', key);
           const reply = D.reasonReply[key] || [];
-          this.dialogue.play(reply.concat(D.benchEnd), () => this.toPrayer());
+          this.dialogue.play(reply.concat(D.benchEnd), () => {
+            Collection.award(this, 'b5', () => this.toChat());
+          });
         });
       });
     });
+  }
+
+  /* 카를로와 메시지를 주고받습니다 */
+  toChat() {
+    this.dialogue.play(DAY01.dream.beforeChat, () => {
+      if (this.stick) this.stick.reset();
+      this.scene.launch('ChatScene', { from: 'DreamBeachScene', next: true });
+      this.scene.pause();
+    });
+  }
+
+  onChatDone() {
+    this.time.delayedCall(400, () => {
+      this.dialogue.play(DAY01.dream.afterChat, () => this.toPrayer());
+    });
+  }
+
+  openVista(kind, card) {
+    if (this.stick) this.stick.reset();
+    this.scene.launch('VistaScene', {
+      kind: kind, from: 'DreamBeachScene',
+      card: Collection.has(card) ? null : card
+    });
+    this.scene.pause();
   }
 
   toPrayer() {

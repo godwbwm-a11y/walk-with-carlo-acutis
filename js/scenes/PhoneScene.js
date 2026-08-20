@@ -164,8 +164,10 @@ window.PhoneScene = class PhoneScene extends Phaser.Scene {
       UI.style(FONT.body, '#cfe0f5', { align: 'center' })).setOrigin(0.5).setAlpha(0);
     this.tweens.add({ targets: [t, s], alpha: 1, duration: 800, delay: 400 });
 
-    this.time.delayedCall(2600, () => {
-      UI.fadeOut(this, 800, () => this.scene.start('RoomScene', { phoneDone: true }), [8, 12, 24]);
+    this.time.delayedCall(2400, () => {
+      Collection.award(this, 'b2', () => {
+        UI.fadeOut(this, 800, () => this.scene.start('RoomScene', { phoneDone: true }), [8, 12, 24]);
+      });
     });
   }
 };

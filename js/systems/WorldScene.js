@@ -14,6 +14,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.dialogue = new DialogueBox(this);
+    this.events.on('resume', this.onResumeWorld, this);
   }
 
   setInputLocked(v) {
@@ -100,6 +101,49 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
       UI.style(FONT.small, PAL.ink, { align: 'center' })).setOrigin(0.5).setDepth(885).setScrollFactor(0).setVisible(false);
     this.actionBtn = b;
     return b;
+  }
+
+  /* 오른쪽 위 작은 사진 버튼 */
+  createPhotoButton(place) {
+    this.photoPlace = place || '';
+    const x = GAME.WIDTH - 34, y = 104;
+    const b = UI.circleButton(this, x, y, 22, '', () => this.openPhoto(), { size: 14, alpha: 0.85 });
+    b.setDepth(890).setScrollFactor(0);
+    this.photoIcon = this.add.image(x, y, 'camera_icon').setScale(0.62)
+      .setDepth(892).setScrollFactor(0);
+    this.photoBtn = b;
+    return b;
+  }
+
+  openPhoto() {
+    if (this.inputLocked) return;
+    if (this.stick) this.stick.reset();
+    this.setHudVisible(false);
+    this.scene.launch('PhotoMode', { from: this.scene.key, place: this.photoPlace });
+    this.scene.pause();
+  }
+
+  /* 사진에 조작 화면이 담기지 않도록 잠시 감춥니다 */
+  setHudVisible(v) {
+    [this.objective, this.actionBtn, this.actionLabel, this.photoBtn, this.photoIcon, this.pauseBtn]
+      .forEach(o => { if (o) o.setVisible(v); });
+    if (this.stick && this.stick.hint) this.stick.hint.setVisible(v);
+    this.interactables.forEach(it => { if (it.marker) it.marker.setVisible(v); });
+  }
+
+  /* 미니게임은 이 장면 위에 잠깐 올라왔다 갑니다 */
+  openMiniGame(key) {
+    if (this.stick) this.stick.reset();
+    this.scene.launch(key, { from: this.scene.key });
+    this.scene.pause();
+  }
+
+  onResumeWorld() {
+    if (this.stick) this.stick.reset();
+    this.setHudVisible(true);
+    if (this.actionBtn) this.actionBtn.setVisible(false);
+    if (this.actionLabel) this.actionLabel.setVisible(false);
+    this.setInputLocked(false);
   }
 
   tryInteract() {

@@ -11,17 +11,22 @@ window.PauseScene = class PauseScene extends Phaser.Scene {
     scrim.fillStyle(0x101a2e, 0.62);
     scrim.fillRect(0, 0, W, H);
 
-    UI.panel(this, W / 2, H / 2, W - 60, 400, { fill: PAL.paper });
+    UI.panel(this, W / 2, H / 2, W - 56, 476, { fill: PAL.paper });
 
-    this.add.text(W / 2, H / 2 - 160, '잠시 쉬어갑니다', UI.style(22, PAL.ink)).setOrigin(0.5);
-    this.add.text(W / 2, H / 2 - 118, '기록은 자동으로 저장됩니다.', UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5);
+    this.add.text(W / 2, H / 2 - 196, '잠시 쉬어갑니다', UI.style(22, PAL.ink)).setOrigin(0.5);
+    this.add.text(W / 2, H / 2 - 158, '기록은 자동으로 저장됩니다.', UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5);
 
-    this.bgmBtn = UI.button(this, W / 2, H / 2 - 44, 230, 56, '', () => this.toggle('bgm'), { size: FONT.label });
-    this.sfxBtn = UI.button(this, W / 2, H / 2 + 26, 230, 56, '', () => this.toggle('sfx'), { size: FONT.label });
+    this.bgmBtn = UI.button(this, W / 2, H / 2 - 100, 230, 56, '', () => this.toggle('bgm'), { size: FONT.label });
+    this.sfxBtn = UI.button(this, W / 2, H / 2 - 30, 230, 56, '', () => this.toggle('sfx'), { size: FONT.label });
     this.refresh();
 
-    UI.button(this, W / 2, H / 2 + 100, 230, 56, '계속 걷기', () => this.resume(), { size: FONT.label, fill: PAL.sun });
-    UI.button(this, W / 2, H / 2 + 170, 230, 52, '처음 화면으로', () => {
+    UI.button(this, W / 2, H / 2 + 40, 230, 56, '보관함', () => {
+      this.scene.launch('GalleryScene', { from: 'PauseScene' });
+      this.scene.pause();
+    }, { size: FONT.label, fill: PAL.cream });
+
+    UI.button(this, W / 2, H / 2 + 110, 230, 56, '계속 걷기', () => this.resume(), { size: FONT.label, fill: PAL.sun });
+    UI.button(this, W / 2, H / 2 + 180, 230, 52, '처음 화면으로', () => {
       this.scene.stop(this.from);
       this.scene.stop();
       this.scene.start('TitleScene');

@@ -24,6 +24,7 @@ window.SaveSystem = (function () {
         finalReflection: null
       },
       lifePlan: null,
+      collection: [],           // 모은 말씀 카드
       journal: [],
       found: [],                 // 살펴본 오브젝트 기록
       settings: { bgm: true, sfx: true },
