@@ -40,6 +40,9 @@
       Day3RoomScene, Day3StreetScene, Day3ChurchScene, Day3ExitScene,
       Day3ParkScene, Day3HomeScene, Day3NoteScene, Day3EndScene,
       ReadyScene, LookAroundScene, SilenceScene, HeartWordScene,
+      Day4RoomScene, Day4SchoolScene, Day4YardScene, Day4StreetScene,
+      Day4NoteScene, Day4EndScene,
+      FeedScene, WordsScene, MirrorScene, SeePersonScene, GiftScene,
       MiracleMapScene, FortressScene, NightShareScene
     ]
   };

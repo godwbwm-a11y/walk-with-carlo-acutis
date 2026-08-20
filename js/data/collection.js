@@ -16,7 +16,7 @@ window.COLLECTION = {
       from: '성 카를로 아쿠티스', where: '카를로와 메시지를 주고받았을 때' },
     { id: 'c2', day: 2, also: [3], cat: 'carlo', text: '성체는 천국으로 가는\n고속도로입니다.',
       from: '성 카를로 아쿠티스', where: '성당에서 성체등을 바라보았을 때' },
-    { id: 'c3', day: 1, cat: 'carlo', text: '모든 사람은 원본으로 태어나지만,\n많은 이가 복사본으로 죽습니다.',
+    { id: 'c3', day: 1, also: [4], cat: 'carlo', text: '모든 사람은 원본으로 태어나지만,\n많은 이가 복사본으로 죽습니다.',
       from: '성 카를로 아쿠티스', where: '성인이 뭐냐고 물어보았을 때' },
     { id: 'c4', day: 2, cat: 'carlo', text: '나 말고, 하느님.',
       from: '성 카를로 아쿠티스', where: 'DAY 2를 마쳤을 때' },
@@ -47,7 +47,7 @@ window.COLLECTION = {
       from: '시편 23,1', where: '책장을 정리하다 무언가를 찾았을 때' },
     { id: 'b5', day: 1, cat: 'bible', text: '나는 너희를 친구라고 불렀다.',
       from: '요한 15,15', where: '벤치에서 카를로와 이야기를 마쳤을 때' },
-    { id: 'b6', day: 1, cat: 'bible', text: '당신께서 저를 놀랍고 신비롭게\n지으셨으니 당신을 찬송하나이다.',
+    { id: 'b6', day: 1, also: [4], cat: 'bible', text: '당신께서 저를 놀랍고 신비롭게\n지으셨으니 당신을 찬송하나이다.',
       from: '시편 139,14', where: '지난 여름 사진을 들여다보았을 때' },
     { id: 'b7', day: 1, cat: 'bible', text: '너희의 빛이 사람들 앞을 비추어,\n그들이 하늘에 계신 아버지를 찬양하게 하여라.',
       from: '마태 5,16', where: '가족의 말을 끝까지 들었을 때' },
@@ -97,7 +97,17 @@ window.COLLECTION = {
     { id: 's10', day: 3, cat: 'saints', text: '당신께서는 제 안에 계셨습니다.\n그런데 저는 밖에서 당신을 찾았습니다.',
       from: '성 아우구스티노 「고백록」', where: '공원의 작은 책장에서' },
     { id: 'j2', day: 3, cat: 'journey', text: '그냥 함께 있어도 됩니다.',
-      from: '여행의 문장', where: '아무것도 하지 않고 머물러 본 뒤' }
+      from: '여행의 문장', where: '아무것도 하지 않고 머물러 본 뒤' },
+
+    /* DAY 4 */
+    { id: 'j3', day: 4, cat: 'journey', text: '다른 사람이 빛난다고\n내가 어두워지는 것은 아니다.',
+      from: '여행의 문장', where: '아침 SNS 를 멈추었을 때' },
+    { id: 'b16', day: 4, cat: 'bible', text: '우리는 하느님의 작품입니다.',
+      from: '에페 2,10', where: '교실에서 시험지를 접었을 때' },
+    { id: 's11', day: 4, cat: 'saints', text: '우리는 우리의 나약함과\n실패의 총합이 아닙니다.',
+      from: '성 요한 바오로 2세', where: '혼자 있던 친구와 매점에 갔을 때' },
+    { id: 'j4', day: 4, cat: 'journey', text: '내가 가진 좋은 것은\n누군가에게 줄 수 있는 선물이다.',
+      from: '여행의 문장', where: '석양 아래에서 받은 것을 헤아렸을 때' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },

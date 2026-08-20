@@ -5,9 +5,10 @@
 
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
-이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)** 이 들어 있습니다.
+이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**,
+**DAY 4(월요일)** 가 들어 있습니다.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2는 약 15~20분, DAY 3은 약 15~20분간 플레이할 수 있습니다.
+DAY 2·DAY 3·DAY 4는 각각 약 15~20분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -92,6 +93,34 @@ DAY 2는 약 15~20분, DAY 3은 약 15~20분간 플레이할 수 있습니다.
 
 《아무것도 하지 않기》에는 성공도 실패도 없습니다. 중간에 화면을 눌러도
 시간이 처음으로 돌아가지 않고, “괜찮아요. 다시 여기 있어 봅시다.” 라고만 합니다.
+
+---
+
+## DAY 4 · 월요일 — “나는 복사본이 아니다.”
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 아침 방 | 눈뜨자마자 여는 SNS, 미니게임 《피드》 |
+| 2 | 등굣길 · 교실 | 시험지 점수 옆에 적힌 다른 이름들 |
+| 3 | 복도 | 미니게임 《누가 원하는 걸까》 — 내가 원하는 것과 남이 원하는 것 |
+| 4 | 운동장 | 카를로와 만나 미니게임 《거울》 — 나를 덮은 평가를 걷어내기 |
+| 5 | 운동장 벤치 | 시편 139편, “당신께서 저를 놀랍고 신비롭게 지으셨으니” |
+| 6 | 급식실 앞 | 미니게임 《사람 보기》 — 오래 바라보아야 보이는 것 |
+| 7 | 혼자 있는 학생 | 말을 걸어도, 그냥 앉아도, 지나가도 나무라지 않습니다 |
+| 8 | 하교 · 학원가 | 똑같은 뒷모습들 사이에서 “그래도 ‘나’네.” |
+| 9 | 석양 | 미니게임 《받은 선물》 — 내게 주신 좋은 것 하나와 그 쓰임 |
+| 10 | 오늘의 기도 | 비교하지 않게 해주세요. 한마디를 더 적어도 좋습니다 |
+| 11 | 여행 노트 | 누구와 비교했는지, 그 사람의 좋은 점, 그리고 나의 좋은 점 |
+| 12 | 엔딩 | 복사기가 뱉어낸 똑같은 종이 두 장, 그리고 **ERROR → ORIGINAL** |
+
+《피드》에서 화면을 넘길수록 나는 조금씩 작아집니다. 다시 커지는 방법은
+멈추고 나를 한 번 바라보는 것뿐입니다. 점수도, 실패도 없습니다.
+
+《거울》에서 떼어낸 평가는 사라지지 않고 거울 밖에 그대로 남습니다.
+좋은 점을 하나도 고르지 않아도 됩니다. 그때는 **“아직 잘 모르겠다”** 가
+오늘의 대답이 됩니다.
+
+노트의 질문은 **남의 좋은 점을 먼저 적고, 그다음에 나의 좋은 점을 적는** 순서입니다.
 
 ---
 
@@ -205,7 +234,7 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js, day02.js, day03.js, collection.js(말씀),
+js/data/              config.js, day01.js, day02.js, day03.js, day04.js, collection.js(말씀),
                       chat.js(채팅), carloday.js(카를로의 하루)
 js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3, UI,
                       DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
@@ -217,17 +246,19 @@ js/scenes/day2/       Day2Room, Day2Phone, Day2Street, Day2Store, Day2Church,
                       Day2Relic, Day2Sunset, Day2Return, Day2Note, Day2Album, Day2End
 js/scenes/day3/       Day3Room, Day3Street, Day3Church, Day3Exit, Day3Park,
                       Day3Home, Day3Note, Day3End
+js/scenes/day4/       Day4Room, Day4School, Day4Yard, Day4Street, Day4Note, Day4End
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
-                      Ready, LookAround, Silence, HeartWord
+                      Ready, LookAround, Silence, HeartWord,
+                      Feed, Words, Mirror, SeePerson, Gift
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 38장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
+**말씀 카드 42장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
 아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
 보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
@@ -261,7 +292,7 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-DAY 4 《나는 원본이다》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
+DAY 5 《내 손으로 만드는 것》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
 《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
 저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
 DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.

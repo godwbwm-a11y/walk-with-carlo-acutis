@@ -57,6 +57,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day1 = SaveSystem.get('dayCompleted.day1', false);
     const day2 = SaveSystem.get('dayCompleted.day2', false);
     const day3 = SaveSystem.get('dayCompleted.day3', false);
+    const day4 = SaveSystem.get('dayCompleted.day4', false);
     let y = 668;
 
     if (cp && cp.scene) {
@@ -65,6 +66,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.button(this, W / 2, y, 250, 60, 'DAY 2 걷기', () => this.startDay(2), { size: 19 });
     } else if (day2 && !day3) {
       UI.button(this, W / 2, y, 250, 60, 'DAY 3 걷기', () => this.startDay(3), { size: 19 });
+    } else if (day3 && !day4) {
+      UI.button(this, W / 2, y, 250, 60, 'DAY 4 걷기', () => this.startDay(4), { size: 19 });
     } else if (!day1) {
       UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
@@ -85,7 +88,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 3 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 4 · 2027 서울 WYD 를 준비하며',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -124,7 +127,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
-    const entry = n === 3 ? { scene: 'Day3RoomScene', data: {} }
+    const entry = n === 4 ? { scene: 'Day4RoomScene', data: {} }
+      : n === 3 ? { scene: 'Day3RoomScene', data: {} }
       : n === 2 ? { scene: 'Day2RoomScene', data: {} }
       : { scene: 'HomeScene', data: { intro: true } };
     SaveSystem.checkpoint(entry.scene, entry.data);
@@ -139,26 +143,29 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.picker = layer;
 
     const scrim = this.add.graphics();
-    scrim.fillStyle(0x101a2e, 0.7); scrim.fillRect(0, 0, W, H);
+    scrim.fillStyle(0x101a2e, 0.97); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
-    layer.add(this.add.text(W / 2, H * 0.30, '어느 날을 걸을까요?',
+    layer.add(this.add.text(W / 2, H * 0.19, '어느 날을 걸을까요?',
       UI.style(21, PAL.cream)).setOrigin(0.5));
 
     const day1 = SaveSystem.get('dayCompleted.day1', false);
+    const day2 = SaveSystem.get('dayCompleted.day2', false);
+    const day3 = SaveSystem.get('dayCompleted.day3', false);
     const days = [
-      { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true },
-      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1 },
-      { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2 }
+      { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true, need: '' },
+      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1, need: 'DAY 1' },
+      { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2, need: 'DAY 2' },
+      { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: day3, need: 'DAY 3' }
     ];
 
-    let y = H * 0.38;
+    let y = H * 0.28;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;
       const label = d.open
         ? d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')'
-        : d.label + '\n🔒 DAY 1 을 마치면 열립니다';
+        : d.label + '\n🔒 ' + d.need + ' 을 마치면 열립니다';
       const b = UI.button(this, W / 2, y, W - 70, 84, label, () => {
         if (!d.open) return;
         layer.destroy(); this.picker = null;

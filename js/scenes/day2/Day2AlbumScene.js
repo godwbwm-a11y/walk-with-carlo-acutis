@@ -51,7 +51,10 @@ window.Day2AlbumScene = class Day2AlbumScene extends Phaser.Scene {
     });
 
     const bottom = startY + Math.ceil(cards.length / cols) * (ch + gapY) + 6;
-    this.add.text(W / 2, bottom, this.missedText, UI.style(FONT.small, '#c9d6ea', {
+    const foot = (got >= cards.length)          // 다 찾았으면 놓친 말씀 안내를 하지 않습니다
+      ? '오늘의 말씀을 모두 만났습니다.'
+      : this.missedText;
+    this.add.text(W / 2, bottom, foot, UI.style(FONT.small, '#c9d6ea', {
       align: 'center', lineSpacing: 6, wordWrap: { width: W - 60 }
     })).setOrigin(0.5).setAlpha(0.9);
 

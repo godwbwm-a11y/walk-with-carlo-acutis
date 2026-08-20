@@ -66,6 +66,8 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
         const parent = this.scene.get(from);
         this.scene.resume(from);
         if (parent && parent.onMiniGameDone) parent.onMiniGameDone(this.scene.key);
+      } else {
+        this.scene.start('TitleScene');        // 돌아갈 곳이 없으면 처음 화면으로
       }
     });
   }
