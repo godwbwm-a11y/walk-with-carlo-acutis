@@ -43,6 +43,9 @@
       Day4RoomScene, Day4SchoolScene, Day4YardScene, Day4StreetScene,
       Day4NoteScene, Day4EndScene,
       FeedScene, WordsScene, MirrorScene, SeePersonScene, GiftScene,
+      Day5SubwayScene, Day5FestivalScene, Day5ReconcileScene, Day5VocationScene,
+      Day5MassScene, Day5ThemeScene, Day5NightScene, Day5NoteScene, Day5EndScene,
+      WayScene, HelloScene, RhythmScene, MosaicScene, HeartStopScene, CourageScene,
       MiracleMapScene, FortressScene, NightShareScene
     ]
   };

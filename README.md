@@ -6,9 +6,9 @@
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
 이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**,
-**DAY 4(월요일)** 가 들어 있습니다.
+**DAY 4(월요일)**, **DAY 5(화요일 · WYD SEOUL)** 가 들어 있습니다.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2·DAY 3·DAY 4는 각각 약 15~20분간 플레이할 수 있습니다.
+DAY 2~DAY 5는 각각 약 15~25분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -124,6 +124,40 @@ DAY 2·DAY 3·DAY 4는 각각 약 15~20분간 플레이할 수 있습니다.
 
 ---
 
+## DAY 5 · 화요일 — “용기를 내어라.”
+
+꿈의 시간이 현실과 다르게 흐릅니다. 눈을 뜨니 **2027년 8월 3일**,
+서울 세계청년대회 첫날의 지하철 안입니다.
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 서울 지하철 | 여러 언어가 겹쳤다가 웃음소리가 됩니다 |
+| 2 | 환승 통로 | 미니게임 《같이 가는 길》 — 혼자 정답을 찾지 않고 같이 찾습니다 |
+| 3 | 열차 안 | “너도 저 사람들한테는 외국인이야.” |
+| 4 | WYD 안내구역 | 미니게임 《HELLO, SEOUL!》 — 말이 통하지 않아도 건네는 인사 |
+| 5 | 청년축제 | 지우 · 루카 · 마리아 · 레아, 저마다 다른 이유로 온 네 사람 |
+| 6 | 무대 | 미니게임 《우리의 리듬》 — 판정도 콤보도 없습니다 |
+| 7 | 공동 작품 | 미니게임 《한 몸, 많은 지체》 — 작은 조각 하나를 붙입니다 |
+| 8 | 화해의 공원 | 들어가도, 지나가도 됩니다. 안에서의 일은 보여주지 않습니다 |
+| 9 | 성소 박람회 | 미니게임 《어디에 마음이 멈추나요?》 — 결과를 알려주지 않습니다 |
+| 10 | 개막미사 | 열두 컷의 몽타주. 거대한 교회 안의 한 사람 |
+| 11 | 오늘의 말씀 | **“용기를 내어라. 내가 세상을 이겼다.”** (요한 16,33) |
+| 12 | 밤의 서울 | 미니게임 《용기의 한 걸음》 — 발판 세 개면 충분합니다 |
+| 13 | 여행 노트 | 나라 수를 세지 않고, 만난 사람의 이름을 적습니다 |
+
+미사와 고해성사는 게임이 되지 않습니다. 화해의 공원에서는 문이 닫히고,
+아주 작은 종소리 뒤에 문이 열립니다. 카를로도 무슨 일이 있었는지 묻지 않습니다.
+
+성소는 직업 맞히기 퀴즈가 아닙니다. 여러 장면을 골라도, 하나도 고르지 않아도
+**“당신의 성소는 ○○입니다”** 같은 결과는 나오지 않습니다.
+
+DAY 4 에서 고른 나의 좋은 점이 여기서 조용히 쓰입니다.
+`잘 들어준다` 를 골랐다면 청년들이 한마디를 더 들려주고,
+`음악을 좋아한다` 면 무대에서 카를로가 한마디를 더 건네고,
+공동 작품에서는 그 좋은 점에서 나온 조각이 맨 앞에 놓입니다.
+
+---
+
 전투·죽음·시간 제한·경쟁·점수가 없습니다. 기도에는 성공과 실패가 없고,
 플레이어의 선택은 평가되지 않습니다. 미니게임도 마찬가지로, 여러 번
 빗나가면 조금씩 너그러워질 뿐 지는 일은 없습니다.
@@ -234,9 +268,9 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js, day02.js, day03.js, day04.js, collection.js(말씀),
+js/data/              config.js, day01.js ~ day05.js, collection.js(말씀),
                       chat.js(채팅), carloday.js(카를로의 하루)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3, UI,
+js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5, UI,
                       DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
 js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
@@ -247,18 +281,21 @@ js/scenes/day2/       Day2Room, Day2Phone, Day2Street, Day2Store, Day2Church,
 js/scenes/day3/       Day3Room, Day3Street, Day3Church, Day3Exit, Day3Park,
                       Day3Home, Day3Note, Day3End
 js/scenes/day4/       Day4Room, Day4School, Day4Yard, Day4Street, Day4Note, Day4End
+js/scenes/day5/       Day5Subway, Day5Festival, Day5Reconcile, Day5Vocation,
+                      Day5Mass, Day5Theme, Day5Night, Day5Note, Day5End
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
                       Ready, LookAround, Silence, HeartWord,
-                      Feed, Words, Mirror, SeePerson, Gift
+                      Feed, Words, Mirror, SeePerson, Gift,
+                      Way, Hello, Rhythm, Mosaic, HeartStop, Courage
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 42장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
+**말씀 카드 48장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
 아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
 보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
@@ -292,7 +329,7 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-DAY 5 《내 손으로 만드는 것》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
+DAY 6 부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
 《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
 저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
 DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.

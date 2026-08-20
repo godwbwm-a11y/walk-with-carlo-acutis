@@ -107,7 +107,21 @@ window.COLLECTION = {
     { id: 's11', day: 4, cat: 'saints', text: '우리는 우리의 나약함과\n실패의 총합이 아닙니다.',
       from: '성 요한 바오로 2세', where: '혼자 있던 친구와 매점에 갔을 때' },
     { id: 'j4', day: 4, cat: 'journey', text: '내가 가진 좋은 것은\n누군가에게 줄 수 있는 선물이다.',
-      from: '여행의 문장', where: '석양 아래에서 받은 것을 헤아렸을 때' }
+      from: '여행의 문장', where: '석양 아래에서 받은 것을 헤아렸을 때' },
+
+    /* DAY 5 */
+    { id: 'b17', day: 5, cat: 'bible', text: '우리도 수가 많지만\n그리스도 안에서 한 몸을 이루면서\n서로 서로 지체가 됩니다.',
+      from: '로마 12,5', where: '지하철에서 길을 함께 찾았을 때' },
+    { id: 'j5', day: 5, cat: 'journey', text: '낯선 사람은\n아직 모르는 친구일 수도 있다.',
+      from: '여행의 문장', where: '먼저 인사를 건네 보았을 때' },
+    { id: 's12', day: 5, cat: 'saints', text: '두려워하지 마십시오!\n그리스도께 문을 활짝 여십시오!',
+      from: '성 요한 바오로 2세', where: '화해의 공원을 지날 때' },
+    { id: 'c12', day: 5, cat: 'carlo', text: '우리의 목표는 유한한 것이 아니라\n무한한 것이어야 합니다.',
+      from: '성 카를로 아쿠티스', where: '성소 박람회의 디지털 전시에서' },
+    { id: 'b18', day: 5, cat: 'bible', text: '용기를 내어라.\n내가 세상을 이겼다.',
+      from: '요한 16,33', where: '개막미사가 끝난 뒤' },
+    { id: 'j6', day: 5, cat: 'journey', text: '용기는 두려움이 없는 것이 아니라,\n두려워도 한 걸음 걷는 것이다.',
+      from: '여행의 문장', where: '밤의 서울에서 한 걸음 내디뎠을 때' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },

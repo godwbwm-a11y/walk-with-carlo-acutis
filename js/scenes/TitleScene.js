@@ -88,7 +88,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 4 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 5 · 2027 서울 WYD 를 준비하며',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -127,7 +127,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
-    const entry = n === 4 ? { scene: 'Day4RoomScene', data: {} }
+    const entry = n === 5 ? { scene: 'Day5SubwayScene', data: {} }
+      : n === 4 ? { scene: 'Day4RoomScene', data: {} }
       : n === 3 ? { scene: 'Day3RoomScene', data: {} }
       : n === 2 ? { scene: 'Day2RoomScene', data: {} }
       : { scene: 'HomeScene', data: { intro: true } };
@@ -146,20 +147,22 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     scrim.fillStyle(0x101a2e, 0.97); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
-    layer.add(this.add.text(W / 2, H * 0.19, '어느 날을 걸을까요?',
+    layer.add(this.add.text(W / 2, H * 0.15, '어느 날을 걸을까요?',
       UI.style(21, PAL.cream)).setOrigin(0.5));
 
     const day1 = SaveSystem.get('dayCompleted.day1', false);
     const day2 = SaveSystem.get('dayCompleted.day2', false);
     const day3 = SaveSystem.get('dayCompleted.day3', false);
+    const day4 = SaveSystem.get('dayCompleted.day4', false);
     const days = [
       { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true, need: '' },
       { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1, need: 'DAY 1' },
       { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2, need: 'DAY 2' },
-      { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: day3, need: 'DAY 3' }
+      { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: day3, need: 'DAY 3' },
+      { n: 5, label: 'DAY 5 · 화요일', sub: '“용기를 내어라.”', open: day4, need: 'DAY 4' }
     ];
 
-    let y = H * 0.28;
+    let y = H * 0.25;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;
@@ -172,7 +175,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
         this.startDay(d.n);
       }, { size: FONT.small, fill: d.open ? PAL.paper : PAL.cream, alpha: d.open ? 1 : 0.6 });
       layer.add(b);
-      y += 100;
+      y += 92;
     });
 
     layer.add(UI.button(this, W / 2, y + 12, 200, 54, '닫기', () => {
