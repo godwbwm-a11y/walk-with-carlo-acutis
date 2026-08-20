@@ -42,7 +42,7 @@ window.MiracleMapScene = class MiracleMapScene extends MiniGameScene {
     })).setOrigin(0.5).setDepth(60).setAlpha(0);
 
     this.input.on('drag', (p, obj, dx, dy) => {
-      if (!obj.isCard || obj.placed) return;
+      if (!obj.isCard || obj.placed || this.reading) return;
       obj.x = dx; obj.y = dy;
     });
     this.input.on('dragstart', (p, obj) => { if (obj.isCard) obj.setDepth(200); });
@@ -203,8 +203,120 @@ window.MiracleMapScene = class MiracleMapScene extends MiniGameScene {
     }
 
     this.left--;
-    this.showNote('찾았다. ' + card.data2.title + ' · ' + target.place.country);
-    this.time.delayedCall(600, () => this.nextCard());
+    const info = card.data2;
+    this.showNote('찾았다. ' + info.title + ' · ' + target.place.country);
+    this.time.delayedCall(700, () => this.openArticle(info.id, () => this.nextCard()));
+  }
+
+  /* ── 맞힌 기적의 이야기를 읽는 창 ─────────────── */
+  openArticle(id, onClose) {
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const M = CARLO_DAY.miracles[id];
+    if (!M) { if (onClose) onClose(); return; }
+
+    this.reading = true;
+    if (this.closeBtn) this.closeBtn.setVisible(false);
+
+    const top = 92, bot = 730;
+    const viewTop = top + 46, viewH = bot - viewTop - 16;
+
+    const layer = this.add.container(0, 0).setDepth(400);
+    const scrim = this.add.graphics();
+    scrim.fillStyle(HEX('#2b3b60'), 1); scrim.fillRect(0, 0, W, H);
+    layer.add(scrim);
+
+    /* 2005년의 브라우저 창 그대로 */
+    const g = this.add.graphics();
+    g.fillStyle(0x000000, 0.2); g.fillRoundedRect(20, top + 5, W - 40, bot - top, 10);
+    g.fillStyle(HEX('#d9d3c4'), 1); g.fillRoundedRect(18, top, W - 36, bot - top, 10);
+    g.fillStyle(HEX('#b8b1a1'), 1); g.fillRoundedRect(18, top, W - 36, 34, { tl: 10, tr: 10, bl: 0, br: 0 });
+    [0xc9553f, 0xe0954a, 0x7fa96b].forEach((c, i) => { g.fillStyle(c, 1); g.fillCircle(36 + i * 16, top + 17, 5); });
+    g.fillStyle(HEX(PAL.paper), 1); g.fillRoundedRect(26, viewTop - 4, W - 52, viewH + 8, 8);
+    layer.add(g);
+    layer.add(this.add.text(W / 2, top + 17, 'miracolieucaristici.org', UI.style(11, PAL.ink))
+      .setOrigin(0.5).setAlpha(0.75));
+
+    /* 글은 잘라 보여주고, 끌어서 읽습니다 */
+    const content = this.add.container(0, viewTop);
+    const shape = this.make.graphics({ add: false });
+    shape.fillRect(26, viewTop, W - 52, viewH);
+    content.setMask(shape.createGeometryMask());
+    layer.add(content);
+
+    let y = 14;
+    const title = this.add.text(W / 2, y, M.title,
+      UI.style(21, PAL.ink, { align: 'center', wordWrap: { width: W - 88 } })).setOrigin(0.5, 0);
+    content.add(title); y += title.height + 6;
+
+    const where = this.add.text(W / 2, y, M.where, UI.style(13, PAL.inkSoft)).setOrigin(0.5, 0);
+    content.add(where); y += where.height + 14;
+
+    const rule = this.add.graphics();
+    rule.lineStyle(2, HEX(PAL.sun), 0.55); rule.lineBetween(56, y, W - 56, y);
+    content.add(rule); y += 18;
+
+    M.body.forEach((para) => {
+      const t = this.add.text(42, y, para,
+        UI.style(17, PAL.ink, { wordWrap: { width: W - 84 }, lineSpacing: 7 }));
+      content.add(t);
+      y += t.height + 16;
+    });
+
+    y += 8;
+    const noteRule = this.add.graphics();
+    noteRule.lineStyle(2, HEX(PAL.clay), 0.35); noteRule.lineBetween(56, y, W - 56, y);
+    content.add(noteRule); y += 16;
+
+    const note = this.add.text(W / 2, y, CARLO_DAY.miracleNote,
+      UI.style(13, PAL.clay, { align: 'center', lineSpacing: 5 })).setOrigin(0.5, 0);
+    content.add(note); y += note.height + 40;   // 아래 안내 문구와 겹치지 않도록
+
+    /* 끌어서 넘겨보기 */
+    let scrollY = 0;
+    const maxScroll = Math.max(0, y - viewH);
+    let dragging = false, lastY = 0, moved = 0;
+    const onDown = (p) => {
+      if (p.y < viewTop || p.y > viewTop + viewH) return;
+      dragging = true; lastY = p.y; moved = 0;
+    };
+    const onMove = (p) => {
+      if (!dragging) return;
+      const dy = p.y - lastY; lastY = p.y; moved += Math.abs(dy);
+      scrollY = Phaser.Math.Clamp(scrollY + dy, -maxScroll, 0);
+      content.y = viewTop + scrollY;
+    };
+    const onUp = () => { dragging = false; };
+    this.input.on('pointerdown', onDown);
+    this.input.on('pointermove', onMove);
+    this.input.on('pointerup', onUp);
+
+    if (maxScroll > 0) {
+      const hint = this.add.text(W / 2, bot + 9, CARLO_DAY.miracleScroll,
+        UI.style(12, '#c9d6ea')).setOrigin(0.5, 0).setAlpha(0.85);
+      layer.add(hint);
+      this.tweens.add({ targets: hint, alpha: 0.3, duration: 1400, yoyo: true, repeat: -1 });
+    }
+
+    const back = UI.button(this, W / 2, H - 50, 240, 56, CARLO_DAY.miracleClose, () => {
+      this.input.off('pointerdown', onDown);
+      this.input.off('pointermove', onMove);
+      this.input.off('pointerup', onUp);
+      AudioSystem.back();
+      this.tweens.add({
+        targets: layer, alpha: 0, duration: 300,
+        onComplete: () => {
+          layer.destroy();
+          this.reading = false;
+          if (this.closeBtn && !this.finished) this.closeBtn.setVisible(true);
+          if (onClose) onClose();
+        }
+      });
+    }, { size: FONT.label, fill: PAL.sun });
+    layer.add(back);
+
+    layer.setAlpha(0);
+    this.tweens.add({ targets: layer, alpha: 1, duration: 350 });
+    AudioSystem.chime();
   }
 
   showNote(t) {
