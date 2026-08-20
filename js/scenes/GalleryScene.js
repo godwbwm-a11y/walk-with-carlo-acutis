@@ -77,7 +77,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
       UI.style(FONT.body, PAL.sun)).setOrigin(0.5, 0));
     y += 44;
 
-    const titles = { 1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일' };
+    const titles = { 1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일', 99: '카를로의 하루 · 밀라노' };
 
     COLLECTION.days().forEach((day) => {
       const cards = COLLECTION.byDay(day);
@@ -96,7 +96,10 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
       cards.forEach((card) => {
         const cat = COLLECTION.cats[card.cat];
         const have = Collection.has(card.id);
-        const h = have ? this.wordCardHeight(card) : 62;
+        /* 글이 몇 줄이 되든 칸이 함께 늘어나도록 먼저 재어 봅니다 */
+        const body = have ? this.add.text(W / 2, 0, card.text,
+          UI.style(18, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 76 } })).setOrigin(0.5, 0) : null;
+        const h = have ? Math.max(104, body.height + 76) : 62;
         const g = this.add.graphics();
         g.fillStyle(HEX(have ? PAL.paper : '#2b3b60'), have ? 0.97 : 0.5);
         g.fillRoundedRect(16, y, W - 32, h, 14);
@@ -105,11 +108,11 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
         this.content.add(g);
 
         if (have) {
-          this.content.add(this.add.text(30, y + 16, cat.icon + ' ' + cat.name,
+          this.content.add(this.add.text(30, y + 18, cat.icon + ' ' + cat.name,
             UI.style(12, cat.color)).setOrigin(0, 0.5));
-          this.content.add(this.add.text(W / 2, y + 30, card.text,
-            UI.style(18, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 76 } })).setOrigin(0.5, 0));
-          this.content.add(this.add.text(W - 34, y + h - 22, '— ' + card.from,
+          body.setY(y + 34);
+          this.content.add(body);
+          this.content.add(this.add.text(W - 34, y + h - 24, '— ' + card.from,
             UI.style(14, PAL.inkSoft)).setOrigin(1, 0.5));
         } else {
           this.content.add(this.add.text(W / 2, y + 18, '아직 만나지 못한 말씀',
@@ -123,11 +126,6 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     });
 
     this.finishLayout(y);
-  }
-
-  wordCardHeight(card) {
-    const lines = card.text.split('\n').length;
-    return 56 + lines * 26;
   }
 
   buildPhotos() {

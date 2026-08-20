@@ -113,7 +113,7 @@ window.Day2StoreScene = class Day2StoreScene extends Phaser.Scene {
         this.spark.disableInteractive();
         this.tweens.add({ targets: this.spark, alpha: 0, duration: 400 });
         this.dialogue.say(S.sparkFound, () => {
-          Collection.award(this, 's8', () => { this.hint.setText(''); this.buildButtons(); });
+          Collection.award(this, 's9', () => { this.hint.setText(''); this.buildButtons(); });
         });
       });
       this.buildButtons();

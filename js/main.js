@@ -29,13 +29,15 @@
     scene: [
       BootScene, TitleScene, HomeScene, RoomScene,
       PhoneScene, DreamBeachScene, VistaScene, ChatScene,
+      CarloDayScene,
       PrayerScene, JournalScene, PauseScene,
       PhotoMode, GalleryScene,
       WaterPlantScene, HelpMomScene, HomeworkScene, ShelfScene,
       Day2RoomScene, Day2PhoneScene, Day2StreetScene, Day2StoreScene,
       Day2ChurchScene, Day2RelicScene, Day2SunsetScene, Day2ReturnScene,
       Day2NoteScene, Day2AlbumScene, Day2EndScene,
-      PrepareBagScene, OrangeScene, NoiseScene, HeavyBagScene
+      PrepareBagScene, OrangeScene, NoiseScene, HeavyBagScene,
+      MiracleMapScene, FortressScene, NightShareScene
     ]
   };
 

@@ -41,7 +41,7 @@ window.CHAT = {
       ]
     },
     {
-      id: 'mass', label: '미사는 왜 매주 가야 해?', card: 'c6',
+      id: 'mass', label: '미사는 왜 매주 가야 해?', card: 'c10',
       lines: [
         { who: 'me', t: '솔직히 미사 지루할 때 있어.' },
         { who: 'carlo', t: '알아. 나도 졸았어.' },
@@ -66,7 +66,7 @@ window.CHAT = {
       ]
     },
     {
-      id: 'net', label: '너 컴퓨터 좋아했다며?', card: 'c7',
+      id: 'net', label: '너 컴퓨터 좋아했다며?', card: 'c11',
       lines: [
         { who: 'me', t: '너 컴퓨터 잘했다며?' },
         { who: 'carlo', t: '좋아했지. 게임도 했고.' },

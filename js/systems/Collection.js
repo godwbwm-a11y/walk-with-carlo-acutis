@@ -33,21 +33,28 @@ window.Collection = (function () {
     layer.add(scrim);
 
     const cy = H * 0.44;
+
+    /* 글이 길어지면 카드도 함께 자랍니다 */
+    const body = scene.add.text(W / 2, 0, card.text,
+      UI.style(19, PAL.ink, { align: 'center', lineSpacing: 8, wordWrap: { width: 264 } }))
+      .setOrigin(0.5).setScrollFactor(0);
+    const cardH = Math.max(240, body.height + 152);
+    const top = cy - cardH / 2;
+
     const cardG = scene.add.graphics().setScrollFactor(0);
-    cardG.fillStyle(0x000000, 0.18); cardG.fillRoundedRect(W / 2 - 152, cy - 116, 304, 240, 20);
-    cardG.fillStyle(HEX(PAL.paper), 1); cardG.fillRoundedRect(W / 2 - 154, cy - 120, 308, 240, 20);
-    cardG.lineStyle(2, HEX(cat.color), 0.7); cardG.strokeRoundedRect(W / 2 - 154, cy - 120, 308, 240, 20);
-    cardG.fillStyle(HEX(cat.color), 1); cardG.fillRoundedRect(W / 2 - 154, cy - 120, 308, 40, { tl: 20, tr: 20, bl: 0, br: 0 });
+    cardG.fillStyle(0x000000, 0.18); cardG.fillRoundedRect(W / 2 - 152, top + 4, 304, cardH, 20);
+    cardG.fillStyle(HEX(PAL.paper), 1); cardG.fillRoundedRect(W / 2 - 154, top, 308, cardH, 20);
+    cardG.lineStyle(2, HEX(cat.color), 0.7); cardG.strokeRoundedRect(W / 2 - 154, top, 308, cardH, 20);
+    cardG.fillStyle(HEX(cat.color), 1); cardG.fillRoundedRect(W / 2 - 154, top, 308, 40, { tl: 20, tr: 20, bl: 0, br: 0 });
     layer.add(cardG);
 
-    layer.add(scene.add.text(W / 2, cy - 100, cat.icon + '  ' + cat.name,
+    layer.add(scene.add.text(W / 2, top + 20, cat.icon + '  ' + cat.name,
       UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setScrollFactor(0));
-    layer.add(scene.add.text(W / 2, cy - 16, card.text,
-      UI.style(19, PAL.ink, { align: 'center', lineSpacing: 8, wordWrap: { width: 264 } }))
-      .setOrigin(0.5).setScrollFactor(0));
-    layer.add(scene.add.text(W / 2, cy + 76, '— ' + card.from,
+    body.setY(top + 40 + (cardH - 76) / 2);
+    layer.add(body);
+    layer.add(scene.add.text(W / 2, top + cardH - 26, '— ' + card.from,
       UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setScrollFactor(0));
-    layer.add(scene.add.text(W / 2, cy - 158, '새로운 말씀을 발견했습니다',
+    layer.add(scene.add.text(W / 2, top - 36, '새로운 말씀을 발견했습니다',
       UI.style(FONT.body, PAL.sun)).setOrigin(0.5).setScrollFactor(0));
 
     layer.setAlpha(0);
@@ -62,9 +69,9 @@ window.Collection = (function () {
       });
     }
 
-    const keep = UI.button(scene, W / 2, cy + 168, 220, 56, '말씀을 간직하기', close,
+    const keep = UI.button(scene, W / 2, top + cardH + 48, 220, 56, '말씀을 간직하기', close,
       { size: FONT.label, fill: PAL.sun });
-    const go = UI.button(scene, W / 2, cy + 236, 220, 52, '계속 여행하기', close,
+    const go = UI.button(scene, W / 2, top + cardH + 116, 220, 52, '계속 여행하기', close,
       { size: FONT.small, alpha: 0.9 });
     [keep, go].forEach(function (b) { b.setScrollFactor(0); layer.add(b); });
   }

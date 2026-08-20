@@ -25,6 +25,11 @@ window.JournalScene = class JournalScene extends Phaser.Scene {
     this.add.text(W / 2, H * 0.44 - 60, body,
       UI.style(20, PAL.ink, { align: 'center', lineSpacing: 12 })).setOrigin(0.5);
 
+    if (SaveSystem.get('carloDayDone', false)) {
+      this.add.text(W / 2, H * 0.44 + 46, J.carloLine,
+        UI.style(FONT.small, PAL.clay, { align: 'center', lineSpacing: 6 })).setOrigin(0.5).setAlpha(0.95);
+    }
+
     this.add.text(W / 2, H * 0.44 + 96, '오늘 걸으며 살펴본 것 ' + found + '가지',
       UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5);
 

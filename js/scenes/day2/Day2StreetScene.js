@@ -198,7 +198,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
       onInteract: () => {
         this.disableInteractable('d2_spark_park');
         this.benchSpark.setVisible(false);
-        this.dialogue.say(DAY02.park.benchSpark, () => Collection.award(this, 'b9'));
+        this.dialogue.say(DAY02.park.benchSpark, () => Collection.award(this, 'b13'));
       }
     });
     this.sparkItem.enabled = false;
@@ -353,7 +353,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
     this.followCarlo = true;
 
     this.dialogue.play(DAY02.bag.after, () => {
-      Collection.award(this, 'b10', () => {
+      Collection.award(this, 'b12', () => {
         this.dialogue.play(DAY02.walk.talk1, () => {
           this.setInputLocked(false);
           this.walkTalkStage = 1;
@@ -417,6 +417,6 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
   }
 
   onStoreDone(gaveKindWord) {
-    if (gaveKindWord) Collection.award(this, 's8');
+    if (gaveKindWord) Collection.award(this, 's9');
   }
 };
