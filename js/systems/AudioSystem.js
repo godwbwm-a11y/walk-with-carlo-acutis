@@ -84,6 +84,13 @@ window.AudioSystem = (function () {
       src.connect(lp); lp.connect(out); src.start();
       nodes.push(src, lp);
       out.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2.0);
+    } else if (kind === 'city') {
+      const src = noiseSource();
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 80;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 430; lp.Q.value = 0.5;
+      src.connect(hp); hp.connect(lp); lp.connect(out); src.start();
+      nodes.push(src, hp, lp);
+      out.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 2.0);
     } else if (kind === 'beach') {
       for (let i = 0; i < 2; i++) {
         const src = noiseSource();
@@ -183,6 +190,17 @@ window.AudioSystem = (function () {
     chime:  function () { tone(880, 0.9, 'sine', 0.09); tone(1320, 0.7, 'sine', 0.035); },
     bell:   function () { tone(392, 2.6, 'sine', 0.10); tone(587, 2.2, 'sine', 0.045); tone(784, 1.8, 'sine', 0.025); },
     wave:   function () { noiseHit(0.9, 420, 0.6, 0.07); },
-    found:  function () { tone(587, 0.16, 'triangle', 0.07); setTimeout(function () { tone(880, 0.28, 'triangle', 0.06); }, 110); }
+    found:  function () { tone(587, 0.16, 'triangle', 0.07); setTimeout(function () { tone(880, 0.28, 'triangle', 0.06); }, 110); },
+
+    /* 카를로의 하루 */
+    tram:   function () { tone(1046, 0.5, 'sine', 0.05); setTimeout(function () { tone(1318, 0.4, 'sine', 0.035); }, 130); },
+    blip:   function () { tone(760, 0.06, 'square', 0.035); },
+    charge: function () { tone(300, 0.08, 'square', 0.03); },
+    boom:   function () { noiseHit(0.5, 140, 0.7, 0.14); tone(90, 0.4, 'sine', 0.08, 55); },
+    alarm:  function () {
+      tone(880, 0.16, 'square', 0.05);
+      setTimeout(function () { tone(880, 0.16, 'square', 0.05); }, 240);
+      setTimeout(function () { tone(880, 0.16, 'square', 0.05); }, 480);
+    }
   };
 })();

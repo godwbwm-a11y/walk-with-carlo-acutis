@@ -28,9 +28,11 @@
     scene: [
       BootScene, TitleScene, HomeScene, RoomScene,
       PhoneScene, DreamBeachScene, VistaScene, ChatScene,
+      CarloDayScene,
       PrayerScene, JournalScene, PauseScene,
       PhotoMode, GalleryScene,
-      WaterPlantScene, HelpMomScene, HomeworkScene, ShelfScene
+      WaterPlantScene, HelpMomScene, HomeworkScene, ShelfScene,
+      MiracleMapScene, FortressScene, NightShareScene
     ]
   };
 

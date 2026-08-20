@@ -11,6 +11,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.worldW = opt.width || GAME.WIDTH;
     this.worldH = opt.height || GAME.HEIGHT;
     this.walkSpeed = opt.speed || 108;
+    this.playerTex = opt.playerTex || 'player';   // 카를로의 하루에서는 카를로가 됩니다
     this._stepAt = 0;
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
@@ -28,7 +29,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
 
   createPlayer(x, y) {
     this.playerShadow = this.add.image(x, y + 20, 'shadow').setDepth(y - 1);
-    this.player = this.physics.add.sprite(x, y, 'player_front');
+    this.player = this.physics.add.sprite(x, y, this.playerTex + '_front');
     this.player.setOrigin(0.5, 0.86);
     this.player.body.setSize(20, 12).setOffset(6, 28);
     this.player.setCollideWorldBounds(true);
@@ -171,7 +172,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     const moving = (vx !== 0 || vy !== 0);
     if (moving) {
       const want = vy < -8 ? 'back' : 'front';
-      if (want !== this.facing) { this.facing = want; p.setTexture('player_' + want); }
+      if (want !== this.facing) { this.facing = want; p.setTexture(this.playerTex + '_' + want); }
       if (Math.abs(vx) > 6) p.setFlipX(vx < 0);
       p.setScale(1.12, 1.12 + Math.sin(time / 90) * 0.04);
       p.setRotation(Math.sin(time / 180) * 0.03);

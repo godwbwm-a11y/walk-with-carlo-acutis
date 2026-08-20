@@ -87,7 +87,10 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
 
       cards.forEach((card) => {
         const have = Collection.has(card.id);
-        const h = have ? this.wordCardHeight(card) : 62;
+        /* 글이 몇 줄이 되든 칸이 함께 늘어나도록 먼저 재어 봅니다 */
+        const body = have ? this.add.text(W / 2, 0, card.text,
+          UI.style(18, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 76 } })).setOrigin(0.5, 0) : null;
+        const h = have ? Math.max(88, body.height + 54) : 62;
         const g = this.add.graphics();
         g.fillStyle(HEX(have ? PAL.paper : '#2b3b60'), have ? 0.97 : 0.5);
         g.fillRoundedRect(16, y, W - 32, h, 14);
@@ -96,8 +99,8 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
         this.content.add(g);
 
         if (have) {
-          this.content.add(this.add.text(W / 2, y + 20, card.text,
-            UI.style(18, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 76 } })).setOrigin(0.5, 0));
+          body.setY(y + 18);
+          this.content.add(body);
           this.content.add(this.add.text(W - 34, y + h - 26, '— ' + card.from,
             UI.style(14, PAL.inkSoft)).setOrigin(1, 0));
         } else {
@@ -112,11 +115,6 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     });
 
     this.finishLayout(y);
-  }
-
-  wordCardHeight(card) {
-    const lines = card.text.split('\n').length;
-    return 56 + lines * 26;
   }
 
   buildPhotos() {

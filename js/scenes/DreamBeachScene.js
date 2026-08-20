@@ -230,9 +230,21 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     });
   }
 
+  /* 메시지를 마치면, 카를로가 자기 하루로 초대합니다 */
   onChatDone() {
     this.time.delayedCall(400, () => {
-      this.dialogue.play(DAY01.dream.afterChat, () => this.toPrayer());
+      this.dialogue.play(DAY01.dream.afterChat.concat(CARLO_DAY.invite), () => this.toCarloDay());
+    });
+  }
+
+  /* 눈을 감으면 2005년 밀라노의 아침입니다 */
+  toCarloDay() {
+    AudioSystem.bell();
+    this.setInputLocked(true);
+    if (this.stick) this.stick.destroy();
+    UI.caption(this, ['눈을 감았다.'], {
+      y: GAME.HEIGHT * 0.3, hold: 1200,
+      onDone: () => UI.fadeOut(this, 1800, () => this.scene.start('CarloDayScene'), [250, 246, 236])
     });
   }
 
@@ -245,11 +257,6 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     this.scene.pause();
   }
 
-  toPrayer() {
-    AudioSystem.bell();
-    if (this.stick) this.stick.destroy();
-    UI.fadeOut(this, 1400, () => this.scene.start('PrayerScene'), [12, 20, 40]);
-  }
 
   update(time, delta) {
     this.updateWorld(time, delta);
