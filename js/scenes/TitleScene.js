@@ -53,16 +53,24 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.style(FONT.small, '#e6d9c4', { align: 'center' })).setOrigin(0.5).setAlpha(0.9);
 
     /* 버튼 */
-    const hasSave = SaveSystem.hasSave();
-    let y = 676;
-    if (hasSave) {
+    const cp = SaveSystem.get('checkpoint', null);
+    const day1 = SaveSystem.get('dayCompleted.day1', false);
+    const day2 = SaveSystem.get('dayCompleted.day2', false);
+    let y = 668;
+
+    if (cp && cp.scene) {
       UI.button(this, W / 2, y, 250, 60, '이어서 걷기', () => this.continueGame(), { size: 19 });
-      y += 74;
-      UI.button(this, W / 2, y, 250, 58, '처음부터 걷기', () => this.confirmRestart(),
-        { size: 18, fill: PAL.cream, alpha: 0.9 });
+    } else if (day1 && !day2) {
+      UI.button(this, W / 2, y, 250, 60, 'DAY 2 걷기', () => this.startDay(2), { size: 19 });
+    } else if (!day1) {
+      UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
-      UI.button(this, W / 2, y, 250, 62, '걷기 시작하기', () => this.startNew(), { size: 20 });
+      UI.button(this, W / 2, y, 250, 60, '다시 걷기', () => this.dayPicker(), { size: 19 });
     }
+
+    y += 74;
+    UI.button(this, W / 2, y, 250, 56, 'DAY 선택', () => this.dayPicker(),
+      { size: FONT.small, fill: PAL.cream, alpha: 0.92 });
 
     /* 소리 설정 */
     this.bgmBtn = UI.circleButton(this, 44, 48, 24, '♪', () => this.toggle('bgm'), { size: 18 });
@@ -74,7 +82,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 체험판 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 2 · 2027 서울 WYD 를 준비하며',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -108,10 +116,57 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.refreshSound();
   }
 
-  startNew() {
+  startNew() { this.startDay(1); }
+
+  /* DAY 별 시작 지점 */
+  startDay(n) {
     AudioSystem.unlock();
-    SaveSystem.checkpoint('HomeScene');
-    UI.fadeOut(this, 700, () => this.scene.start('HomeScene', { intro: true }));
+    const entry = n === 2
+      ? { scene: 'Day2RoomScene', data: {} }
+      : { scene: 'HomeScene', data: { intro: true } };
+    SaveSystem.checkpoint(entry.scene, entry.data);
+    UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
+  }
+
+  /* 걸었던 날 다시 고르기 */
+  dayPicker() {
+    if (this.picker) return;
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(200);
+    this.picker = layer;
+
+    const scrim = this.add.graphics();
+    scrim.fillStyle(0x101a2e, 0.7); scrim.fillRect(0, 0, W, H);
+    layer.add(scrim);
+
+    layer.add(this.add.text(W / 2, H * 0.30, '어느 날을 걸을까요?',
+      UI.style(21, PAL.cream)).setOrigin(0.5));
+
+    const day1 = SaveSystem.get('dayCompleted.day1', false);
+    const days = [
+      { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true },
+      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1 }
+    ];
+
+    let y = H * 0.42;
+    days.forEach((d) => {
+      const got = Collection.countOfDay(d.n);
+      const all = COLLECTION.byDay(d.n).length;
+      const label = d.open
+        ? d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')'
+        : d.label + '\n🔒 DAY 1 을 마치면 열립니다';
+      const b = UI.button(this, W / 2, y, W - 70, 84, label, () => {
+        if (!d.open) return;
+        layer.destroy(); this.picker = null;
+        this.startDay(d.n);
+      }, { size: FONT.small, fill: d.open ? PAL.paper : PAL.cream, alpha: d.open ? 1 : 0.6 });
+      layer.add(b);
+      y += 100;
+    });
+
+    layer.add(UI.button(this, W / 2, y + 12, 200, 54, '닫기', () => {
+      layer.destroy(); this.picker = null;
+    }, { size: FONT.small, alpha: 0.9 }));
   }
 
   continueGame() {
@@ -128,7 +183,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       { key: 'yes', label: '네, 처음부터 걷습니다' }
     ], (k) => {
       dlg.destroy();
-      if (k === 'yes') { SaveSystem.reset(); this.startNew(); }
+      if (k === 'yes') { SaveSystem.reset(); this.startDay(1); }
     });
   }
 };

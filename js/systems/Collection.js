@@ -47,24 +47,26 @@ window.Collection = (function () {
       .setOrigin(0.5).setScrollFactor(0));
     layer.add(scene.add.text(W / 2, cy + 76, '— ' + card.from,
       UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setScrollFactor(0));
-    layer.add(scene.add.text(W / 2, cy - 156, '말씀을 하나 얻었습니다',
+    layer.add(scene.add.text(W / 2, cy - 158, '새로운 말씀을 발견했습니다',
       UI.style(FONT.body, PAL.sun)).setOrigin(0.5).setScrollFactor(0));
-    layer.add(scene.add.text(W / 2, cy + 156, '화면을 누르면 계속',
-      UI.style(FONT.small, '#d9c9ae')).setOrigin(0.5).setScrollFactor(0).setAlpha(0.85));
 
     layer.setAlpha(0);
     scene.tweens.add({ targets: layer, alpha: 1, duration: 400 });
     AudioSystem.found();
 
-    const zone = scene.add.zone(W / 2, H / 2, W, H).setOrigin(0.5)
-      .setInteractive().setDepth(2001).setScrollFactor(0);
-    zone.once('pointerdown', function () {
+    function close() {
       AudioSystem.tap();
       scene.tweens.add({
         targets: layer, alpha: 0, duration: 300,
-        onComplete: function () { layer.destroy(); zone.destroy(); if (onDone) onDone(); }
+        onComplete: function () { layer.destroy(); if (onDone) onDone(); }
       });
-    });
+    }
+
+    const keep = UI.button(scene, W / 2, cy + 168, 220, 56, '말씀을 간직하기', close,
+      { size: FONT.label, fill: PAL.sun });
+    const go = UI.button(scene, W / 2, cy + 236, 220, 52, '계속 여행하기', close,
+      { size: FONT.small, alpha: 0.9 });
+    [keep, go].forEach(function (b) { b.setScrollFactor(0); layer.add(b); });
   }
 
   /* 얻은 뒤 곧바로 보여주는 짧은 방법 */
@@ -75,6 +77,12 @@ window.Collection = (function () {
     return true;
   }
 
+  /* 그 DAY에서 모은 개수 */
+  function countOfDay(day) {
+    const ids = owned();
+    return COLLECTION.byDay(day).filter(function (c) { return ids.indexOf(c.id) !== -1; }).length;
+  }
+
   return {
     owned: owned,
     has: has,
@@ -82,6 +90,7 @@ window.Collection = (function () {
     show: show,
     award: award,
     count: function () { return owned().length; },
+    countOfDay: countOfDay,
     total: function () { return COLLECTION.cards.length; }
   };
 })();

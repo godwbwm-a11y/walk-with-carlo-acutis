@@ -5,8 +5,8 @@
 
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
-이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일) 수직 슬라이스**가 들어 있습니다.
-설치 없이 스마트폰 브라우저에서 바로 열어 약 10~15분간 플레이할 수 있습니다.
+이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)** 과 **DAY 2(토요일)** 가 들어 있습니다.
+설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 10~15분, DAY 2는 약 15~20분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -42,6 +42,30 @@
 | 카를로와 메시지 | 벤치 대화 뒤, 채팅으로 신앙을 묻고 답합니다 |
 | 사진 찍기 | 어느 화면에서든 오른쪽 위 사진 버튼 |
 
+---
+
+## DAY 2 · 토요일 — “나 말고, 하느님.”
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 아침, 내 방 | 가족 단톡방 메시지, 미니게임 《나갈 준비》 — 가방이 왜 이렇게 무겁지? |
+| 2 | 골목 | 고양이, 이웃, 그리고 성당에 간다는 어린이 |
+| 3 | 편의점 | 따뜻한 말 한마디를 건네면 숨은 말씀이 나타납니다 |
+| 4 | 작은 공원 | 미니게임 《굴러가는 귤》 — “같이 하니까 금방이네.” |
+| 5 | 학교 앞 | 미니게임 《마음의 소음》 — 눌러도 사라지지 않는 생각들 |
+| 6 | 성당 가는 길 | 카를로와 다시 만나 미니게임 《무거운 가방》 — 오늘 하나만 내려놓기 |
+| 7 | 성당 | 미니게임 《빛을 찾아서》, 그리고 유해 앞의 침묵 |
+| 8 | 기도 | 기도문으로, 또는 내 말로 직접 적어서 |
+| 9 | 석양 · 돌아가는 길 | “나 말고, 하느님.” 그리고 조금 가벼워진 걸음 |
+| 10 | 여행 노트 | 두 가지 질문, 오늘의 작은 실천, DAY 2 말씀카드 앨범 |
+
+성당에 가까워질수록 미니게임의 자극은 줄어들고, 유해 앞에서는 조작 UI가 완전히 사라집니다.
+**아무것도 하지 않는 것이 그 자리의 플레이**가 됩니다.
+
+돌은 사라지지 않습니다. 다만 오늘 하나를 혼자 들지 않기로 합니다.
+
+---
+
 전투·죽음·시간 제한·경쟁·점수가 없습니다. 기도에는 성공과 실패가 없고,
 플레이어의 선택은 평가되지 않습니다.
 
@@ -76,22 +100,26 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js, collection.js(말씀), chat.js(채팅)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, UI, DialogueBox,
-                      Joystick, Collection, PhotoSystem,
+js/data/              config.js, day01.js, day02.js, collection.js(말씀), chat.js(채팅)
+js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2, UI,
+                      DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
 js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
                       Chat, Prayer, Journal, Pause, PhotoMode, Gallery
-js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf
+js/scenes/day2/       Day2Room, Day2Phone, Day2Street, Day2Store, Day2Church,
+                      Day2Relic, Day2Sunset, Day2Return, Day2Note, Day2Album, Day2End
+js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
+                      PrepareBag, Orange, Noise, HeavyBag
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 20장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀을
-걷고 만나고 물어보는 동안 하나씩 얻습니다. 아직 얻지 못한 카드에는
-어디에서 만날 수 있는지만 살짝 적혀 있습니다.
+**말씀 카드 26장** (DAY 1 스무 장, DAY 2 여섯 장) — 성 카를로 아쿠티스의 말,
+성경 말씀, 성인 성녀의 말씀, 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
+아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
+보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
 
 **사진첩** — 프레임을 끌어 옮기고 크기를 바꾼 뒤 찍습니다.
 사진은 게임 안 사진첩에 담기고(최대 12장), 휴대폰에도 저장할 수 있습니다.
@@ -122,9 +150,10 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-DAY 2 《나 말고, 하느님》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
+DAY 3 《예수님 곁에 머물기》부터 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
 《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
-DAY 1의 저장 구조(`gameProgress`)는 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
+저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
+DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.
 
 ## 본당에서 사용하실 때
 
