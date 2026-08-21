@@ -8,6 +8,7 @@ window.BootScene = class BootScene extends Phaser.Scene {
     TextureFactory.createAll(this);
     if (TextureFactory.createDay2) TextureFactory.createDay2(this);
     if (TextureFactory.createDay3) TextureFactory.createDay3(this);
+    if (TextureFactory.createDay4) TextureFactory.createDay4(this);
     if (TextureFactory.createDay5) TextureFactory.createDay5(this);
     if (TextureFactory.createDay6) TextureFactory.createDay6(this);
     if (TextureFactory.createDay7) TextureFactory.createDay7(this);

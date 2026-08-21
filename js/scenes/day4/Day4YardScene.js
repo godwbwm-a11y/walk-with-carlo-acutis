@@ -46,6 +46,15 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
       onInteract: () => this.talkCarlo()
     });
 
+    /* 담벼락 — 오늘 들은 말들이 종이로 붙어 있습니다 */
+    this.wall = this.add.image(1000, 438, 'd4_wall').setOrigin(0.5, 1).setDepth(4).setScale(1.15);
+    this.wallItem = this.addInteractable({
+      id: 'd4_wall', x: 1000, y: 600, label: '담벼락', range: 96, priority: 2, markerY: 470,
+      onInteract: () => this.lookWall()
+    });
+    this.wallItem.enabled = false;
+    if (this.wallItem.marker) this.wallItem.marker.setVisible(false);
+
     this.benchCardItem = this.addInteractable({
       id: 'd4_benchcard', x: 1250, y: 606, label: '벤치 밑', range: 80, priority: 3, markerY: 560,
       onInteract: () => this.benchCard()
@@ -97,6 +106,27 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
             });
           });
         });
+      });
+    });
+  }
+
+  /* 담벼락 앞에서 — 카를로가 걸어옵니다 */
+  lookWall() {
+    if (this.flags.wall) { this.dialogue.say(['떨어진 종이들이 바닥에 그대로 있다.']); return; }
+    this.flags.wall = true;
+    this.disableInteractable('d4_wall');
+    this.setInputLocked(true);
+
+    this.dialogue.play(DAY04.bricks.look, () => {
+      /* 카를로가 벤치 쪽에서 담벼락으로 옵니다 */
+      this.tweens.add({
+        targets: this.carlo, x: 1074, duration: 1100, ease: 'Sine.easeInOut',
+        onComplete: () => {
+          this.carloItem.x = 1074;
+          if (this.carloItem.marker) this.carloItem.marker.x = 1074;
+          if (this.stick) this.stick.reset();
+          this.openMiniGame('BrickScene');
+        }
       });
     });
   }
@@ -177,10 +207,34 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
         });
       });
     } else if (key === 'SeePersonScene') {
-      this.lonelyItem.enabled = true;
-      if (this.lonelyItem.marker) this.lonelyItem.marker.setVisible(true);
-      this.objective.setText('운동장 구석을 한번 보자');
+      /* 이제 담벼락이 눈에 들어옵니다 */
+      this.wallItem.enabled = true;
+      if (this.wallItem.marker) this.wallItem.marker.setVisible(true);
+      this.objective.setText(DAY04.bricks.objective);
       this.setInputLocked(false);
+
+    } else if (key === 'BrickScene') {
+      /* 떨어진 종이들이 담벼락 밑에 쌓입니다 */
+      this.tweens.add({ targets: this.wall, alpha: 0.55, duration: 1200 });
+      this.fallenPapers();
+      this.dialogue.play(DAY04.bricks.after, () => {
+        this.lonelyItem.enabled = true;
+        if (this.lonelyItem.marker) this.lonelyItem.marker.setVisible(true);
+        this.objective.setText('운동장 구석을 한번 보자');
+        this.setInputLocked(false);
+      });
+    }
+  }
+
+  /* 떨어진 종이 몇 장이 담벼락 밑에 남습니다 */
+  fallenPapers() {
+    for (let i = 0; i < 9; i++) {
+      const x = 930 + Phaser.Math.Between(0, 140);
+      const y = 452 + Phaser.Math.Between(0, 18);
+      const p = this.add.graphics().setDepth(y - 200).setAlpha(0);
+      p.fillStyle(0xf6f1e4, 0.92);
+      p.fillRect(x, y, Phaser.Math.Between(16, 26), Phaser.Math.Between(9, 13));
+      this.tweens.add({ targets: p, alpha: 1, duration: 700, delay: i * 90 });
     }
   }
 
