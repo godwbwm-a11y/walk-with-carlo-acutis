@@ -10,7 +10,10 @@
     height: GAME.HEIGHT,
     scale: {
       mode: Phaser.Scale.FIT,          // 화면이 잘리지 않도록 항상 전체를 보여줍니다
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+      /* 가운데 맞추기는 CSS 에만 맡깁니다.
+         Phaser 에도 맡기면 여백으로 한 번, flex 로 또 한 번 —
+         두 번 가운데를 맞추다가 화면이 한쪽으로 밀립니다. */
+      autoCenter: Phaser.Scale.NO_CENTER,
       width: GAME.WIDTH,
       height: GAME.HEIGHT
     },
