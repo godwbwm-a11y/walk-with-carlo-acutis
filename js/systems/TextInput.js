@@ -1,111 +1,161 @@
-/* 직접 적어보는 칸 — 브라우저의 입력창을 게임 화면 위에 얹습니다.
-   휴대폰 자판이 아래에서 올라와도 가려지지 않도록 글 쓰는 칸을 화면 위쪽에 둡니다.
-   입력이 어려운 환경에서는 조용히 건너뜁니다. */
+/* 직접 적어보는 칸
+
+   게임 화면(캔버스) 위에 브라우저 입력창을 따로 띄웁니다.
+   예전처럼 Phaser 안에 입력칸을 얹으면, 자판이 올라올 때
+   화면 높이가 바뀌면서 게임 화면 전체가 다시 맞춰지고 — 그림이 깨졌습니다.
+
+   지금은 적는 동안 게임 화면을 그대로 얼려 두고,
+   글 적는 칸만 위에 조용히 올라옵니다.
+   엔터를 누르면 그대로 다음으로 넘어갑니다. */
 
 window.TextInput = (function () {
 
-  function supported(scene) {
-    return !!(scene.add.dom && scene.game.domContainer);
+  let live = null;                 // 지금 열려 있는 칸
+
+  function supported() {
+    return !!(typeof document !== 'undefined' && document.body);
   }
 
-  /* 낮은 수준 입력칸 — 되도록 아래의 ask() 를 쓰세요. */
-  function open(scene, opt, onChange) {
-    opt = opt || {};
-    if (!supported(scene)) return null;
+  /* ── 적는 동안 게임 화면이 흔들리지 않게 붙잡아 둡니다 ── */
+  function hold(game) {
+    window.__typing = true;
+    try { if (game && game.scale) game.scale.stopListeners(); } catch (e) {}
+  }
 
-    const w = opt.width || GAME.WIDTH - 60;
-    const h = opt.height || 140;
-    const fontPx = opt.fontSize || 21;
-    const html =
-      '<textarea style="' +
-      'width:' + w + 'px;height:' + h + 'px;' +
-      'box-sizing:border-box;padding:16px 18px;' +
-      'font-family:' + FONT.family.replace(/"/g, "'") + ';' +
-      'font-size:' + fontPx + 'px;line-height:1.55;color:#3d2c20;' +
-      'background:#fdf3e0;border:3px solid rgba(210,130,47,.85);border-radius:16px;' +
-      'outline:none;resize:none;-webkit-appearance:none;" ' +
-      'placeholder="' + (opt.placeholder || '') + '" ' +
-      'maxlength="200">' + (opt.value || '') + '</textarea>';
+  function release(game) {
+    window.__typing = false;
+    try {
+      if (game && game.scale) {
+        game.scale.startListeners();
+        game.scale.refresh();
+      }
+    } catch (e) {}
+  }
 
-    const el = scene.add.dom(opt.x || GAME.WIDTH / 2, opt.y || GAME.HEIGHT * 0.3).createFromHTML(html);
-    el.setDepth(opt.depth === undefined ? 1200 : opt.depth);
-    const area = el.node.querySelector('textarea');
-
-    if (onChange) el.addListener('input').on('input', function () { onChange(area.value); });
-
-    return {
-      dom: el,
-      focus: function () { try { area.focus(); } catch (e) {} },
-      blur: function () { try { area.blur(); } catch (e) {} },
-      value: function () { return (area.value || '').trim(); },
-      destroy: function () { try { area.blur(); } catch (e) {} el.destroy(); }
-    };
+  /* 자판이 올라오면 보이는 높이만큼만 씁니다 */
+  function fitToViewport(layer) {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    layer.style.height = vv.height + 'px';
+    layer.style.top = vv.offsetTop + 'px';
   }
 
   /* ── 물어보고, 적고, 적은 것을 보여주기까지 한 번에 ──────────────
-     opt: { question, note, placeholder, okLabel, skipLabel, showBack }
+     opt: { question, note, placeholder, okLabel, skipLabel, showBack, maxLength }
      onDone(value|null) 로 돌려줍니다. */
   function ask(scene, opt, onDone) {
     opt = opt || {};
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const depth = opt.depth === undefined ? 1400 : opt.depth;
+    if (!supported()) { onDone(null); return; }
+    /* 앞서 열린 칸이 남아 있으면 조용히 치웁니다 —
+       장면이 도중에 바뀌어도 다음부터 안 열리는 일이 없도록 */
+    if (live) live.dispose();
 
-    const layer = scene.add.container(0, 0).setDepth(depth).setScrollFactor(0);
-    const scrim = scene.add.graphics().setScrollFactor(0);
-    scrim.fillStyle(0x0e1526, 0.97); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
+    const game = scene.game;
+    hold(game);
 
-    /* 1 · 질문은 맨 위에 */
-    let y = 74;
-    const q = scene.add.text(W / 2, y, opt.question || '', UI.style(FONT.body, PAL.cream, {
-      align: 'center', wordWrap: { width: W - 52 }, lineSpacing: 8
-    })).setOrigin(0.5, 0).setScrollFactor(0);
-    layer.add(q);
-    y += q.height + 10;
+    const layer = document.createElement('div');
+    layer.id = 'ask-layer';
 
-    if (opt.note) {
-      const n = scene.add.text(W / 2, y, opt.note, UI.style(FONT.small, PAL.dimWarm, {
-        align: 'center', wordWrap: { width: W - 60 }, lineSpacing: 6
-      })).setOrigin(0.5, 0).setScrollFactor(0);
-      layer.add(n);
-      y += n.height + 12;
+    const inner = document.createElement('div');
+    inner.className = 'ask-inner';
+    layer.appendChild(inner);
+
+    if (opt.question) {
+      const q = document.createElement('p');
+      q.className = 'ask-q';
+      q.textContent = opt.question;
+      inner.appendChild(q);
     }
-    y += 12;
+    if (opt.note) {
+      const n = document.createElement('p');
+      n.className = 'ask-note';
+      n.textContent = opt.note;
+      inner.appendChild(n);
+    }
 
-    /* 2 · 글 쓰는 칸은 자판이 올라와도 보이도록 화면 위쪽에 */
-    const boxH = opt.height || 150;
-    const field = open(scene, {
-      x: W / 2, y: y + boxH / 2,
-      width: W - 52, height: boxH,
-      placeholder: opt.placeholder || '천천히 적어보세요',
-      depth: depth + 10
+    /* 한 줄 칸입니다 — 엔터가 “다 적었어요” 와 같은 뜻이 되도록 */
+    const field = document.createElement('input');
+    field.className = 'ask-field';
+    field.type = 'text';
+    field.enterKeyHint = 'done';
+    field.autocomplete = 'off';
+    field.setAttribute('autocapitalize', 'off');
+    field.maxLength = opt.maxLength || 120;
+    field.placeholder = opt.placeholder || '천천히 적어보세요';
+    field.value = opt.value || '';
+    inner.appendChild(field);
+
+    const tip = document.createElement('p');
+    tip.className = 'ask-tip';
+    tip.textContent = '엔터를 누르면 그대로 넘어갑니다';
+    inner.appendChild(tip);
+
+    const ok = document.createElement('button');
+    ok.className = 'ask-btn';
+    ok.type = 'button';
+    ok.textContent = opt.okLabel || '다 적었어요';
+    inner.appendChild(ok);
+
+    const skip = document.createElement('button');
+    skip.className = 'ask-btn ask-skip';
+    skip.type = 'button';
+    skip.textContent = opt.skipLabel || '적지 않고 넘어가기';
+    inner.appendChild(skip);
+
+    document.body.appendChild(layer);
+    fitToViewport(layer);
+
+    const onViewport = function () { fitToViewport(layer); };
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onViewport);
+      window.visualViewport.addEventListener('scroll', onViewport);
+    }
+
+    let closed = false;
+
+    /* 화면에서만 치웁니다 — 돌려줄 값은 건드리지 않습니다 */
+    function dispose() {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', onViewport);
+        window.visualViewport.removeEventListener('scroll', onViewport);
+      }
+      try { field.blur(); } catch (e) {}
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+      if (live && live.layer === layer) live = null;
+      setTimeout(function () { release(game); }, 60);
+    }
+
+    function close(save) {
+      if (closed) return;
+      closed = true;
+      const v = save ? (field.value || '').trim() : '';
+      dispose();
+
+      if (save && v) {
+        if (opt.showBack === false) { onDone(v); return; }
+        showBack(scene, v, opt, function () { onDone(v); });
+      } else {
+        onDone(save ? null : null);
+      }
+    }
+
+    ok.addEventListener('click', function () { close(true); });
+    skip.addEventListener('click', function () { close(false); });
+    field.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        e.preventDefault();
+        close(true);
+      }
     });
 
-    /* 3 · 버튼은 칸 바로 아래에 — 자판 위로 올라오도록 */
-    const btnY = y + boxH + 42;
-    const finish = (save) => {
-      let v = null;
-      if (save && field) v = field.value();
-      if (field) field.destroy();
-      layer.destroy();
-      if (save && v) showBack(scene, v, opt, () => onDone(v));
-      else onDone(save ? (v || null) : null);
-    };
+    live = { close: close, dispose: dispose, field: field, layer: layer };
 
-    if (field) {
-      const ok = UI.button(scene, W / 2, btnY, 260, 64, opt.okLabel || '다 적었어요',
-        () => finish(true), { size: FONT.label, fill: PAL.sun });
-      const skip = UI.button(scene, W / 2, btnY + 78, 260, 58, opt.skipLabel || '적지 않고 넘어가기',
-        () => finish(false), { size: FONT.small });
-      ok.setScrollFactor(0); skip.setScrollFactor(0);
-      layer.add(ok); layer.add(skip);
-      scene.time.delayedCall(260, () => field.focus());
-    } else {
-      const ok = UI.button(scene, W / 2, y + 40, 260, 64, opt.skipLabel || '넘어가기',
-        () => finish(false), { size: FONT.label, fill: PAL.sun });
-      ok.setScrollFactor(0);
-      layer.add(ok);
-    }
+    /* 적는 도중에 장면이 바뀌어도 칸이 남지 않게 */
+    scene.events.once('shutdown', function () {
+      if (live && live.layer === layer) { closed = true; dispose(); }
+    });
+
+    setTimeout(function () { try { field.focus(); } catch (e) {} }, 80);
   }
 
   /* 적은 글을 크게 한 번 보여줍니다 — 잘리지 않게 크기를 맞춥니다 */
@@ -116,7 +166,7 @@ window.TextInput = (function () {
     scrim.fillStyle(0x0e1526, 0.97); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
-    const head = scene.add.text(W / 2, H * 0.22, opt.backHead || '이렇게 적었습니다',
+    const head = scene.add.text(W / 2, H * 0.22, (opt && opt.backHead) || '이렇게 적었습니다',
       UI.style(FONT.small, PAL.dim)).setOrigin(0.5).setScrollFactor(0);
     layer.add(head);
 
@@ -135,7 +185,7 @@ window.TextInput = (function () {
     scene.tweens.add({ targets: layer, alpha: 1, duration: 400 });
     AudioSystem.chime();
 
-    const go = UI.button(scene, W / 2, H - 128, 250, 62, '계속', () => {
+    const go = UI.button(scene, W / 2, H - 128, 250, 62, '계속', function () {
       layer.destroy();
       if (after) after();
     }, { size: FONT.label, fill: PAL.sun });
@@ -144,5 +194,5 @@ window.TextInput = (function () {
     scene.tweens.add({ targets: go, alpha: 1, duration: 400, delay: 500 });
   }
 
-  return { open: open, ask: ask, supported: supported, showBack: showBack };
+  return { ask: ask, supported: supported, showBack: showBack };
 })();

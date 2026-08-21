@@ -175,3 +175,113 @@ body.desktop #game canvas {
 
 /* PC 에서는 창 모양이 어떻든 세로로 돌리라는 안내를 하지 않습니다 */
 body.desktop #rotate-guard { display: none !important; }
+
+/* ── 직접 적는 칸 ─────────────────────────────────
+   게임 화면(캔버스) 위에 브라우저 입력창을 따로 띄웁니다.
+   Phaser 안에 얹으면 자판이 올라올 때 화면 전체가 다시 맞춰지며 깨집니다. */
+#ask-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 70;
+  display: flex;
+  justify-content: center;
+  background: rgba(14, 21, 38, .975);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 게임 화면에는 글자 선택·스크롤을 막아 두었습니다.
+   적는 칸 안에서는 다시 풀어 줍니다. */
+#ask-layer,
+#ask-layer * {
+  -webkit-user-select: auto;
+  user-select: auto;
+  touch-action: auto;
+}
+
+#ask-layer .ask-field {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+#ask-layer .ask-inner {
+  width: 100%;
+  max-width: 430px;
+  padding: 34px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+#ask-layer .ask-q {
+  margin: 0;
+  color: #fff8ec;
+  font-size: 23px;
+  line-height: 1.5;
+  text-align: center;
+  word-break: keep-all;
+}
+
+#ask-layer .ask-note {
+  margin: 0;
+  color: #e0d3bd;
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: center;
+  opacity: .85;
+  word-break: keep-all;
+}
+
+#ask-layer .ask-field {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 16px 18px;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1.4;
+  color: #3d2c20;
+  background: #fdf3e0;
+  border: 3px solid rgba(210, 130, 47, .85);
+  border-radius: 16px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+#ask-layer .ask-field::placeholder { color: #b9a88f; }
+
+#ask-layer .ask-tip {
+  margin: 0;
+  color: #9db0cc;
+  font-size: 15px;
+  text-align: center;
+}
+
+#ask-layer .ask-btn {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 62px;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 20px;
+  color: #3d2c20;
+  background: #f2b56b;
+  border: 2px solid rgba(210, 130, 47, .7);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+#ask-layer .ask-btn.ask-skip {
+  min-height: 56px;
+  font-size: 17px;
+  color: #fdf3e0;
+  background: transparent;
+  border-color: rgba(253, 243, 224, .35);
+}
+
+#ask-layer .ask-btn:active { transform: translateY(2px); }

@@ -116,6 +116,9 @@
   /* 가로 화면 안내 (손에 든 기기에서만) */
   const guard = document.getElementById('rotate-guard');
   function checkOrientation() {
+    /* 글을 적는 동안에는 자판 때문에 화면이 낮아질 뿐입니다.
+       가로로 돌렸다고 오해하지 않도록 그대로 둡니다. */
+    if (window.__typing) return;
     const landscape = !isDesktop && window.innerWidth > window.innerHeight * 1.08;
     if (guard) guard.classList.toggle('show', landscape);
     if (game && game.scene) {

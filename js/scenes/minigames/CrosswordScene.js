@@ -141,7 +141,9 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
       question: e.n + ' ' + e.dir + ' — ' + e.clue,
       placeholder: C.placeholder,
       okLabel: C.okBtn,
-      skipLabel: C.skipBtn
+      skipLabel: C.skipBtn,
+      maxLength: 12,
+      showBack: false          // 답은 되비추지 않고 바로 주교님께
     }, (v) => this.check(v));
   }
 
