@@ -65,7 +65,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day7 = SaveSystem.get('dayCompleted.day7', false);
     const day8 = SaveSystem.get('dayCompleted.day8', false);
     const epi = SaveSystem.get('dayCompleted.epilogue', false);
-    let y = 620;
+    let y = 596;
 
     if (cp && cp.scene) {
       UI.button(this, W / 2, y, 268, 66, '이어서 걷기', () => this.continueGame(), { size: FONT.body });
@@ -91,7 +91,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.button(this, W / 2, y, 268, 66, '다시 걷기', () => this.dayPicker(), { size: FONT.body });
     }
 
-    y += 82;
+    y += 80;
     UI.button(this, W / 2, y, 268, 60, 'DAY 선택', () => this.dayPicker(),
       { size: FONT.label, fill: PAL.cream, alpha: 0.94 });
 
@@ -104,13 +104,6 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       this.scene.pause();
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
-
-    /* 에필로그까지 마쳤다면 크레딧을 언제든 다시 볼 수 있습니다 */
-    if (epi) {
-      UI.button(this, W / 2, y + 74, 268, 56, '엔딩 크레딧 보기', () => {
-        UI.fadeOut(this, 600, () => this.scene.start('EpCreditsScene', { from: 'TitleScene' }));
-      }, { size: FONT.small, fill: PAL.paper, alpha: 0.94 });
-    }
 
     UI.footer(this);
 
@@ -152,6 +145,10 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
+    if (n === 10) {                       /* 엔딩 크레딧은 저장하지 않고 바로 봅니다 */
+      UI.fadeOut(this, 600, () => this.scene.start('EpCreditsScene', { from: 'TitleScene' }));
+      return;
+    }
     const entry = n === 9 ? { scene: 'EpIntroScene', data: {} }
       : n === 8 ? { scene: 'Day8MorningScene', data: {} }
       : n === 7 ? { scene: 'Day7RoomScene', data: {} }
@@ -181,24 +178,18 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     layer.add(this.add.text(W / 2, 108, '위아래로 넘겨보세요',
       UI.style(FONT.tiny, PAL.dim)).setOrigin(0.5).setAlpha(0.9));
 
-    const day1 = SaveSystem.get('dayCompleted.day1', false);
-    const day2 = SaveSystem.get('dayCompleted.day2', false);
-    const day3 = SaveSystem.get('dayCompleted.day3', false);
-    const day4 = SaveSystem.get('dayCompleted.day4', false);
-    const day5done = SaveSystem.get('dayCompleted.day5', false);
-    const day6done = SaveSystem.get('dayCompleted.day6', false);
-    const day7done = SaveSystem.get('dayCompleted.day7', false);
-    const day8done = SaveSystem.get('dayCompleted.day8', false);
+    /* 어느 날이든 바로 고를 수 있습니다 — 순서대로 걷지 않아도 됩니다 */
     const days = [
-      { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true, need: '' },
-      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1, need: 'DAY 1' },
-      { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: day2, need: 'DAY 2' },
-      { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: day3, need: 'DAY 3' },
-      { n: 5, label: 'DAY 5 · 화요일', sub: '“용기를 내어라.”', open: day4, need: 'DAY 4' },
-      { n: 6, label: 'DAY 6 · 수요일', sub: '“이제 너희가 가라.”', open: day5done, need: 'DAY 5' },
-      { n: 7, label: 'DAY 7 · 목요일', sub: '“내가 받은 것을 나눈다.”', open: day6done, need: 'DAY 6' },
-      { n: 8, label: 'DAY 8 · 금요일', sub: '“이제 내가 걷는다.”', open: day7done, need: 'DAY 7' },
-      { n: 9, label: EPI.gate.label, sub: EPI.gate.sub, open: day8done, need: 'DAY 8', bonus: true }
+      { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true },
+      { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: true },
+      { n: 3, label: 'DAY 3 · 주일', sub: '“예수님 곁에 머물기”', open: true },
+      { n: 4, label: 'DAY 4 · 월요일', sub: '“나는 복사본이 아니다.”', open: true },
+      { n: 5, label: 'DAY 5 · 화요일', sub: '“용기를 내어라.”', open: true },
+      { n: 6, label: 'DAY 6 · 수요일', sub: '“이제 너희가 가라.”', open: true },
+      { n: 7, label: 'DAY 7 · 목요일', sub: '“내가 받은 것을 나눈다.”', open: true },
+      { n: 8, label: 'DAY 8 · 금요일', sub: '“이제 내가 걷는다.”', open: true },
+      { n: 9, label: EPI.gate.label, sub: EPI.gate.sub, open: true, bonus: true },
+      { n: 10, label: '엔딩 크레딧', sub: '“다음에는 당신이 만들어보세요.”', open: true, bonus: true }
     ];
 
     /* 아홉 줄에 글자가 커져 한 화면에 다 들어가지 않습니다 — 밀어서 봅니다 */
@@ -232,7 +223,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       row.add(this.add.text(-rowW / 2 + 20, -rowH / 2 + 14, d.label,
         UI.style(FONT.small, d.open ? PAL.sunDeep : PAL.inkSoft)).setOrigin(0, 0));
 
-      const sub = d.open ? d.sub : '🔒 ' + d.need + ' 을 마치면 열립니다';
+      const sub = d.open ? d.sub : '🔒 ' + (d.need || '') + ' 을 마치면 열립니다';
       row.add(this.add.text(-rowW / 2 + 20, 4, sub,
         UI.style(d.open ? FONT.body : FONT.small, d.open ? PAL.ink : PAL.inkSoft, {
           wordWrap: { width: rowW - 40 }

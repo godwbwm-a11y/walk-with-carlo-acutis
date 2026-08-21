@@ -42,6 +42,8 @@ window.AudioSystem = (function () {
 
   function unlock() {
     ensure();
+    /* 배경 음악도 같은 순간에 허락을 받습니다 */
+    if (window.MusicSystem) MusicSystem.unlock();
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
     started = true;
@@ -177,7 +179,11 @@ window.AudioSystem = (function () {
     stopPad: stopPad,
     stopAll: function () { stopPad(); stopAmbience(0.8); currentAmb = 'none'; },
 
-    setBgm: function (on) { ensure(); if (bgmBus) bgmBus.gain.value = on ? 1 : 0; },
+    setBgm: function (on) {
+      ensure();
+      if (bgmBus) bgmBus.gain.value = on ? 1 : 0;
+      if (window.MusicSystem) MusicSystem.setEnabled(on);
+    },
     setSfx: function (on) { ensure(); if (sfxBus) sfxBus.gain.value = on ? 1 : 0; },
 
     /* 효과음 — 작고 부드럽게 */

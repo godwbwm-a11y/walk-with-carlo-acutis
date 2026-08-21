@@ -249,25 +249,22 @@ window.UI = (function () {
   }
 
   /* ── 제목 화면 아래 저작권 안내 ─────────────── */
+  /* 작게, 버튼을 건드리지 않을 만큼만 */
   function footer(scene) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const a = scene.add.text(0, 0, GAME.COPYRIGHT, style(FONT.small, PAL.cream)).setOrigin(0.5);
+    const a = scene.add.text(0, 0, GAME.COPYRIGHT, style(FONT.tiny, PAL.dim)).setOrigin(0.5);
     const b = scene.add.text(0, 0, GAME.LICENSE, style(FONT.tiny, PAL.dim, {
-      align: 'center', wordWrap: { width: W - 62 }, lineSpacing: 4
+      align: 'center', wordWrap: { width: W - 28 }, lineSpacing: 2
     })).setOrigin(0.5);
 
-    const inner = a.height + 6 + b.height;
-    const boxH = inner + 24;
+    const inner = a.height + 2 + b.height;
     a.y = -inner / 2 + a.height / 2;
     b.y = inner / 2 - b.height / 2;
 
-    const c = scene.add.container(W / 2, H - boxH / 2 - 12).setDepth(60);
-    const g = scene.add.graphics();
-    g.fillStyle(0x0d1424, 0.55);
-    g.fillRoundedRect(-(W - 30) / 2, -boxH / 2, W - 30, boxH, 16);
-    c.add([g, a, b]);
-    c.setAlpha(0.96);
-    c.boxH = boxH;
+    const c = scene.add.container(W / 2, H - inner / 2 - 10).setDepth(60);
+    c.add([a, b]);
+    c.setAlpha(0.7);
+    c.boxH = inner;
     return c;
   }
 

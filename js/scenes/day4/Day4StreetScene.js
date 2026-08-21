@@ -187,6 +187,7 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
   }
 
   freePrayer(veil, t) {
+    if (window.MusicSystem) MusicSystem.setWanted(false);
     if (this.strengthText) this.strengthText.setAlpha(0.5);
     if (!TextInput.supported(this)) { this.bye(veil, t); return; }
     TextInput.ask(this, {
@@ -201,6 +202,7 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
   }
 
   bye(veil, t) {
+    if (window.MusicSystem) MusicSystem.setWanted(true);
     const targets = [veil, t];
     if (this.strengthText) targets.push(this.strengthText);
     this.tweens.add({

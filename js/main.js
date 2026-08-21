@@ -72,6 +72,7 @@
     if (game) return;
     game = new Phaser.Game(config);
     window.__game = game;
+
   }
 
   /* 글꼴이 준비되면 시작 — 최대 2.5초까지만 기다립니다 */

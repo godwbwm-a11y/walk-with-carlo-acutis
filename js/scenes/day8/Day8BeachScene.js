@@ -336,6 +336,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   prayMine() {
+    if (window.MusicSystem) MusicSystem.setWanted(false);
     if (!TextInput.supported(this)) { this.prayLines(); return; }
     TextInput.ask(this, {
       question: '예수님,',
@@ -351,6 +352,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   prayStay() {
+    if (window.MusicSystem) MusicSystem.setWanted(false);
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     let i = 0;
     const t = this.add.text(W / 2, H * 0.42, '', UI.style(19, PAL.cream, {
@@ -370,6 +372,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   prayLines() {
+    if (window.MusicSystem) MusicSystem.setWanted(false);
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const body = this.add.text(W / 2, 200, '', UI.style(18, PAL.cream, {
       align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
