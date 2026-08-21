@@ -48,7 +48,11 @@ window.DialogueBox = class DialogueBox {
       UI.style(FONT.dialogue, PAL.ink, { wordWrap: { width: boxW - this.padX * 2 } })
     );
     this.textLayer.add(this.text);
+    /* 잘라내는 틀도 화면에 붙여 둡니다.
+       이것을 빼두면 카메라가 따라 움직이는 장면에서 틀만 배경과 함께 밀려나,
+       말풍선은 그대로인데 글자만 잘려 사라집니다. */
     const mask = scene.make.graphics({ add: false });
+    mask.setScrollFactor(0);
     mask.fillRect(W / 2 - boxW / 2, boxY - boxH / 2 + 8, boxW, boxH - 16);
     this.textLayer.setMask(mask.createGeometryMask());
     this.maskShape = mask;
@@ -78,14 +82,24 @@ window.DialogueBox = class DialogueBox {
 
     /* PC — 스페이스·엔터로도 넘어갑니다 */
     if (scene.input.keyboard) {
+      /* 한 장면에서 상자를 새로 만들면 먼저 쓰던 상자는 조용히 물러납니다.
+         남겨 두면 이미 지워진 글자를 만지려다 갱신이 멈춥니다. */
+      if (scene.__dlgKeyTick) scene.events.off('update', scene.__dlgKeyTick);
+
       this._keys = scene.input.keyboard.addKeys('SPACE,ENTER');
       this._keyTick = () => {
+        if (!this.container || !this.container.scene) return;   // 이미 지워진 상자
         if (!this.isOpen || this.choiceOpen) { this._keyHeld = false; return; }
         const down = this._keys.SPACE.isDown || this._keys.ENTER.isDown;
         if (down && !this._keyHeld) this.advance();
         this._keyHeld = down;
       };
       scene.events.on('update', this._keyTick);
+      scene.__dlgKeyTick = this._keyTick;
+      scene.events.once('shutdown', () => {
+        scene.events.off('update', this._keyTick);
+        if (scene.__dlgKeyTick === this._keyTick) scene.__dlgKeyTick = null;
+      });
     }
 
     this.choiceGroup = scene.add.container(0, 0).setDepth(1010).setScrollFactor(0);

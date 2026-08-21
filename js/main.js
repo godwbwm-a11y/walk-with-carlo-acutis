@@ -68,9 +68,25 @@
 
   let game = null;
 
+  /* 어느 한 곳이 잘못되어도 게임이 통째로 멈추지는 않게 합니다.
+     화면을 다시 그려 달라는 요청은 한 번 끊기면 스스로 돌아오지 않아서,
+     그대로 두면 말풍선만 남고 글자가 영영 나오지 않습니다. */
+  function keepAlive(g) {
+    const step = g.step.bind(g);
+    let told = 0;
+    g.step = function (time, delta) {
+      try {
+        step(time, delta);
+      } catch (e) {
+        if (told < 5) { told++; console.error('[한 프레임을 건너뜁니다]', e); }
+      }
+    };
+  }
+
   function launch() {
     if (game) return;
     game = new Phaser.Game(config);
+    keepAlive(game);
     window.__game = game;
 
   }

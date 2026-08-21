@@ -171,7 +171,9 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
   /* 매 프레임 — 이동과 가까운 대상 찾기 */
   updateWorld(time, delta) {
     const p = this.player;
-    if (!p) return;
+    /* 장면이 물러나는 중이면 몸이 먼저 사라져 있기도 합니다.
+       여기서 한 번 걸러 두지 않으면 갱신 도중에 멈춰 버립니다. */
+    if (!p || !p.body || !p.scene) return;
 
     let vx = 0, vy = 0;
     if (this.stick && !this.inputLocked) {
