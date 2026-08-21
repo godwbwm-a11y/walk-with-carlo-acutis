@@ -56,7 +56,11 @@
       Day8MorningScene, Day8SearchScene, Day8WalkScene, Day8ChurchScene,
       Day8BeachScene, Day8HomeScene, Day8GoodbyeScene, Day8CardScene,
       Day8NoteScene, Day8ReviewScene, Day8EndScene,
-      SeeFriendScene, AloneScene, MyPathScene
+      SeeFriendScene, AloneScene, MyPathScene,
+      EpIntroScene, EpYardScene, EpDinnerScene, EpCarloScene,
+      EpChurchScene, EpPrayerScene, EpPhotoScene, EpWalkScene,
+      EpPhotoBookScene, EpFinalScene,
+      PassScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene
     ]
   };
 

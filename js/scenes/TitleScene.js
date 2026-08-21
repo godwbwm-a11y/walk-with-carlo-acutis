@@ -62,6 +62,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day6 = SaveSystem.get('dayCompleted.day6', false);
     const day7 = SaveSystem.get('dayCompleted.day7', false);
     const day8 = SaveSystem.get('dayCompleted.day8', false);
+    const epi = SaveSystem.get('dayCompleted.epilogue', false);
     let y = 668;
 
     if (cp && cp.scene) {
@@ -80,6 +81,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       UI.button(this, W / 2, y, 250, 60, 'DAY 7 걷기', () => this.startDay(7), { size: 19 });
     } else if (day7 && !day8) {
       UI.button(this, W / 2, y, 250, 60, 'DAY 8 걷기', () => this.startDay(8), { size: 19 });
+    } else if (day8 && !epi) {
+      UI.button(this, W / 2, y, 250, 60, '에필로그 열기', () => this.startDay(9), { size: 19 });
     } else if (!day1) {
       UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
     } else {
@@ -100,7 +103,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 8 · 2027 서울 WYD 를 준비하며',
+    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 8 · EPILOGUE',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
 
     /* 첫 터치에 소리 시작 */
@@ -139,7 +142,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
-    const entry = n === 8 ? { scene: 'Day8MorningScene', data: {} }
+    const entry = n === 9 ? { scene: 'EpIntroScene', data: {} }
+      : n === 8 ? { scene: 'Day8MorningScene', data: {} }
       : n === 7 ? { scene: 'Day7RoomScene', data: {} }
       : n === 6 ? { scene: 'Day6IntroScene', data: {} }
       : n === 5 ? { scene: 'Day5SubwayScene', data: {} }
@@ -172,6 +176,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day5done = SaveSystem.get('dayCompleted.day5', false);
     const day6done = SaveSystem.get('dayCompleted.day6', false);
     const day7done = SaveSystem.get('dayCompleted.day7', false);
+    const day8done = SaveSystem.get('dayCompleted.day8', false);
     const days = [
       { n: 1, label: 'DAY 1 · 금요일', sub: '“성당에 꼭 가야 해?”', open: true, need: '' },
       { n: 2, label: 'DAY 2 · 토요일', sub: '“나 말고, 하느님.”', open: day1, need: 'DAY 1' },
@@ -180,26 +185,29 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       { n: 5, label: 'DAY 5 · 화요일', sub: '“용기를 내어라.”', open: day4, need: 'DAY 4' },
       { n: 6, label: 'DAY 6 · 수요일', sub: '“이제 너희가 가라.”', open: day5done, need: 'DAY 5' },
       { n: 7, label: 'DAY 7 · 목요일', sub: '“내가 받은 것을 나눈다.”', open: day6done, need: 'DAY 6' },
-      { n: 8, label: 'DAY 8 · 금요일', sub: '“이제 내가 걷는다.”', open: day7done, need: 'DAY 7' }
+      { n: 8, label: 'DAY 8 · 금요일', sub: '“이제 내가 걷는다.”', open: day7done, need: 'DAY 7' },
+      { n: 9, label: EPI.gate.label, sub: EPI.gate.sub, open: day8done, need: 'DAY 8', bonus: true }
     ];
 
-    let y = 148;
+    let y = 138;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;
-      const label = d.open
-        ? d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')'
-        : d.label + '\n🔒 ' + d.need + ' 을 마치면 열립니다';
-      const b = UI.button(this, W / 2, y, W - 70, 66, label, () => {
+      const label = !d.open
+        ? d.label + '\n🔒 ' + d.need + ' 을 마치면 열립니다'
+        : d.bonus
+          ? d.label + '\n' + d.sub                 /* 에필로그는 말씀을 세지 않습니다 */
+          : d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')';
+      const b = UI.button(this, W / 2, y, W - 70, 58, label, () => {
         if (!d.open) return;
         layer.destroy(); this.picker = null;
         this.startDay(d.n);
       }, { size: FONT.small, fill: d.open ? PAL.paper : PAL.cream, alpha: d.open ? 1 : 0.6 });
       layer.add(b);
-      y += 72;
+      y += 66;
     });
 
-    layer.add(UI.button(this, W / 2, y + 8, 200, 52, '닫기', () => {
+    layer.add(UI.button(this, W / 2, y + 6, 200, 52, '닫기', () => {
       layer.destroy(); this.picker = null;
     }, { size: FONT.small, alpha: 0.9 }));
   }

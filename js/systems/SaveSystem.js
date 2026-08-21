@@ -25,6 +25,11 @@ window.SaveSystem = (function () {
         finalReflection: null
       },
       lifePlan: null,
+      epilogue: {                // 에필로그는 본편 진행에 영향을 주지 않습니다
+        played: false, greeting: null, newFriendName: null,
+        favoriteGame: null, learnedWord: null, taughtWord: null,
+        photoPose: null, photoKept: false, games: [], completed: false
+      },
       collection: [],           // 모은 말씀 카드
       journal: [],
       found: [],                 // 살펴본 오브젝트 기록
@@ -45,6 +50,7 @@ window.SaveSystem = (function () {
         data.dayCompleted = Object.assign(blank().dayCompleted, parsed.dayCompleted || {});
         data.reflections = Object.assign(blank().reflections, parsed.reflections || {});
         data.settings = Object.assign(blank().settings, parsed.settings || {});
+        data.epilogue = Object.assign(blank().epilogue, parsed.epilogue || {});
       }
     } catch (e) {
       available = false;             // 시크릿 모드 등 — 게임은 그대로 진행

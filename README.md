@@ -5,12 +5,13 @@
 
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
-이 저장소에는 **8일 여정 전체**가 들어 있습니다.
+이 저장소에는 **8일 여정 전체와 에필로그**가 들어 있습니다.
 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**, **DAY 4(월요일)**,
 **DAY 5(화요일 · WYD SEOUL)**, **DAY 6(수요일 · 철야와 파견)**,
 **DAY 7(목요일 · 나눔)**, **DAY 8(금요일 · 이제 내가 걷는다)**.
+그리고 마지막에 **EPILOGUE 《우리 본당에 세계가 찾아왔다!》** 가 열립니다.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2~DAY 8은 각각 약 15~25분간 플레이할 수 있습니다.
+DAY 2~DAY 8은 각각 약 15~25분, 에필로그는 약 5~7분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -276,6 +277,52 @@ DAY 4 의 좋은 점, DAY 5 의 작은 용기, DAY 6 의 파견 장소가 여기
 
 ---
 
+## EPILOGUE · 2027 WYD 서울 · 인천교구 대회 — “우리 본당에 세계가 찾아왔다!”
+
+DAY 8을 마치면 열리는 보너스입니다. 본편처럼 깊은 성찰을 요구하지 않습니다.
+웃고, 뛰고, 놀고, 먹고, 친구가 되고, 마지막에 함께 기도하는 **밝고 따뜻한 피날레**입니다.
+
+DAY 5와 정확히 거울처럼 맞물립니다.
+
+| DAY 5 | EPILOGUE |
+|---|---|
+| 내가 낯선 곳으로 갔습니다 | 낯선 친구들이 우리 본당으로 옵니다 |
+| 내가 먼저 인사하기 어려웠습니다 | 이번에는 다른 친구들이 어려워합니다 |
+| 세계 교회에 초대받았습니다 | 우리 본당이 세계 교회를 맞아들입니다 |
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 그날 밤 | 불 꺼진 방. 책상 위의 MY CARD. 파도 소리가 들릴 것 같다가— |
+| 2 | 다시 꿈 | 눈을 뜨니 해변이 아니라 **우리 성당 앞**입니다 |
+| 3 | 버스가 들어온다 | 여러 나라의 인사가 한꺼번에 들립니다. “안… 녕하세요!” |
+| 4 | 첫 번째 인사 | 👋 🙂 🙇 중 하나를 고릅니다. 그리고 “헬… Hello!” |
+| 5 | 어색한 환영식 | 서로 영어를 떠넘기다가— **툭.** 축구공 하나가 굴러옵니다 |
+| 6 | 미니게임 《같이 놀자!》 | 축구 · 제기 · 공기 · 사진 · 음악 · 간식. 순서도 개수도 자유입니다 |
+| 7 | 미니게임 《우리말, 너희말》 | 한 단어씩 서로에게. “친구?” — **“응. 친구.”** |
+| 8 | 가방을 찾는 친구 | 표시가 없습니다. 함께 찾고 나면 저절로 “Together.” |
+| 9 | 저녁 식사 | 나라별로 앉았던 자리가 조금씩 섞입니다 |
+| 10 | 익숙한 사람 | 성당 문 옆. 청바지. 운동화. 백팩. **카를로.** |
+| 11 | 하나의 성당 | “우리의 언어는 다릅니다.” — “하지만 우리가 부르는 분은 한 분입니다.” |
+| 12 | 마지막 기도 | 세상의 모든 청소년과 청년들을 위하여. 각자의 언어로 “Amen.” |
+| 13 | 단체사진 | 3 · 2 · 1 · **찰칵!** 사람을 누르면 오늘의 기억이 떠오릅니다 |
+| 14 | 사진 속 카를로 | 맨 뒤에 아주 작게. 확대해 봅니다. 고개를 들면 없습니다 |
+| 15 | 함께 걷는 길 | “Spicy?” — 모두: **“NO!”** |
+| 16 | 마지막 | 제목의 절반이 사라집니다. 《오늘, 걷습니다》 |
+
+**점수도 순위도 승패도 없습니다.** 축구에는 골대가 없고, 제기는 몇 번 찼는지 세지 않으며,
+공깃돌이 굴러가면 여럿이 함께 줍습니다. 발음을 틀려도 “Almost!” 하고 다시 하면 됩니다.
+
+에필로그에는 **새 말씀카드를 넣지 않았습니다.** 카드 시스템은 DAY 8의 `MY CARD` 에서
+이미 완성되었기 때문입니다. 에필로그가 남기는 것은 카드가 아니라 **사람**이고,
+마지막 수집품은 여행 노트 뒷표지에 붙는 **단체사진 한 장**입니다.
+
+카를로도 다시 주인공이 되지 않습니다. 한 문장만 남기고 물러납니다.
+
+> **“그게 교회야.”**
+> **“서로 다른 사람들이 예수님 때문에 만나고, 친구가 되고, 함께 걷는 것.”**
+
+---
+
 ## 카를로의 하루 · 2005년 밀라노
 
 메시지를 마치면 카를로가 이렇게 말합니다. **“네가 나 한번 해볼래?”**
@@ -379,9 +426,10 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js ~ day08.js, collection.js(말씀),
-                      chat.js(채팅), carloday.js(카를로의 하루)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5/6/7/8, UI,
+js/data/              config.js, day01.js ~ day08.js, epilogue.js(에필로그),
+                      collection.js(말씀), chat.js(채팅), carloday.js(카를로의 하루)
+js/systems/           SaveSystem, AudioSystem, TextureFactory,
+                      TextureDay2/3/5/6/7/8, TextureEpi, UI,
                       DialogueBox, Joystick, Collection, JourneyText(기록을 한 줄로),
                       PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
@@ -402,6 +450,9 @@ js/scenes/day7/       Day7Room, Day7School, Day7Computer, Day7Town,
 js/scenes/day8/       Day8Morning, Day8Search, Day8Walk, Day8Church, Day8Beach,
                       Day8Home, Day8Goodbye, Day8Card(MY CARD), Day8Note,
                       Day8Review(DAY 1–8 여행 노트), Day8End
+js/scenes/epilogue/   EpiPhoto(단체사진 그리기), EpIntro, EpYard, EpDinner,
+                      EpCarlo, EpChurch, EpPrayer, EpPhoto, EpWalk,
+                      EpPhotoBook(우리의 사진), EpFinal
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
@@ -410,7 +461,8 @@ js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       Way, Hello, Rhythm, Mosaic, HeartStop, Courage,
                       PilgrimWalk, OurSpot, StarPrayer, Stay, Morning, Mission,
                       Explain, MakeCard, NetChoice, Notice, Received,
-                      SeeFriend, Alone, MyPath
+                      SeeFriend, Alone, MyPath,
+                      Pass, Jegi, Gonggi, Pose, Follow, Taste, TwoWords(에필로그)
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
@@ -451,15 +503,16 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-**8일 여정이 모두 들어왔습니다.** 이어서 에필로그 《우리 본당에 세계가 찾아오다》 를
-붙일 수 있도록 저장 구조(`gameProgress`)와 말씀카드 도감은 그대로 열어 두었습니다.
+**8일 여정과 에필로그가 모두 들어왔습니다. 시나리오가 완결되었습니다.**
+저장 구조는 그대로 열려 있어 필요하면 더 붙일 수 있습니다.
 DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에, DAY 8 에서 고른 한 걸음은 `lifePlan` 에,
-마지막 카드는 `finalCard` 에 남습니다.
+마지막 카드는 `finalCard` 에, 에필로그의 기록은 `epilogue` 에 남습니다.
 
 ## 본당에서 사용하실 때
 
 - 링크만 공유하면 됩니다. 설치가 필요 없습니다.
 - 이어폰을 함께 준비하면 파도 소리와 기도 시간의 침묵이 훨씬 잘 전해집니다.
 - 마지막 기도 장면은 건너뛸 수 있지만, 가능하면 끝까지 머물러 보시길 권합니다.
+- 에필로그는 본편이 끝난 뒤에 열립니다. 여럿이 모인 자리에서 함께 보기에 좋습니다.
 
 *성 카를로 아쿠티스, 저희를 위하여 빌어주소서.*
