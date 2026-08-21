@@ -82,7 +82,7 @@ window.COLLECTION = {
     /* DAY 2 */
     { id: 'b13', day: 2, cat: 'bible', text: '두려워하지 마라, 내가 너와 함께 있다.',
       from: '이사 41,10', where: '공원 벤치 아래에서' },
-    { id: 'b12', day: 2, cat: 'bible', text: '여러분의 모든 걱정을 그분께 내맡기십시오.\n그분께서 여러분을 돌보고 계십니다.',
+    { id: 'b12', day: 2, also: [8], cat: 'bible', text: '여러분의 모든 걱정을 그분께 내맡기십시오.\n그분께서 여러분을 돌보고 계십니다.',
       from: '1베드 5,7', where: '무거운 돌 하나를 내려놓았을 때' },
     { id: 's9', day: 2, cat: 'saints', text: '기도하고, 바라고,\n걱정하지 마십시오.',
       from: '성 비오 신부', where: '편의점에서 따뜻한 말을 건넸을 때' },
@@ -149,7 +149,15 @@ window.COLLECTION = {
     { id: 'b22', day: 7, cat: 'bible', text: '너희의 빛이 사람들 앞을 비추어,\n그들이 너희의 착한 행실을 보고\n하늘에 계신 너희 아버지를 찬양하게 하여라.',
       from: '마태 5,16', where: '누군가를 도운 뒤 길가에서' },
     { id: 'j10', day: 7, cat: 'journey', text: '내가 받은 것은 나만을 위한 것이 아니다.\n누군가에게 닿을 때 선물이 된다.',
-      from: '여행의 문장', where: '석양 아래에서 받은 것과 사람을 이었을 때' }
+      from: '여행의 문장', where: '석양 아래에서 받은 것과 사람을 이었을 때' },
+
+    /* ── DAY 8 · 이제 내가 걷는다 ─────────────── */
+    { id: 'j11', day: 8, cat: 'journey', text: '옆에 아무도 없는 날에도\n나는 그대로 걸을 수 있다.',
+      from: '여행의 문장', where: '혼자서 친구에게 먼저 말을 걸었을 때' },
+    { id: 'b23', day: 8, cat: 'bible', text: '보라, 내가 세상 끝 날까지\n언제나 너희와 함께 있겠다.',
+      from: '마태 28,20', where: '마지막 꿈에서 헤어지던 바닷가에서' },
+    { id: 'j12', day: 8, cat: 'journey', text: '나의 인생 계획은\n크지 않아도 괜찮다.\n오늘 걸을 수 있는 한 걸음이면 된다.',
+      from: '여행의 문장', where: '나의 길을 스스로 그려보았을 때' }
   ],
 
   get: function (id) { return this.cards.find(function (c) { return c.id === id; }); },

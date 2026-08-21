@@ -52,7 +52,11 @@
       Day7RoomScene, Day7SchoolScene, Day7ComputerScene, Day7TownScene,
       Day7ChurchScene, Day7NoteScene, Day7EndScene,
       ExplainScene, MakeCardScene, NetChoiceScene, NoticeScene, ReceivedScene,
-      MiracleMapScene, FortressScene, NightShareScene
+      MiracleMapScene, FortressScene, NightShareScene,
+      Day8MorningScene, Day8SearchScene, Day8WalkScene, Day8ChurchScene,
+      Day8BeachScene, Day8HomeScene, Day8GoodbyeScene, Day8CardScene,
+      Day8NoteScene, Day8ReviewScene, Day8EndScene,
+      SeeFriendScene, AloneScene, MyPathScene
     ]
   };
 

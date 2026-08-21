@@ -5,11 +5,12 @@
 
 > “항상 예수님과 함께 있는 것, 이것이 나의 인생 계획입니다.”
 
-이 저장소에는 전체 8일 여정 가운데 **DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**,
-**DAY 4(월요일)**, **DAY 5(화요일 · WYD SEOUL)**, **DAY 6(수요일 · 철야와 파견)**,
-**DAY 7(목요일 · 나눔)** 이 들어 있습니다.
+이 저장소에는 **8일 여정 전체**가 들어 있습니다.
+**DAY 1(금요일)**, **DAY 2(토요일)**, **DAY 3(주일)**, **DAY 4(월요일)**,
+**DAY 5(화요일 · WYD SEOUL)**, **DAY 6(수요일 · 철야와 파견)**,
+**DAY 7(목요일 · 나눔)**, **DAY 8(금요일 · 이제 내가 걷는다)**.
 설치 없이 스마트폰 브라우저에서 바로 열어 DAY 1은 약 20~30분(카를로의 하루 포함),
-DAY 2~DAY 7은 각각 약 15~25분간 플레이할 수 있습니다.
+DAY 2~DAY 8은 각각 약 15~25분간 플레이할 수 있습니다.
 
 ### ▶ 지금 플레이하기
 
@@ -230,6 +231,44 @@ DAY 4 의 좋은 점, DAY 5 의 작은 용기, DAY 6 의 파견 장소가 여기
 
 ---
 
+## DAY 8 · 금요일 — “이제 내가 걷는다.”
+
+**오늘 카를로는 나오지 않습니다.** 창밖 골목에도, 학교 복도에도, 하굣길에도 없습니다.
+게임도 오늘은 플레이어에게 훨씬 덜 말합니다. 목표 안내도, `카를로를 찾으세요` 도 없습니다.
+
+| 순서 | 장면 | 내용 |
+|---|---|---|
+| 1 | 아침 방 | 창문을 열어도 골목이 비어 있습니다. 여행 노트를 넘겨보다 그냥 닫습니다 |
+| 2 | 카를로 어디 있어? | 지금까지 카를로가 서 있던 다섯 자리. 모두 비어 있고 지난 말만 짧게 스칩니다 |
+| 3 | 교실 | DAY 4 와 거의 같은 교실. 친구가 “나는 왜 저렇게 못하지?” 하고 말합니다 |
+| 4 | 미니게임 《이번에는 네가 선택한다》 | DAY 4 에서 배운 대로 먼저 바라보고, 무엇을 말해줄지 내가 고릅니다 |
+| 5 | 복도 | 카를로가 나타나던 자리. 혼자 그 말투를 흉내 내고 혼자 웃습니다 |
+| 6 | 하굣길 | 가방이 다시 무거워집니다. 이번에는 혼자 열고 혼자 내려놓습니다 |
+| 7 | 돌을 내려놓고 | DAY 2 에서 카를로가 했던 말을 **이번에는 내가** 합니다. 새 카드는 나오지 않습니다 |
+| 8 | 동네 | 도움이 필요한 사람 넷. 표시도 `[돕는다]` 버튼도 없습니다. 지나가도 됩니다 |
+| 9 | 성당 문 앞 | 들어가도, 그냥 지나가도 됩니다. 게임은 아무것도 판단하지 않습니다 |
+| 10 | 미니게임 《이번에는 혼자》 | 안내도 완료 표시도 없습니다. 이번에는 내가 먼저 “예수님, 저 왔어요.” 합니다 |
+| 11 | 해변 | 카를로는 오지 않습니다. 일곱 날의 기억이 지나갑니다 |
+| 12 | 마지막 성찰 | “나는 왜 신앙생활을 하고 있을까?” — 정답도, 가장 좋은 답도 없습니다 |
+| 13 | 나의 인생 계획 | 딱 **하나**만 고릅니다. 크지 않아도 됩니다 |
+| 14 | 미니게임 《나의 길》 | 잘못 고른 길이 없습니다. 어느 쪽으로 걸어도 하나의 길로 이어집니다 |
+| 15 | 기도 | 말이 떠오르지 않으면 “예수님, 저와 함께 걸어주세요.” 한 마디면 됩니다 |
+| 16 | 집 | DAY 1 과 같은 질문. **“내가 가고 싶어서.”** |
+| 17 | 마지막 꿈 | 카를로가 다시 오라고 하지 않습니다. **예수님께 가라고 합니다** |
+| 18 | MY CARD · 노트 · 끝 | 다음 날 버튼이 없습니다. 다음 날은 게임 밖에 있습니다 |
+
+오늘 말씀 카드는 **네 장뿐**입니다. 이미 받은 말씀을 다시 꺼내 보는 날이기 때문입니다.
+하굣길에서는 새 카드를 얻는 대신 DAY 2 의 **1베드 5,7** 이 다시 밝아집니다.
+
+마지막 꿈에서 카를로는 오늘 한 일을 하나씩 세어 주고, 이렇게 말하고 떠납니다.
+**“미사에서.”** 그리고 **“나 말고, 하느님.”**
+두 사람은 서로 반대쪽으로 걸어가고, 모래에는 발자국이 하나만 남습니다.
+
+끝 화면에는 **[나의 여행 노트 보기]** 와 **[처음부터 다시 걷기]** 만 있습니다.
+여행 노트에서는 DAY 1 부터 DAY 8 까지 내가 적은 문장과 MY CARD 를 한 번에 넘겨볼 수 있습니다.
+
+---
+
 전투·죽음·시간 제한·경쟁·점수가 없습니다. 기도에는 성공과 실패가 없고,
 플레이어의 선택은 평가되지 않습니다. 미니게임도 마찬가지로, 여러 번
 빗나가면 조금씩 너그러워질 뿐 지는 일은 없습니다.
@@ -340,10 +379,11 @@ node tools/dev-server.js
 index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
-js/data/              config.js, day01.js ~ day07.js, collection.js(말씀),
+js/data/              config.js, day01.js ~ day08.js, collection.js(말씀),
                       chat.js(채팅), carloday.js(카를로의 하루)
-js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5/6/7, UI,
-                      DialogueBox, Joystick, Collection, PhotoSystem, TextInput,
+js/systems/           SaveSystem, AudioSystem, TextureFactory, TextureDay2/3/5/6/7/8, UI,
+                      DialogueBox, Joystick, Collection, JourneyText(기록을 한 줄로),
+                      PhotoSystem, TextInput,
                       WorldScene(걷기 장면 공통), MiniGameScene(미니게임 공통)
 js/scenes/            Boot, Title, Home, Room, Phone, DreamBeach, Vista(연출),
                       Chat, CarloDay(밀라노), Prayer, Journal, Pause,
@@ -359,6 +399,9 @@ js/scenes/day6/       Day6Intro, Day6Pilgrimage, Day6Field, Day6Vigil,
                       Day6Night, Day6Dawn, Day6Mission, Day6Note, Day6End
 js/scenes/day7/       Day7Room, Day7School, Day7Computer, Day7Town,
                       Day7Church, Day7Note, Day7End
+js/scenes/day8/       Day8Morning, Day8Search, Day8Walk, Day8Church, Day8Beach,
+                      Day8Home, Day8Goodbye, Day8Card(MY CARD), Day8Note,
+                      Day8Review(DAY 1–8 여행 노트), Day8End
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
@@ -366,14 +409,15 @@ js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       Feed, Words, Mirror, SeePerson, Gift,
                       Way, Hello, Rhythm, Mosaic, HeartStop, Courage,
                       PilgrimWalk, OurSpot, StarPrayer, Stay, Morning, Mission,
-                      Explain, MakeCard, NetChoice, Notice, Received
+                      Explain, MakeCard, NetChoice, Notice, Received,
+                      SeeFriend, Alone, MyPath
 vendor/phaser.min.js  Phaser 3.80.1 (오프라인에서도 열리도록 함께 보관)
 tools/dev-server.js   로컬 테스트용 정적 서버
 ```
 
 ## 수집과 사진첩
 
-**말씀 카드 60장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
+**말씀 카드 63장** — 성 카를로 아쿠티스의 말, 성경 말씀, 성인 성녀의 말씀,
 그리고 여행의 문장을 걷고 만나고 물어보는 동안 하나씩 얻습니다.
 아직 얻지 못한 카드에는 어디에서 만날 수 있는지만 살짝 적혀 있습니다.
 보관함에서는 DAY별로 몇 장을 모았는지 볼 수 있고, 모두 모으지 않아도 이야기는 끝까지 진행됩니다.
@@ -407,10 +451,10 @@ Netlify 정적 호스팅. 빌드 명령 없이 저장소 루트를 그대로 게
 
 ## 다음 단계
 
-마지막 DAY 8 《이제 내가 걷는다》, 그리고 에필로그
-《우리 본당에 세계가 찾아오다》까지 시나리오가 준비되어 있습니다.
-저장 구조(`gameProgress`)와 말씀카드 도감은 이후 DAY를 그대로 받을 수 있도록 설계되어 있습니다.
-DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에 남아, 이후 같은 길을 지날 때 다시 쓸 수 있습니다.
+**8일 여정이 모두 들어왔습니다.** 이어서 에필로그 《우리 본당에 세계가 찾아오다》 를
+붙일 수 있도록 저장 구조(`gameProgress`)와 말씀카드 도감은 그대로 열어 두었습니다.
+DAY 2에서 내려놓은 돌은 `stonesLeftBehind` 에, DAY 8 에서 고른 한 걸음은 `lifePlan` 에,
+마지막 카드는 `finalCard` 에 남습니다.
 
 ## 본당에서 사용하실 때
 
