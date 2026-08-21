@@ -17,19 +17,85 @@ window.TextInput = (function () {
   }
 
   /* ── 적는 동안 게임 화면이 흔들리지 않게 붙잡아 둡니다 ── */
-  function hold(game) {
-    window.__typing = true;
-    try { if (game && game.scale) game.scale.stopListeners(); } catch (e) {}
-  }
 
-  function release(game) {
-    window.__typing = false;
+  /* 게임 화면이 실제로 재는 크기 — 캔버스를 담은 자리입니다.
+     자판이 올라오면 이 자리가 낮아지고, 내려가면 되돌아옵니다. */
+  function frameSize(game) {
     try {
-      if (game && game.scale) {
-        game.scale.startListeners();
-        game.scale.refresh();
+      const p = game && game.scale && game.scale.parent;
+      if (p && p.getBoundingClientRect) {
+        const b = p.getBoundingClientRect();
+        return { w: Math.round(b.width), h: Math.round(b.height) };
       }
     } catch (e) {}
+    return { w: window.innerWidth, h: window.innerHeight };
+  }
+
+  let heldSize = null;
+  let heldInterval = null;
+  let holdToken = 0;
+
+  function hold(game) {
+    holdToken++;
+    window.__typing = true;
+    if (heldInterval === null) {
+      heldSize = frameSize(game);
+      try {
+        if (game && game.scale) {
+          game.scale.stopListeners();
+          /* 창 크기 알림을 끄는 것만으로는 모자랍니다.
+             Phaser 는 0.5초마다 스스로 자리 크기를 다시 재기 때문에,
+             그대로 두면 자판이 덮은 크기로 캔버스가 줄어듭니다. */
+          heldInterval = game.scale.resizeInterval;
+          game.scale.resizeInterval = 1000000;
+        }
+      } catch (e) {}
+    }
+    return holdToken;
+  }
+
+  /* 자판이 다 내려가 자리가 제자리로 돌아온 뒤에야 다시 맞춥니다.
+     곧바로 맞추면 아직 자판이 덮고 있는 작은 크기로 한 번 줄었다가
+     되돌아옵니다 — 화면이 깜빡이는 것처럼 보입니다. */
+  function release(game, token) {
+    if (token !== holdToken) return;        // 그 사이 새 칸이 열렸으면 그대로 둡니다
+    const start = heldSize;
+    let last = frameSize(game);
+    let steady = 0;
+    let tries = 0;
+
+    function done(needRefresh) {
+      if (token !== holdToken) return;
+      window.__typing = false;
+      heldSize = null;
+      try {
+        if (game && game.scale) {
+          if (heldInterval !== null) { game.scale.resizeInterval = heldInterval; heldInterval = null; }
+          game.scale.startListeners();
+          /* 자리 크기를 먼저 다시 재야 반영됩니다 */
+          if (needRefresh) { game.scale.getParentBounds(); game.scale.refresh(); }
+        }
+      } catch (e) {}
+    }
+
+    function settle() {
+      if (token !== holdToken) return;
+      const now = frameSize(game);
+      steady = (now.w === last.w && now.h === last.h) ? steady + 1 : 0;
+      last = now;
+      tries++;
+
+      const backToStart = !!start && now.w === start.w && Math.abs(now.h - start.h) <= 2;
+
+      /* 제자리로 돌아왔고 잠잠하면 — 크기가 그대로이니 다시 맞출 것도 없습니다 */
+      if (steady >= 3 && backToStart) { done(false); return; }
+      /* 돌아오지 않았더라도 충분히 잠잠해졌으면 그 크기에 한 번만 맞춥니다 */
+      if (steady >= 3 && tries > 14) { done(true); return; }
+      if (tries > 44) { done(true); return; }            // 약 2.2초
+
+      setTimeout(settle, 50);
+    }
+    setTimeout(settle, 50);
   }
 
   /* 자판이 올라오면 보이는 높이만큼만 씁니다 */
@@ -51,7 +117,7 @@ window.TextInput = (function () {
     if (live) live.dispose();
 
     const game = scene.game;
-    hold(game);
+    const token = hold(game);
 
     const layer = document.createElement('div');
     layer.id = 'ask-layer';
@@ -122,7 +188,7 @@ window.TextInput = (function () {
       try { field.blur(); } catch (e) {}
       if (layer.parentNode) layer.parentNode.removeChild(layer);
       if (live && live.layer === layer) live = null;
-      setTimeout(function () { release(game); }, 60);
+      release(game, token);   // 자판이 다 내려간 것을 보고 스스로 맞춥니다
     }
 
     function close(save) {
