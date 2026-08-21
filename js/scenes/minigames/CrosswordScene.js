@@ -190,10 +190,12 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
     this.updateProgress();
 
     this.tweens.add({ targets: this.bishop, y: this.bishop.y - 10, duration: 220, yoyo: true });
-    this.dialogue.play([
-      { s: '주교님', t: DAY06.crossword.right },
-      { s: '주교님', t: e.explain }
-    ], () => this.nextClue());
+
+    /* 설명은 한 마디일 수도, 여러 마디일 수도 있습니다 */
+    const explain = Array.isArray(e.explain) ? e.explain : [e.explain];
+    const lines = [{ s: '주교님', t: DAY06.crossword.right }]
+      .concat(explain.map((t) => ({ s: '주교님', t: t })));
+    this.dialogue.play(lines, () => this.nextClue());
   }
 
   fillWord(e) {
