@@ -231,6 +231,59 @@ TextureFactory.createEpi = function (scene) {
     g.fillStyle(0xcdc3ac, 0.6); g.fillRect(0, 44, 48, 2);
   });
 
+  /* ── 놀이에 쓰는 그림 ──────────────────────── */
+
+  /* 제기를 차 올리는 발 — 뒤꿈치를 축으로 돌립니다 */
+  make(scene, 'epi_foot', 46, 24, function (g) {
+    g.fillStyle(0x4a5a74, 1); g.fillRoundedRect(0, 4, 20, 15, 6);      // 바짓단
+    g.fillStyle(0xf2ece0, 1); g.fillRoundedRect(10, 8, 34, 12, 6);     // 신발
+    g.fillStyle(0xd6cdbc, 1); g.fillRoundedRect(10, 16, 34, 5, 2.5);   // 밑창
+    g.fillStyle(0xc9553f, 0.85); g.fillRoundedRect(24, 10, 12, 3, 1.5);
+  });
+
+  /* 공깃돌이 얹히는 손등 — 손가락은 오른쪽을 봅니다.
+     돗자리 위에서도 손 모양이 또렷하도록 테두리를 둘렀습니다. */
+  make(scene, 'epi_hand_back', 96, 48, function (g) {
+    g.fillStyle(0x000000, 0.15); g.fillEllipse(48, 44, 78, 9);
+    g.fillStyle(0xc98f63, 1); g.fillRoundedRect(2, 18, 22, 18, 8);     // 손목
+    g.fillStyle(0xdca878, 1); g.fillRoundedRect(12, 12, 50, 26, 11);   // 손등
+    g.lineStyle(2, 0xa87a52, 1); g.strokeRoundedRect(12, 12, 50, 26, 11);
+    for (let i = 0; i < 4; i++) {                                      // 손가락 넷
+      const y = 13.5 + i * 6.4, w = 30 - i * 3;
+      g.fillStyle(0xdca878, 1); g.fillRoundedRect(58, y, w, 5.6, 2.8);
+      g.lineStyle(1.3, 0xa87a52, 0.85); g.strokeRoundedRect(58, y, w, 5.6, 2.8);
+    }
+    g.fillStyle(0xd39e6e, 1); g.fillRoundedRect(16, 31, 24, 10, 5);    // 엄지
+    g.lineStyle(1.3, 0xa87a52, 0.85); g.strokeRoundedRect(16, 31, 24, 10, 5);
+  });
+
+  /* 공깃돌을 낚아채는 손 — 손가락을 오므렸습니다 */
+  make(scene, 'epi_hand_open', 96, 58, function (g) {
+    g.fillStyle(0x000000, 0.15); g.fillEllipse(48, 54, 74, 9);
+    g.fillStyle(0xc98f63, 1); g.fillRoundedRect(2, 28, 22, 18, 8);     // 손목
+    g.fillStyle(0xdca878, 1); g.fillRoundedRect(12, 22, 50, 26, 11);   // 손바닥
+    g.lineStyle(2, 0xa87a52, 1); g.strokeRoundedRect(12, 22, 50, 26, 11);
+    for (let i = 0; i < 4; i++) {                                      // 세워 오므린 손가락
+      const x = 48 + i * 9, y = 6 + i * 3.5, h = 24 - i * 2;
+      g.fillStyle(0xdca878, 1); g.fillRoundedRect(x, y, 9.5, h, 4.7);
+      g.lineStyle(1.3, 0xa87a52, 0.85); g.strokeRoundedRect(x, y, 9.5, h, 4.7);
+    }
+    g.fillStyle(0xd39e6e, 1); g.fillRoundedRect(14, 40, 25, 11, 5.5);  // 엄지
+    g.lineStyle(1.3, 0xa87a52, 0.85); g.strokeRoundedRect(14, 40, 25, 11, 5.5);
+  });
+
+  /* 골대 — 앞에서 본 모습, 그물까지 */
+  make(scene, 'epi_goal', 150, 62, function (g) {
+    g.fillStyle(0xffffff, 0.16); g.fillRoundedRect(8, 8, 134, 46, 6);
+    g.lineStyle(1, 0xf4ede0, 0.5);
+    for (let x = 16; x < 142; x += 12) g.lineBetween(x, 10, x, 52);
+    for (let y = 14; y < 54; y += 11) g.lineBetween(10, y, 140, y);
+    g.lineStyle(5, 0xfaf6ec, 1);
+    g.lineBetween(6, 6, 144, 6);
+    g.lineBetween(6, 6, 6, 56);
+    g.lineBetween(144, 6, 144, 56);
+  });
+
   /* 말풍선 안의 인사 — 여러 나라 말이 동시에 뜹니다 */
   make(scene, 'epi_bubble', 96, 44, function (g) {
     g.fillStyle(0x000000, 0.12); g.fillRoundedRect(3, 5, 92, 34, 14);

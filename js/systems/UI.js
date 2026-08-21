@@ -397,6 +397,59 @@ window.UI = (function () {
   }
 
   /* 일시정지(설정) 버튼 — 오른쪽 위 */
+  /* 누르는 순간 바로 반응하고, 대고 있는 동안 눌린 채로 있는 버튼.
+     제기를 차거나 공깃돌을 잡는 것처럼 때를 맞추는 놀이에 씁니다.
+     (보통 버튼은 손을 뗄 때 반응하므로 한 박자 늦습니다.) */
+  function padButton(scene, x, y, w, h, label, opt) {
+    opt = opt || {};
+    w = Math.max(w, TOUCH.min);
+    h = Math.max(h, TOUCH.min);
+    const c = scene.add.container(x, y);
+    const g = scene.add.graphics();
+    const fill = HEX(opt.fill || PAL.paper);
+    const line = HEX(opt.strokeColor || PAL.sunDeep);
+    const round = opt.round === undefined ? 18 : opt.round;
+
+    function draw(pressed) {
+      g.clear();
+      if (!pressed) { g.fillStyle(0x000000, 0.16); g.fillRoundedRect(-w / 2, -h / 2 + 4, w, h, round); }
+      g.fillStyle(fill, opt.alpha === undefined ? 0.96 : opt.alpha);
+      g.fillRoundedRect(-w / 2, -h / 2 + (pressed ? 2 : 0), w, h, round);
+      g.lineStyle(2, line, opt.strokeAlpha === undefined ? 0.6 : opt.strokeAlpha);
+      g.strokeRoundedRect(-w / 2, -h / 2 + (pressed ? 2 : 0), w, h, round);
+    }
+    draw(false);
+
+    const t = scene.add.text(0, 0, label, style(opt.size || FONT.label, opt.color || PAL.ink, {
+      align: 'center', wordWrap: { width: w - 20 }
+    })).setOrigin(0.5);
+
+    c.add([g, t]);
+    c.setSize(w, h);
+    c.setInteractive();
+    c.isDown = false;
+
+    function press() {
+      if (c.isDown) return;
+      c.isDown = true; draw(true); t.y = 2;
+      if (opt.quiet !== true) AudioSystem.tap();
+      if (c.onPress) c.onPress();
+    }
+    function release() {
+      if (!c.isDown) return;
+      c.isDown = false; draw(false); t.y = 0;
+      if (c.onRelease) c.onRelease();
+    }
+    c.on('pointerdown', press);
+    c.on('pointerup', release);
+    c.on('pointerout', release);
+    c.on('pointerupoutside', release);
+
+    c.setLabel = function (s) { t.setText(s); };
+    c.release = release;
+    return c;
+  }
+
   function pauseButton(scene, sceneKeyToResume) {
     const b = circleButton(scene, GAME.WIDTH - 34, 44, 21, '❙❙', function () {
       scene.scene.pause();
@@ -416,6 +469,7 @@ window.UI = (function () {
     panel: panel,
     button: button,
     circleButton: circleButton,
+    padButton: padButton,
     caption: caption,
     objective: objective,
     marker: marker,

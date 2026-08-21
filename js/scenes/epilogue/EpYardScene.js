@@ -51,7 +51,7 @@ window.EpYardScene = class EpYardScene extends WorldScene {
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.stick = new Joystick(this);
     this.createActionButton();
-    this.createPhotoButton('우리 본당 마당, WYD 인천교구 대회');
+    this.createPhotoButton('우리 본당 마당, WYD 교구 대회');
     this.pauseBtn = UI.pauseButton(this);
 
     this.buildActivities();
