@@ -280,31 +280,73 @@ window.UI = (function () {
     back.fillStyle(0x101a2e, 0.55);
     back.fillRect(0, y - 74, GAME.WIDTH, 148);
     back.setAlpha(0);
-    const t = scene.add.text(GAME.WIDTH / 2, y, '', style(opt.size || 20, opt.color || PAL.cream, {
-      align: 'center', wordWrap: { width: GAME.WIDTH - 80 }
+    const t = scene.add.text(GAME.WIDTH / 2, y, '', style(opt.size || FONT.body, opt.color || PAL.cream, {
+      align: 'center', wordWrap: { width: GAME.WIDTH - 76 }, lineSpacing: 8
     })).setOrigin(0.5).setAlpha(0);
-    c.add([back, t]);
+
+    /* 눌러야 다음 줄로 넘어갑니다 — 저절로 휙 지나가지 않게 */
+    const tip = scene.add.text(GAME.WIDTH / 2, y + 76, GAME.TAP_NEXT,
+      style(FONT.tiny, PAL.dim)).setOrigin(0.5).setAlpha(0);
+    c.add([back, t, tip]);
     scene.tweens.add({ targets: back, alpha: 1, duration: 600 });
 
+    const zone = scene.add.zone(GAME.WIDTH / 2, GAME.HEIGHT / 2, GAME.WIDTH, GAME.HEIGHT)
+      .setOrigin(0.5).setDepth(899).setScrollFactor(0).setInteractive();
+
     let i = 0;
+    let ready = false;
+    let closed = false;
+
+    function finish() {
+      if (closed) return;
+      closed = true;
+      zone.destroy();
+      scene.tweens.add({ targets: [back, tip], alpha: 0, duration: 500 });
+      scene.time.delayedCall(560, function () { c.destroy(); if (opt.onDone) opt.onDone(); });
+    }
+
     function next() {
-      if (i >= lines.length) {
-        scene.tweens.add({ targets: back, alpha: 0, duration: 500 });
-        scene.time.delayedCall(560, function () { c.destroy(); if (opt.onDone) opt.onDone(); });
-        return;
-      }
+      if (i >= lines.length) { finish(); return; }
+      ready = false;
       t.setText(lines[i++]);
       t.setAlpha(0);
+      tip.setAlpha(0);
       scene.tweens.add({
         targets: t, alpha: 1, duration: 700, ease: 'Sine.easeOut',
         onComplete: function () {
-          scene.time.delayedCall(opt.hold || 1400, function () {
-            scene.tweens.add({ targets: t, alpha: 0, duration: 600, onComplete: next });
-          });
+          ready = true;
+          scene.tweens.add({ targets: tip, alpha: 0.85, duration: 500, delay: 500 });
         }
       });
     }
+
+    function step() {
+      if (closed) return;
+      if (!ready) {                                  // 아직 나타나는 중이면 즉시 완성
+        scene.tweens.killTweensOf(t);
+        t.setAlpha(1); ready = true;
+        scene.tweens.add({ targets: tip, alpha: 0.85, duration: 300 });
+        return;
+      }
+      AudioSystem.tap();
+      scene.tweens.add({ targets: t, alpha: 0, duration: 400, onComplete: next });
+    }
+    zone.on('pointerup', step);
+
+    if (scene.input.keyboard) {
+      const keys = scene.input.keyboard.addKeys('SPACE,ENTER');
+      let held = false;
+      const tick = function () {
+        if (closed) { scene.events.off('update', tick); return; }
+        const down = keys.SPACE.isDown || keys.ENTER.isDown;
+        if (down && !held) step();
+        held = down;
+      };
+      scene.events.on('update', tick);
+    }
+
     next();
+    c.skip = finish;
     return c;
   }
 

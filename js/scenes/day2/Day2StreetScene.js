@@ -223,7 +223,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
 
   enterStore() {
     if (this.stick) this.stick.reset();
-    this.scene.launch('Day2StoreScene', { from: this.scene.key });
+    this.scene.launch('StoreScene', { from: this.scene.key, board: true });
     this.scene.pause();
   }
 

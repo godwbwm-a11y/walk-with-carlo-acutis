@@ -31,6 +31,9 @@ window.SaveSystem = (function () {
         photoPose: null, photoKept: false, games: [], completed: false,
         creditsSeen: false
       },
+      store: {                   // 동네 편의점 — 올 때마다 조금씩 친해집니다
+        visits: 0, friend: 0, tastes: [], lastSnack: null, gotGift: false
+      },
       collection: [],           // 모은 말씀 카드
       journal: [],
       found: [],                 // 살펴본 오브젝트 기록
@@ -52,6 +55,7 @@ window.SaveSystem = (function () {
         data.reflections = Object.assign(blank().reflections, parsed.reflections || {});
         data.settings = Object.assign(blank().settings, parsed.settings || {});
         data.epilogue = Object.assign(blank().epilogue, parsed.epilogue || {});
+        data.store = Object.assign(blank().store, parsed.store || {});
       }
     } catch (e) {
       available = false;             // 시크릿 모드 등 — 게임은 그대로 진행

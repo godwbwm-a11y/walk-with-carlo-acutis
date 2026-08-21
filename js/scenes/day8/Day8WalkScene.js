@@ -58,6 +58,16 @@ window.Day8WalkScene = class Day8WalkScene extends WorldScene {
       onInteract: () => this.churchDoor()
     });
 
+
+    /* 편의점 — 어느 날이든 들어갈 수 있습니다 */
+    this.addInteractable({
+      id: 'store_enter', x: 200, y: 660, label: '편의점', range: 88, markerY: 460,
+      onInteract: () => {
+        if (this.stick) this.stick.reset();
+        this.scene.launch('StoreScene', { from: this.scene.key });
+        this.scene.pause();
+      }
+    });
     this.createPlayer(110, 700);
     this.physics.world.setBounds(40, 640, 1840, 140);
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);

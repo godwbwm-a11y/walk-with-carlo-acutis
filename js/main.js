@@ -30,7 +30,7 @@
     dom: { createContainer: true },      // 기도와 여행 노트에 직접 적을 수 있도록
     scene: [
       BootScene, TitleScene, HomeScene, RoomScene,
-      PhoneScene, DreamBeachScene, VistaScene, ChatScene,
+      PhoneScene, StoreScene, DreamBeachScene, VistaScene, ChatScene,
       CarloDayScene,
       PrayerScene, JournalScene, PauseScene,
       PhotoMode, GalleryScene,

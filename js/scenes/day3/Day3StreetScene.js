@@ -124,7 +124,12 @@ window.Day3StreetScene = class Day3StreetScene extends WorldScene {
 
     this.addInteractable({
       id: 'd3_store', x: 760, y: 600, label: '편의점', range: 86, markerY: 540,
-      onInteract: () => { this.noteFound('d3_store'); this.dialogue.say(S.store); }
+      onInteract: () => {
+        this.noteFound('d3_store');
+        if (this.stick) this.stick.reset();
+        this.scene.launch('StoreScene', { from: this.scene.key });
+        this.scene.pause();
+      }
     });
 
     this.addInteractable({

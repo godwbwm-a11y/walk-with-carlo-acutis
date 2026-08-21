@@ -60,6 +60,16 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
       onInteract: () => this.goOut()
     });
 
+
+    /* 편의점 — 어느 날이든 들어갈 수 있습니다 */
+    this.addInteractable({
+      id: 'store_enter', x: 200, y: 640, label: '편의점', range: 88, markerY: 460,
+      onInteract: () => {
+        if (this.stick) this.stick.reset();
+        this.scene.launch('StoreScene', { from: this.scene.key });
+        this.scene.pause();
+      }
+    });
     this.createPlayer(120, 700);
     this.physics.world.setBounds(40, 640, 1640, 150);
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
