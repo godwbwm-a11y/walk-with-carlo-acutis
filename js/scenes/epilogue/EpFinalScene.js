@@ -215,20 +215,28 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
       AudioSystem.bell();
     }
 
-    this.time.delayedCall(instant ? 100 : 3600, () => this.buttons());
+    this.time.delayedCall(instant ? 100 : 3600, () => {
+      /* 처음 끝까지 왔다면 크레딧이 저절로 흐릅니다 */
+      if (!instant && !SaveSystem.get('epilogue.creditsSeen', false)) {
+        UI.fadeOut(this, 1200, () => this.scene.start('EpCreditsScene', { from: 'EpFinalScene' }), [7, 11, 20]);
+        return;
+      }
+      this.buttons();
+    });
   }
 
   buttons() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, F = EPI.final;
     const rows = [
-      { label: F.btnPhoto, fill: PAL.sun, go: () => this.scene.start('EpPhotoBookScene', { from: 'EpFinalScene' }) },
-      { label: F.btnCards, fill: PAL.cream, go: () => { this.scene.launch('GalleryScene', { from: 'EpFinalScene' }); this.scene.pause(); } },
+      { label: CREDITS.againBtn, fill: PAL.sun, go: () => this.scene.start('EpCreditsScene', { from: 'EpFinalScene' }) },
+      { label: F.btnPhoto, fill: PAL.cream, go: () => this.scene.start('EpPhotoBookScene', { from: 'EpFinalScene' }) },
+      { label: F.btnCards, fill: PAL.paper, go: () => { this.scene.launch('GalleryScene', { from: 'EpFinalScene' }); this.scene.pause(); } },
       { label: F.btnPlan, fill: PAL.paper, go: () => this.showPlan() },
       { label: F.btnAgain, fill: PAL.paper, go: () => this.confirmAgain() }
     ];
 
     this.btns = rows.map((r, i) => {
-      const b = UI.button(this, W / 2, 574 + i * 62, W - 110, 52, r.label, r.go,
+      const b = UI.button(this, W / 2, 560 + i * 58, W - 110, 48, r.label, r.go,
         { size: FONT.small, fill: r.fill });
       b.setDepth(100).setAlpha(0);
       this.tweens.add({ targets: b, alpha: 1, duration: 600, delay: 150 + i * 180 });

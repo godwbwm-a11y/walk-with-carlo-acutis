@@ -59,7 +59,7 @@
       SeeFriendScene, AloneScene, MyPathScene,
       EpIntroScene, EpYardScene, EpDinnerScene, EpCarloScene,
       EpChurchScene, EpPrayerScene, EpPhotoScene, EpWalkScene,
-      EpPhotoBookScene, EpFinalScene,
+      EpPhotoBookScene, EpCreditsScene, EpFinalScene,
       PassScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene
     ]
   };

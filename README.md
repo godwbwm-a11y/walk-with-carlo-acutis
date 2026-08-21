@@ -308,6 +308,7 @@ DAY 5와 정확히 거울처럼 맞물립니다.
 | 14 | 사진 속 카를로 | 맨 뒤에 아주 작게. 확대해 봅니다. 고개를 들면 없습니다 |
 | 15 | 함께 걷는 길 | “Spicy?” — 모두: **“NO!”** |
 | 16 | 마지막 | 제목의 절반이 사라집니다. 《오늘, 걷습니다》 |
+| 17 | 엔딩 크레딧 | 밤하늘 위로 천천히 흘러갑니다. 길게 누르면 빨라집니다 |
 
 **점수도 순위도 승패도 없습니다.** 축구에는 골대가 없고, 제기는 몇 번 찼는지 세지 않으며,
 공깃돌이 굴러가면 여럿이 함께 줍습니다. 발음을 틀려도 “Almost!” 하고 다시 하면 됩니다.
@@ -315,6 +316,10 @@ DAY 5와 정확히 거울처럼 맞물립니다.
 에필로그에는 **새 말씀카드를 넣지 않았습니다.** 카드 시스템은 DAY 8의 `MY CARD` 에서
 이미 완성되었기 때문입니다. 에필로그가 남기는 것은 카드가 아니라 **사람**이고,
 마지막 수집품은 여행 노트 뒷표지에 붙는 **단체사진 한 장**입니다.
+
+마지막에는 **엔딩 크레딧**이 흐릅니다. 이 게임이 어떻게 만들어졌는지,
+그리고 “다음에는 당신이 만들어보세요” 라는 이야기입니다.
+크레딧의 `제작 : 바로 당신` 자리에는 에필로그에서 적어 둔 이름이 올라갑니다.
 
 카를로도 다시 주인공이 되지 않습니다. 한 문장만 남기고 물러납니다.
 
@@ -427,7 +432,8 @@ index.html            진입점 (스크립트 로드 순서 포함)
 css/style.css         노치·홈바 안전영역, 가로화면 안내, 로딩 화면
 js/main.js            Phaser 설정, 세로 고정, 확대 방지
 js/data/              config.js, day01.js ~ day08.js, epilogue.js(에필로그),
-                      collection.js(말씀), chat.js(채팅), carloday.js(카를로의 하루)
+                      credits.js(엔딩 크레딧), collection.js(말씀),
+                      chat.js(채팅), carloday.js(카를로의 하루)
 js/systems/           SaveSystem, AudioSystem, TextureFactory,
                       TextureDay2/3/5/6/7/8, TextureEpi, UI,
                       DialogueBox, Joystick, Collection, JourneyText(기록을 한 줄로),
@@ -452,7 +458,7 @@ js/scenes/day8/       Day8Morning, Day8Search, Day8Walk, Day8Church, Day8Beach,
                       Day8Review(DAY 1–8 여행 노트), Day8End
 js/scenes/epilogue/   EpiPhoto(단체사진 그리기), EpIntro, EpYard, EpDinner,
                       EpCarlo, EpChurch, EpPrayer, EpPhoto, EpWalk,
-                      EpPhotoBook(우리의 사진), EpFinal
+                      EpPhotoBook(우리의 사진), EpCredits(엔딩 크레딧), EpFinal
 js/scenes/minigames/  WaterPlant, HelpMom, Homework, Shelf,
                       MiracleMap, Fortress(대포), NightShare,
                       PrepareBag, Orange, Noise, HeavyBag,
