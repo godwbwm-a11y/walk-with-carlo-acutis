@@ -41,71 +41,91 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
     }
   }
 
-  /* ── 발 아래로 밀려오는 파도 ─────────────── */
+  /* ── 파도 앞에 선 사람 ─────────────────────
+     카메라는 사람 뒤에 있고, 그 앞으로 파도가 들어왔다 나갑니다. */
   buildWave() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.captionText = '파도가 발끝까지 왔다가 돌아간다.\n차갑지 않다. 꿈이라서 그런가.';
 
-    this.add.image(W / 2, 0, 'sky_night').setOrigin(0.5, 0).setDisplaySize(W, 200).setDepth(-10);
-    const g = this.add.graphics().setDepth(-9);
-    g.fillStyle(0x1d3a58, 1); g.fillRect(0, 190, W, 90);
-    g.fillStyle(0xa9b8ca, 1); g.fillRect(0, 280, W, H - 280);
-    g.fillStyle(0x93a4ba, 0.8); g.fillRect(0, 280, W, 26);
-    for (let i = 0; i < 320; i++) {
-      g.fillStyle(i % 3 === 0 ? 0xffffff : 0x7d8ea4, 0.18);
-      g.fillCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(292, H), Phaser.Math.FloatBetween(0.8, 2.2));
+    /* 하늘과 수평선 */
+    const SEA_TOP = 250;
+    this.add.image(W / 2, 0, 'sky_night').setOrigin(0.5, 0).setDisplaySize(W, SEA_TOP + 8).setDepth(-12);
+    for (let i = 0; i < 30; i++) {
+      const s = this.add.image(Phaser.Math.Between(6, W - 6), Phaser.Math.Between(20, SEA_TOP - 40), 'dot')
+        .setDepth(-11).setScale(Phaser.Math.FloatBetween(0.14, 0.36))
+        .setAlpha(Phaser.Math.FloatBetween(0.2, 0.75));
+      this.tweens.add({ targets: s, alpha: 0.1, duration: Phaser.Math.Between(1800, 3400), yoyo: true, repeat: -1 });
+    }
+    const dawn = this.add.image(W / 2, SEA_TOP, 'lamp_glow').setDepth(-11)
+      .setDisplaySize(W * 1.7, 180).setTint(0xffc79a).setAlpha(0.5);
+    this.tweens.add({ targets: dawn, alpha: 0.72, duration: 5000, yoyo: true, repeat: -1 });
+
+    /* 바다와 젖은 모래 */
+    const SAND_TOP = 470;
+    const g = this.add.graphics().setDepth(-10);
+    g.fillStyle(0x1d3a58, 1); g.fillRect(0, SEA_TOP, W, SAND_TOP - SEA_TOP);
+    g.fillStyle(0xe6c9a6, 0.22); g.fillRect(0, SEA_TOP, W, 10);
+    g.fillStyle(0x2f6b8f, 0.45); g.fillRect(0, SEA_TOP + 18, W, 40);
+    g.fillStyle(0xa9b8ca, 1); g.fillRect(0, SAND_TOP, W, H - SAND_TOP);
+    g.fillStyle(0x93a4ba, 0.75); g.fillRect(0, SAND_TOP, W, 26);
+    for (let i = 0; i < 300; i++) {
+      g.fillStyle(i % 3 === 0 ? 0xffffff : 0x7d8ea4, 0.16);
+      g.fillCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(SAND_TOP + 18, H - 4),
+        Phaser.Math.FloatBetween(0.8, 2.1));
     }
 
-    this.add.image(96, 470, 'shell').setScale(1.5).setDepth(4).setRotation(-0.3);
-    this.add.image(300, 640, 'shell').setScale(1.2).setDepth(4).setRotation(0.5);
+    /* 먼 바다의 잔물결 */
+    for (let i = 0; i < 7; i++) {
+      const y = SEA_TOP + 30 + i * 26;
+      const f = this.add.image(Phaser.Math.Between(40, W - 40), y, 'seafoam')
+        .setDisplaySize(Phaser.Math.Between(90, 220), 8)
+        .setAlpha(0.12 + i * 0.03).setDepth(-9);
+      this.tweens.add({
+        targets: f, x: f.x + Phaser.Math.Between(-40, 40), alpha: 0.05,
+        duration: Phaser.Math.Between(3000, 5200), yoyo: true, repeat: -1, delay: i * 240
+      });
+    }
 
-    /* 신발 두 짝 — 내려다본 내 발 */
-    const feetY = H * 0.66;
-    [[-28, -0.13], [28, 0.13]].forEach((cfg) => {
-      const s = this.add.graphics().setDepth(10);
-      s.save();
-      s.translateCanvas(W / 2 + cfg[0], feetY);
-      s.rotateCanvas(cfg[1]);
-      s.fillStyle(0x000000, 0.13); s.fillEllipse(0, 36, 52, 16);
-      s.fillStyle(0x3f5a80, 1); s.fillRoundedRect(-11, -54, 22, 26, 8);      // 바짓단
-      s.fillStyle(0xf6d3b0, 1); s.fillRoundedRect(-9, -34, 18, 14, 6);        // 발목
-      s.fillStyle(0xf3f6fa, 1); s.fillRoundedRect(-21, -26, 42, 62, 18);      // 신발
-      s.fillStyle(0xe0e6ee, 1); s.fillRoundedRect(-21, 16, 42, 20, 10);       // 밑창
-      s.fillStyle(0xd7dee8, 1); s.fillRoundedRect(-13, -22, 26, 20, 9);       // 혀
-      s.lineStyle(2.4, 0xc3ccd8, 1);
-      s.lineBetween(-12, -14, 12, -6); s.lineBetween(12, -14, -12, -6);
-      s.lineBetween(-12, -4, 12, 4); s.lineBetween(12, -4, -12, 4);
-      s.restore();
-    });
+    this.add.image(64, 668, 'shell').setScale(1.4).setDepth(4).setRotation(-0.3);
+    this.add.image(326, 690, 'shell').setScale(1.2).setDepth(4).setRotation(0.5);
 
-    /* 밀려왔다 밀려가는 물 */
-    const water = this.add.graphics().setDepth(20);
-    this.waterY = H;
+    /* 뒤에서 바라본 나 — 온몸이 다 보입니다 */
+    const feetY = 626;
+    this.meShadow = this.add.image(W / 2, feetY + 6, 'shadow').setDepth(28).setAlpha(0.42).setScale(1.5);
+    this.me = this.add.image(W / 2, feetY, 'player_back').setOrigin(0.5, 0.94)
+      .setDepth(30).setScale(2.6);
+    this.tweens.add({ targets: this.me, y: feetY - 5, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    /* 밀려왔다 밀려가는 물 — 사람 앞을 지나갑니다 */
+    const water = this.add.graphics().setDepth(40);
+    this.waterY = H + 40;
     this.drawWater = (y) => {
       water.clear();
-      water.fillStyle(0x6f93b4, 0.55);
-      water.fillRect(0, y, W, H - y + 10);
-      water.fillStyle(0x9fc0d8, 0.5);
-      water.fillRect(0, y, W, 16);
-      water.fillStyle(0xffffff, 0.75);
-      for (let i = 0; i < 34; i++) {
-        const x = (i * 17 + (y * 0.6) % 34);
+      if (y > H) return;
+      water.fillStyle(0x6f93b4, 0.5);
+      water.fillRect(0, y, W, H - y + 20);
+      water.fillStyle(0x9fc0d8, 0.45);
+      water.fillRect(0, y, W, 18);
+      water.fillStyle(0xffffff, 0.7);
+      for (let i = 0; i < 32; i++) {
+        const x = (i * 18 + (y * 0.6) % 36);
         water.fillCircle(x, y + Math.sin(i * 1.7 + y * 0.05) * 5, Phaser.Math.FloatBetween(3, 7));
       }
-      water.fillStyle(0xffffff, 0.35);
+      water.fillStyle(0xffffff, 0.32);
       water.fillRect(0, y - 4, W, 5);
-      water.fillStyle(0xffffff, 0.16);                       // 잔물결
+      water.fillStyle(0xffffff, 0.14);
       for (let k = 1; k < 5; k++) {
-        const ly = y + k * 28 + Math.sin(k + y * 0.03) * 6;
+        const ly = y + k * 30 + Math.sin(k + y * 0.03) * 6;
         if (ly > H) break;
         water.fillRect(20 + k * 14, ly, W - 60 - k * 20, 2);
       }
     };
-    this.drawWater(H);
+    this.drawWater(this.waterY);
 
+    /* 발목까지 왔다가 다시 물러갑니다 */
     this.tweens.add({
-      targets: this, waterY: feetY - 6, duration: 3000, ease: 'Sine.easeInOut',
-      yoyo: true, repeat: -1, hold: 500, repeatDelay: 900,
+      targets: this, waterY: feetY - 10, duration: 3200, ease: 'Sine.easeInOut',
+      yoyo: true, repeat: -1, hold: 700, repeatDelay: 1100,
       onUpdate: () => this.drawWater(this.waterY),
       onYoyo: () => AudioSystem.wave(),
       onRepeat: () => AudioSystem.wave()
@@ -113,8 +133,8 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
 
     /* 만지면 물결이 퍼집니다 */
     this.input.on('pointerdown', (p) => {
-      if (p.y < 260 || p.y > GAME.HEIGHT - 150) return;
-      const ring = this.add.circle(p.x, p.y, 6).setStrokeStyle(2, 0xffffff, 0.8).setDepth(25);
+      if (p.y < SEA_TOP || p.y > GAME.HEIGHT - 150) return;
+      const ring = this.add.circle(p.x, p.y, 6).setStrokeStyle(2, 0xffffff, 0.8).setDepth(45);
       this.tweens.add({
         targets: ring, radius: 54, alpha: 0, duration: 900,
         onUpdate: () => ring.setRadius(ring.radius),
@@ -302,14 +322,14 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
   }
 
   photo() {
-    this.scene.launch('PhotoMode', { from: 'VistaScene', place: this.placeName() });
+    /* 여기서는 화면 전체가 그대로 한 장이 됩니다 */
+    this.scene.launch('PhotoMode', {
+      from: 'VistaScene', place: this.placeName(), full: true
+    });
     this.scene.pause();
   }
 
-  placeName() {
-    return this.kind === 'wave' ? '꿈속 해변, 파도' :
-           this.kind === 'sea' ? '꿈속 해변, 바위 위' : '꿈속 해변, 은하수';
-  }
+  placeName() { return '꿈 속 바닷가'; }
 
   close() {
     const from = this.from;

@@ -1,4 +1,4 @@
-/* DAY 6 · 철야기도와 성체조배 — 조작도 점수도 없습니다. 그리고 별 아래의 대화. */
+/* DAY 6 · 밤샘기도와 성체조배 — 조작도 점수도 없습니다. 그리고 별 아래의 대화. */
 
 window.Day6VigilScene = class Day6VigilScene extends Phaser.Scene {
   constructor() { super('Day6VigilScene'); }
@@ -81,7 +81,7 @@ window.Day6VigilScene = class Day6VigilScene extends Phaser.Scene {
     Collection.award(this, 'c13', () => this.prayer());
   }
 
-  /* 철야 기도 */
+  /* 밤샘기도 */
   prayer() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const veil = this.add.graphics().setDepth(800);

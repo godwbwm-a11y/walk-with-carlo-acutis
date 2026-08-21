@@ -52,9 +52,10 @@ window.Day7SchoolScene = class Day7SchoolScene extends WorldScene {
       this.tweens.add({ targets: img, y: p[1] - 3, duration: 900 + Math.random() * 400, yoyo: true, repeat: -1 });
     });
 
-    /* 카를로는 교문 앞까지만 */
+    /* 카를로는 교문 앞까지 함께 걷습니다 */
     this.carlo = this.add.image(300, 660, 'carlo_front').setDepth(660).setScale(1.34);
-    this.tweens.add({ targets: this.carlo, y: 656, duration: 860, yoyo: true, repeat: -1 });
+    this.carloShadow = this.add.image(300, 664, 'shadow').setDepth(659).setAlpha(0.45).setScale(1.2);
+    this.carloWalks = true;
     this.addInteractable({
       id: 'd7_carlo', x: 300, y: 694, label: '카를로', range: 76, priority: 3, markerY: 596,
       onInteract: () => this.talkCarlo()
@@ -104,7 +105,7 @@ window.Day7SchoolScene = class Day7SchoolScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (!this.flags.gate) { this.dialogue.say([{ s: '카를로', t: '학교 앞까지 같이 가자.' }]); return; }
+    if (!this.flags.gate) { this.dialogue.say([{ s: '카를로', t: '같이 가자. 교문까지만.' }]); return; }
     this.dialogue.say([{ s: '카를로', t: '난 여기서 기다릴게. 잘 살아봐.' }]);
   }
 
@@ -118,7 +119,8 @@ window.Day7SchoolScene = class Day7SchoolScene extends WorldScene {
     const mission = SaveSystem.get('reflections.day6Mission', null);
     const after = () => {
       this.dialogue.play(DAY07.route.gate, () => {
-        this.tweens.add({ targets: this.carlo, alpha: 0.35, duration: 900 });
+        this.carloWalks = false;                 /* 교문 앞에서 멈춥니다 */
+        this.tweens.add({ targets: [this.carlo, this.carloShadow], alpha: 0.35, duration: 900 });
         this.enableInteractable('d7_friend');
         this.enableInteractable('d7_board');
         this.objective.setText(DAY07.school.objective);
@@ -188,5 +190,24 @@ window.Day7SchoolScene = class Day7SchoolScene extends WorldScene {
     this.goScene('Day7ComputerScene', {}, [30, 40, 60]);
   }
 
-  update(time, delta) { this.updateWorld(time, delta); }
+  update(time, delta) {
+    this.updateWorld(time, delta);
+
+    /* 교문까지는 카를로가 조금 뒤에서 함께 걷습니다 */
+    if (this.carloWalks && this.player && !this.inputLocked) {
+      const tx = Phaser.Math.Clamp(this.player.x - (this.player.flipX ? -52 : 52), 60, 980);
+      const ty = this.player.y + 10;
+      const d = Phaser.Math.Distance.Between(this.carlo.x, this.carlo.y, tx, ty);
+      if (d > 26) {
+        this.carlo.x = Phaser.Math.Linear(this.carlo.x, tx, 0.05);
+        this.carlo.y = Phaser.Math.Linear(this.carlo.y, ty, 0.05);
+        this.carlo.setTexture(d > 64 ? 'carlo_back' : 'carlo_front');
+        this.carlo.setFlipX(tx < this.carlo.x);
+      }
+      this.carlo.setDepth(this.carlo.y);
+      this.carloShadow.setPosition(this.carlo.x, this.carlo.y + 4).setDepth(this.carlo.y - 1);
+      const it = this.interactables.find(i => i.id === 'd7_carlo');
+      if (it) { it.x = this.carlo.x; it.y = this.carlo.y + 34; if (it.marker) it.marker.setPosition(this.carlo.x, this.carlo.y - 64); }
+    }
+  }
 };

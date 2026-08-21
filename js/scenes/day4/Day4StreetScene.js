@@ -187,28 +187,17 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
   }
 
   freePrayer(veil, t) {
-    const W = GAME.WIDTH;
-    t.setText(DAY04.prayer.moreHead);
-    t.setY(226);
     if (this.strengthText) this.strengthText.setAlpha(0.5);
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 346, width: W - 76, height: 130,
-      placeholder: DAY04.prayer.placeholder, depth: 1200
-    });
-    if (!field) { this.bye(veil, t); return; }
-
-    const finish = (save) => {
-      if (save) { const v = field.value(); if (v) SaveSystem.set('reflections.day4Prayer', v); }
-      field.destroy(); a.destroy(); b.destroy();
+    if (!TextInput.supported(this)) { this.bye(veil, t); return; }
+    TextInput.ask(this, {
+      question: DAY04.prayer.moreHead,
+      placeholder: DAY04.prayer.placeholder,
+      okLabel: DAY04.prayer.saveBtn,
+      skipLabel: DAY04.prayer.skipBtn
+    }, (v) => {
+      if (v) SaveSystem.set('reflections.day4Prayer', v);
       this.bye(veil, t);
-    };
-    const a = UI.button(this, W / 2, 472, 260, 58, DAY04.prayer.saveBtn, () => finish(true),
-      { size: FONT.small, fill: PAL.sun });
-    const b = UI.button(this, W / 2, 542, 260, 52, DAY04.prayer.skipBtn, () => finish(false),
-      { size: FONT.small });
-    [a, b].forEach(x => x.setDepth(210));
-    this.time.delayedCall(250, () => field.focus());
+    });
   }
 
   bye(veil, t) {

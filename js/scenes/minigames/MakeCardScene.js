@@ -103,29 +103,21 @@ window.MakeCardScene = class MakeCardScene extends MiniGameScene {
     layer.add(this.add.text(W / 2, 200, DAY07.make.step2, UI.style(20, PAL.cream)).setOrigin(0.5));
     this.stage.push(layer);
 
-    const field = TextInput.open(this, {
-      x: W / 2, y: 320, width: W - 76, height: 110,
-      placeholder: DAY07.make.placeholder, depth: 1200
-    });
+    layer.destroy();
+    this.stage.pop();
+    if (!TextInput.supported(this)) { this.step2(); return; }
 
-    const done = (save) => {
-      if (save && field) { const v = field.value(); if (v) this.made.message = v; }
-      if (field) field.destroy();
+    TextInput.ask(this, {
+      question: DAY07.make.step2,
+      placeholder: DAY07.make.placeholder,
+      skipLabel: '고르는 걸로 할래요',
+      height: 130,
+      backHead: '이렇게 적었습니다'
+    }, (v) => {
+      if (v) this.made.message = v;
       if (!this.made.message) { this.step2(); return; }
       this.step3();
-    };
-
-    if (field) {
-      layer.add(UI.button(this, W / 2, 448, 260, 58, '적었어요', () => done(true),
-        { size: FONT.label, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 522, 260, 52, '고르는 걸로 할래요', () => {
-        field.destroy(); this.step2();
-      }, { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 400, 260, 58, '돌아가기', () => this.step2(),
-        { size: FONT.label, fill: PAL.sun }));
-    }
+    });
   }
 
   /* 3 · 누구에게 */

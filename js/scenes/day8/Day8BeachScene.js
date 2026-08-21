@@ -123,38 +123,15 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   faithWrite() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
     if (this.faithLayer) { this.faithLayer.destroy(); this.faithLayer = null; }
-    const layer = this.add.container(0, 0).setDepth(800);
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x101a2e, 0.94); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, 200, DAY08.faith.q, UI.style(22, PAL.cream, {
-      align: 'center', wordWrap: { width: W - 60 }
-    })).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 330, width: W - 76, height: 120, placeholder: DAY08.faith.placeholder, depth: 1200
+    if (!TextInput.supported(this)) { this.faith(); return; }
+    TextInput.ask(this, {
+      question: DAY08.faith.q,
+      placeholder: DAY08.faith.placeholder,
+      skipLabel: '고르는 걸로 할래요'
+    }, (v) => {
+      if (v) this.faithPick(v); else this.faith();
     });
-    const done = (save) => {
-      let v = null;
-      if (save && field) v = field.value();
-      if (field) field.destroy();
-      layer.destroy();
-      this.faithPick(v || '아직 잘 모르겠다.');
-    };
-    if (field) {
-      layer.add(UI.button(this, W / 2, 456, 260, 58, '적었어요', () => done(true),
-        { size: FONT.label, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 530, 260, 54, '고르는 걸로 할래요', () => {
-        field.destroy(); layer.destroy(); this.faith();
-      }, { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 400, 260, 58, '돌아가기', () => {
-        layer.destroy(); this.faith();
-      }, { size: FONT.label, fill: PAL.sun }));
-    }
   }
 
   faithPick(answer) {
@@ -259,36 +236,15 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   planWrite() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
     if (this.planLayer) { this.planLayer.destroy(); this.planLayer = null; }
-    const layer = this.add.container(0, 0).setDepth(800);
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x101a2e, 0.95); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, 200, DAY08.plan.ask, UI.style(21, PAL.cream, {
-      align: 'center', wordWrap: { width: W - 70 }
-    })).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 320, width: W - 76, height: 110, placeholder: DAY08.plan.placeholder, depth: 1200
-    });
-    const done = (save) => {
-      let v = null;
-      if (save && field) v = field.value();
-      if (field) field.destroy();
-      layer.destroy();
+    if (!TextInput.supported(this)) { this.planList(); return; }
+    TextInput.ask(this, {
+      question: DAY08.plan.ask,
+      placeholder: DAY08.plan.placeholder,
+      skipLabel: '고르는 걸로 할래요'
+    }, (v) => {
       if (v) this.planPick(v); else this.planList();
-    };
-    if (field) {
-      layer.add(UI.button(this, W / 2, 450, 260, 58, '적었어요', () => done(true),
-        { size: FONT.label, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 524, 260, 54, '고르는 걸로 할래요', () => done(false),
-        { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 400, 260, 58, '돌아가기', () => done(false),
-        { size: FONT.label, fill: PAL.sun }));
-    }
+    });
   }
 
   planPick(plan) {
@@ -380,31 +336,18 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   }
 
   prayMine() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const layer = this.add.container(0, 0).setDepth(830);
-    layer.add(this.add.text(W / 2, 200, '예수님,', UI.style(23, PAL.cream)).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 330, width: W - 76, height: 140, placeholder: DAY08.prayer.placeholder, depth: 1200
+    if (!TextInput.supported(this)) { this.prayLines(); return; }
+    TextInput.ask(this, {
+      question: '예수님,',
+      placeholder: DAY08.prayer.placeholder,
+      okLabel: '아멘.',
+      skipLabel: '기도문으로 할래요',
+      height: 150,
+      backHead: '이렇게 기도했습니다'
+    }, (v) => {
+      if (v) SaveSystem.set('reflections.day8Prayer', v);
+      if (v) this.prayEnd(); else this.prayLines();
     });
-    const done = (save) => {
-      if (save && field) { const v = field.value(); if (v) SaveSystem.set('reflections.day8Prayer', v); }
-      if (field) field.destroy();
-      layer.destroy();
-      this.prayEnd();
-    };
-    if (field) {
-      layer.add(UI.button(this, W / 2, 470, 260, 58, '아멘.', () => done(true),
-        { size: FONT.label, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 544, 260, 54, '기도문으로 할래요', () => {
-        field.destroy(); layer.destroy(); this.prayLines();
-      }, { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 400, 260, 58, '기도문으로 할래요', () => {
-        layer.destroy(); this.prayLines();
-      }, { size: FONT.label, fill: PAL.sun }));
-    }
   }
 
   prayStay() {

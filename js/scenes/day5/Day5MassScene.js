@@ -62,7 +62,7 @@ window.Day5MassScene = class Day5MassScene extends Phaser.Scene {
 
     const stageBox = this.add.container(W / 2, H * 0.42).setDepth(20);
     this.stageBox = stageBox;
-    const label = this.add.text(W / 2, H * 0.68, '', UI.style(19, '#dfd2bd', {
+    const label = this.add.text(W / 2, H * 0.68, '', UI.style(FONT.body, PAL.dimWarm, {
       align: 'center', wordWrap: { width: W - 70 }
     })).setOrigin(0.5).setDepth(30).setAlpha(0);
 
@@ -76,12 +76,13 @@ window.Day5MassScene = class Day5MassScene extends Phaser.Scene {
       art.setAlpha(0);
       this.tweens.add({ targets: [art, label], alpha: 1, duration: 700 });
       i++;
-      this.time.delayedCall(1500, () => {
+      /* 개막미사도 누를 때마다 한 장씩 넘어갑니다 */
+      UI.tapNext(this, () => {
         this.tweens.add({
           targets: [art, label], alpha: 0, duration: 600,
           onComplete: () => { art.destroy(); next(); }
         });
-      });
+      }, { depth: 940, delay: 600 });
     };
     this.time.delayedCall(700, next);
   }

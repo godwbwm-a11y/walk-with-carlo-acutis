@@ -1,4 +1,4 @@
-/* DAY 6 에서 더 필요한 그림 — 순례길, 철야 들판, 돗자리와 침낭, 새벽 하늘. */
+/* DAY 6 에서 더 필요한 그림 — 순례길, 밤샘기도 들판, 돗자리와 침낭, 새벽 하늘. */
 
 TextureFactory.createDay6 = function (scene) {
   const make = TextureFactory.make;
@@ -99,7 +99,7 @@ TextureFactory.createDay6 = function (scene) {
     g.fillStyle(0xd7a04f, 1); g.fillRect(0, 14, 4, 12);
   });
 
-  /* ── 철야 장소 ─────────────────────────────── */
+  /* ── 밤샘기도 장소 ─────────────────────────────── */
   make(scene, 'wyd_cross', 90, 200, function (g) {
     g.fillStyle(0x8a6340, 1);
     g.fillRoundedRect(37, 0, 16, 200, 4);

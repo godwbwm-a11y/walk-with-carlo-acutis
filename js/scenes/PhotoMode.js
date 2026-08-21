@@ -7,6 +7,8 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     data = data || {};
     this.from = data.from;
     this.place = data.place || '';
+    /* 어떤 자리에서는 화면 전체가 그대로 한 장이 됩니다 */
+    this.full = !!data.full;
     this.shot = null;
     /* 이 장면은 다시 열릴 때 같은 객체를 재사용하므로 지난 흔적을 지웁니다 */
     this.moveZone = null; this.handle = null; this.handleIcon = null;
@@ -17,7 +19,9 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     this.maxW = W - 30; this.maxH = 430;
     this.topLimit = 84; this.bottomLimit = H - 214;
 
-    this.frame = new Phaser.Geom.Rectangle(W / 2 - 150, 210, 300, 230);
+    this.frame = this.full
+      ? new Phaser.Geom.Rectangle(0, 0, W, H)
+      : new Phaser.Geom.Rectangle(W / 2 - 150, 210, 300, 230);
 
     this.mask = this.add.graphics().setDepth(10);
     this.border = this.add.graphics().setDepth(11);
@@ -47,10 +51,19 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     /* 프레임에 맞춰 드래그 영역과 손잡이를 자리잡게 합니다 */
     this.redraw();
 
-    this.title = this.add.text(W / 2, 48, '사진 찍기', UI.style(21, PAL.cream)).setOrigin(0.5).setDepth(15);
-    this.hint = this.add.text(W / 2, H - 190, '프레임을 끌어 옮기고, 모서리를 잡아 크기를 바꿔보세요.',
-      UI.style(FONT.small, '#e2d6c2', { align: 'center', wordWrap: { width: W - 60 } }))
-      .setOrigin(0.5).setDepth(15).setAlpha(0.9);
+    this.title = this.add.text(W / 2, 48, '사진 찍기', UI.style(FONT.body, PAL.cream)).setOrigin(0.5).setDepth(15);
+    this.hint = this.add.text(W / 2, H - 190,
+      this.full ? '지금 보이는 화면 그대로 한 장이 됩니다.'
+                : '프레임을 끌어 옮기고, 모서리를 잡아 크기를 바꿔보세요.',
+      UI.style(FONT.small, PAL.dimWarm, { align: 'center', wordWrap: { width: W - 60 } }))
+      .setOrigin(0.5).setDepth(15).setAlpha(0.95);
+
+    /* 화면 전체를 찍는 자리에서는 프레임을 만질 필요가 없습니다 */
+    if (this.full) {
+      this.moveZone.disableInteractive().setVisible(false);
+      this.handle.disableInteractive().setVisible(false);
+      this.handleIcon.setVisible(false);
+    }
 
     this.shootBtn = UI.circleButton(this, W / 2, H - 116, 42, '●', () => this.take(), { size: 26, color: PAL.clay });
     this.shootBtn.setDepth(15);
@@ -71,14 +84,17 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
   redraw() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, f = this.frame;
     this.mask.clear();
-    this.mask.fillStyle(0x0d1524, 0.72);
-    this.mask.fillRect(0, 0, W, f.y);
-    this.mask.fillRect(0, f.y + f.height, W, H - f.y - f.height);
-    this.mask.fillRect(0, f.y, f.x, f.height);
-    this.mask.fillRect(f.x + f.width, f.y, W - f.x - f.width, f.height);
+    if (!this.full) {
+      this.mask.fillStyle(0x0d1524, 0.72);
+      this.mask.fillRect(0, 0, W, f.y);
+      this.mask.fillRect(0, f.y + f.height, W, H - f.y - f.height);
+      this.mask.fillRect(0, f.y, f.x, f.height);
+      this.mask.fillRect(f.x + f.width, f.y, W - f.x - f.width, f.height);
+    }
 
     const b = this.border;
     b.clear();
+    if (this.full) { this.placeHandles(); return; }
     b.lineStyle(2, 0xfff8ec, 0.85);
     b.strokeRect(f.x, f.y, f.width, f.height);
     b.lineStyle(4, HEX(PAL.sun), 0.95);
@@ -92,6 +108,11 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
     b.lineBetween(f.x, f.y + f.height / 3, f.x + f.width, f.y + f.height / 3);
     b.lineBetween(f.x, f.y + f.height * 2 / 3, f.x + f.width, f.y + f.height * 2 / 3);
 
+    this.placeHandles();
+  }
+
+  placeHandles() {
+    const f = this.frame;
     if (this.moveZone && this.moveZone.input) {
       this.moveZone.setPosition(f.x, f.y).setSize(f.width, f.height);
       this.moveZone.input.hitArea.setSize(f.width, f.height);
@@ -103,9 +124,11 @@ window.PhotoMode = class PhotoMode extends Phaser.Scene {
   }
 
   setUI(on) {
-    [this.mask, this.border, this.handle, this.handleIcon, this.title, this.hint,
+    [this.mask, this.border, this.title, this.hint,
      this.shootBtn, this.closeBtn, this.albumBtn, this.countText].forEach(o => { if (o) o.setVisible(on); });
-    if (this.moveZone) this.moveZone.setVisible(on);
+    if (this.handle) this.handle.setVisible(on && !this.full);
+    if (this.handleIcon) this.handleIcon.setVisible(on && !this.full);
+    if (this.moveZone) this.moveZone.setVisible(on && !this.full);
   }
 
   take() {

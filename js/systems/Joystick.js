@@ -18,6 +18,11 @@ window.Joystick = class Joystick {
       UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.75);
 
     this.cursors = scene.input.keyboard ? scene.input.keyboard.createCursorKeys() : null;
+    /* PC — 방향키와 WASD 둘 다 */
+    this.wasd = scene.input.keyboard ? scene.input.keyboard.addKeys('W,A,S,D') : null;
+    if (window.IS_DESKTOP && this.hint) {
+      this.hint.setText('방향키 또는 WASD 로 걸어보세요');
+    }
 
     scene.input.on('pointerdown', this._down, this);
     scene.input.on('pointermove', this._move, this);
@@ -89,13 +94,15 @@ window.Joystick = class Joystick {
   read() {
     if (this.scene.inputLocked) return { x: 0, y: 0 };
     if (this.pointerId !== null) return { x: this.vector.x, y: this.vector.y };
-    if (this.cursors) {
+    if (this.cursors || this.wasd) {
+      const c = this.cursors, k = this.wasd;
       let x = 0, y = 0;
-      if (this.cursors.left.isDown) x = -1;
-      else if (this.cursors.right.isDown) x = 1;
-      if (this.cursors.up.isDown) y = -1;
-      else if (this.cursors.down.isDown) y = 1;
+      if ((c && c.left.isDown) || (k && k.A.isDown)) x = -1;
+      else if ((c && c.right.isDown) || (k && k.D.isDown)) x = 1;
+      if ((c && c.up.isDown) || (k && k.W.isDown)) y = -1;
+      else if ((c && c.down.isDown) || (k && k.S.isDown)) y = 1;
       if (x || y) {
+        this.hideHint();
         const l = Math.sqrt(x * x + y * y);
         return { x: x / l, y: y / l };
       }

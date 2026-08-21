@@ -36,43 +36,14 @@ window.Day3NoteScene = class Day3NoteScene extends Phaser.Scene {
   }
 
   ask(question, savePath, onDone) {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const layer = this.add.container(0, 0).setDepth(60);
-
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x101a2e, 0.88); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-
-    layer.add(this.add.text(W / 2, 192, question, UI.style(21, PAL.cream, {
-      align: 'center', wordWrap: { width: W - 70 }, lineSpacing: 8
-    })).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 326, width: W - 76, height: 130,
-      placeholder: DAY03.note.placeholder, depth: 1200
-    });
-
-    const done = (save) => {
-      if (save && field) {
-        const v = field.value();
-        if (v) SaveSystem.set(savePath, v);
-      }
-      if (field) field.destroy();
-      layer.destroy();
+    TextInput.ask(this, {
+      question: question,
+      placeholder: DAY03.note.placeholder,
+      skipLabel: DAY03.note.skip
+    }, (v) => {
+      if (v) SaveSystem.set(savePath, v);
       onDone();
-    };
-
-    if (field) {
-      const ok = UI.button(this, W / 2, 452, 260, 60, '적었어요', () => done(true),
-        { size: FONT.label, fill: PAL.sun });
-      const skip = UI.button(this, W / 2, 526, 260, 54, DAY03.note.skip, () => done(false),
-        { size: FONT.small });
-      layer.add([ok, skip]);
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 400, 260, 60, '넘어가기', () => done(false),
-        { size: FONT.label, fill: PAL.sun }));
-    }
+    });
   }
 
   practice() {

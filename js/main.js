@@ -16,8 +16,10 @@
     },
     render: {
       antialias: true,
-      roundPixels: true,
-      powerPreference: 'low-power'      // 저사양 기기 배려
+      antialiasGL: true,
+      roundPixels: false,               // 크게 늘려 보일 때 글자가 뭉개지지 않도록
+      mipmapFilter: 'LINEAR_MIPMAP_LINEAR',
+      powerPreference: 'high-performance'
     },
     fps: { target: 60, min: 30 },
     physics: {
@@ -84,10 +86,19 @@
     }
   }
 
-  /* 가로 화면 안내 */
+  /* PC 인지 손에 든 기기인지 — PC 에서는 가로 화면이 당연하므로 안내하지 않습니다 */
+  const isDesktop = (function () {
+    const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 1);
+    return !coarse && !touch;
+  })();
+  window.IS_DESKTOP = isDesktop;
+  if (isDesktop) document.body.classList.add('desktop');
+
+  /* 가로 화면 안내 (손에 든 기기에서만) */
   const guard = document.getElementById('rotate-guard');
   function checkOrientation() {
-    const landscape = window.innerWidth > window.innerHeight * 1.08;
+    const landscape = !isDesktop && window.innerWidth > window.innerHeight * 1.08;
     if (guard) guard.classList.toggle('show', landscape);
     if (game && game.scene) {
       game.scene.scenes.forEach(function (s) {

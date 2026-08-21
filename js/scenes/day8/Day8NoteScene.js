@@ -92,35 +92,17 @@ window.Day8NoteScene = class Day8NoteScene extends Phaser.Scene {
 
   /* 마지막 질문 — 적지 않아도 됩니다 */
   lastQuestion(scrim) {
-    const W = GAME.WIDTH, H = GAME.HEIGHT, N = DAY08.note;
-    const layer = this.add.container(0, 0).setDepth(60);
-    layer.add(this.add.text(W / 2, 200, N.lastQ, UI.style(21, PAL.cream, {
-      align: 'center', wordWrap: { width: W - 70 }, lineSpacing: 8
-    })).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 336, width: W - 76, height: 130, placeholder: N.placeholder, depth: 1200
-    });
-
-    const done = (save) => {
-      if (save && field) { const v = field.value(); if (v) SaveSystem.set('reflections.day8Walk', v); }
-      if (field) field.destroy();
-      layer.destroy();
-      scrim.destroy();
+    const N = DAY08.note;
+    TextInput.ask(this, {
+      question: N.lastQ,
+      placeholder: N.placeholder,
+      skipLabel: N.skip
+    }, (v) => {
+      if (v) SaveSystem.set('reflections.day8Walk', v);
+      if (scrim) scrim.destroy();
       AudioSystem.chime();
       this.time.delayedCall(300, () => this.album());
-    };
-
-    if (field) {
-      layer.add(UI.button(this, W / 2, 466, 260, 60, '적었어요', () => done(true),
-        { size: FONT.label, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 540, 260, 54, N.skip, () => done(false),
-        { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 420, 260, 60, '넘어가기', () => done(false),
-        { size: FONT.label, fill: PAL.sun }));
-    }
+    });
   }
 
   album() {

@@ -96,13 +96,25 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
   }
 
   createActionButton() {
-    const b = UI.circleButton(this, GAME.WIDTH - 62, GAME.HEIGHT - 108, 40, '', () => {
+    const b = UI.circleButton(this, GAME.WIDTH - 64, GAME.HEIGHT - 112, 46, '', () => {
       this.tryInteract();
     }, { size: FONT.small, fill: PAL.cream });
     b.setDepth(880).setScrollFactor(0).setVisible(false);
-    this.actionLabel = this.add.text(GAME.WIDTH - 62, GAME.HEIGHT - 108, '살펴보기',
-      UI.style(FONT.small, PAL.ink, { align: 'center' })).setOrigin(0.5).setDepth(885).setScrollFactor(0).setVisible(false);
+    this.actionLabel = this.add.text(GAME.WIDTH - 64, GAME.HEIGHT - 112, '살펴보기',
+      UI.style(FONT.small, PAL.ink, { align: 'center', wordWrap: { width: 84 } }))
+      .setOrigin(0.5).setDepth(885).setScrollFactor(0).setVisible(false);
     this.actionBtn = b;
+
+    /* PC — 스페이스·엔터로도 살펴봅니다 */
+    if (this.input.keyboard) {
+      const keys = this.input.keyboard.addKeys('SPACE,ENTER,E');
+      let held = false;
+      this.events.on('update', () => {
+        const down = keys.SPACE.isDown || keys.ENTER.isDown || keys.E.isDown;
+        if (down && !held && !this.inputLocked && this.nearTarget) this.tryInteract();
+        held = down;
+      });
+    }
     return b;
   }
 

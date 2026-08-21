@@ -156,49 +156,33 @@ window.Day8EndScene = class Day8EndScene extends Phaser.Scene {
     this.time.delayedCall(instant ? 100 : 4200, () => this.buttons());
   }
 
-  /* 다음 날 버튼은 없습니다 */
+  /* 여기서 기록을 지우지 않습니다. 걸어온 날은 그대로 남습니다. */
   buttons() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, E = DAY08.end;
 
-    const note = UI.button(this, W / 2, H * 0.68, W - 100, 62, E.noteBtn, () => {
-      UI.fadeOut(this, 500, () => this.scene.start('Day8ReviewScene', { from: 'Day8EndScene' }));
+    const epi = UI.button(this, W / 2, H * 0.66, W - 100, 64, '에필로그 열기', () => {
+      SaveSystem.checkpoint('EpIntroScene', {});
+      UI.fadeOut(this, 700, () => this.scene.start('EpIntroScene'));
     }, { size: FONT.label, fill: PAL.sun });
 
-    const box = UI.button(this, W / 2, H * 0.68 + 76, W - 100, 56, '보관함', () => {
-      this.scene.launch('GalleryScene', { from: 'Day8EndScene' });
-      this.scene.pause();
+    const note = UI.button(this, W / 2, H * 0.66 + 78, W - 100, 58, E.noteBtn, () => {
+      UI.fadeOut(this, 500, () => this.scene.start('Day8ReviewScene', { from: 'Day8EndScene' }));
     }, { size: FONT.small, fill: PAL.cream });
 
-    const again = UI.button(this, W / 2, H * 0.68 + 146, W - 100, 56, E.againBtn, () => {
-      this.confirmAgain();
+    const box = UI.button(this, W / 2, H * 0.66 + 148, W - 100, 56, '보관함', () => {
+      this.scene.launch('GalleryScene', { from: 'Day8EndScene' });
+      this.scene.pause();
     }, { size: FONT.small });
 
-    [note, box, again].forEach((b, i) => {
+    const home = UI.button(this, W / 2, H * 0.66 + 216, W - 100, 56, '처음 화면으로', () => {
+      SaveSystem.set('checkpoint', null);
+      UI.fadeOut(this, 700, () => this.scene.start('TitleScene'));
+    }, { size: FONT.small });
+
+    [epi, note, box, home].forEach((b, i) => {
       b.setDepth(80).setAlpha(0);
-      this.tweens.add({ targets: b, alpha: 1, duration: 700, delay: 200 + i * 250 });
+      this.tweens.add({ targets: b, alpha: 1, duration: 700, delay: 200 + i * 220 });
     });
-    this.btns = [note, box, again];
-  }
-
-  /* 기록을 지우는 일이므로 한 번 더 여쭙습니다 */
-  confirmAgain() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const layer = this.add.container(0, 0).setDepth(400);
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x090c14, 0.94); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, H * 0.36, '처음부터 다시 걸을까요?', UI.style(22, PAL.cream))
-      .setOrigin(0.5));
-    layer.add(this.add.text(W / 2, H * 0.43,
-      '지금까지 적은 노트와 모은 말씀은\n모두 지워집니다.',
-      UI.style(FONT.small, '#cbbfae', { align: 'center', lineSpacing: 7 })).setOrigin(0.5));
-
-    layer.add(UI.button(this, W / 2, H * 0.56, 260, 60, '네, 다시 걷겠습니다', () => {
-      SaveSystem.reset();
-      UI.fadeOut(this, 800, () => this.scene.start('TitleScene'));
-    }, { size: FONT.label, fill: PAL.sun }));
-    layer.add(UI.button(this, W / 2, H * 0.56 + 74, 260, 54, '아니요, 그대로 둘게요', () => {
-      layer.destroy();
-    }, { size: FONT.small }));
+    this.btns = [epi, note, box, home];
   }
 };

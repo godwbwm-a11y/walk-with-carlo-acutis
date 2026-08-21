@@ -1,4 +1,4 @@
-/* DAY 6 · 순례길 — 함께 걸어 철야기도 장소로 갑니다. */
+/* DAY 6 · 순례길 — 함께 걸어 밤샘기도 장소로 갑니다. */
 
 window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
   constructor() { super('Day6PilgrimageScene'); }
@@ -74,7 +74,7 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
       onInteract: () => this.restTalk('maria')
     });
     this.outItem = this.addInteractable({
-      id: 'd6_out', x: 1950, y: 680, label: '철야 장소로', range: 96, priority: 1, markerY: 570,
+      id: 'd6_out', x: 1950, y: 680, label: '밤샘기도 장소로', range: 96, priority: 1, markerY: 570,
       onInteract: () => this.goOut()
     });
 
@@ -132,7 +132,7 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
     AudioSystem.found();
     this.dialogue.say(DAY06.rest.look, () => {
       this.enableInteractable('d6_out');
-      this.objective.setText('철야 장소로 가자');
+      this.objective.setText('밤샘기도 장소로 가자');
     });
   }
 

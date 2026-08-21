@@ -259,42 +259,17 @@ window.EpYardScene = class EpYardScene extends WorldScene {
   }
 
   askName() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const layer = this.add.container(0, 0).setDepth(900).setScrollFactor(0);
-    const scrim = this.add.graphics().setScrollFactor(0);
-    scrim.fillStyle(0x101a2e, 0.92); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, 210, EPI.hello.namePrompt, UI.style(21, PAL.cream))
-      .setOrigin(0.5).setScrollFactor(0));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 316, width: W - 90, height: 84,
-      placeholder: EPI.hello.namePlaceholder, depth: 1200
-    });
-
-    const done = (save) => {
-      let v = null;
-      if (save && field) v = field.value();
-      if (field) field.destroy();
+    TextInput.ask(this, {
+      question: EPI.hello.namePrompt,
+      placeholder: EPI.hello.namePlaceholder,
+      okLabel: '이름을 말한다',
+      skipLabel: EPI.hello.nameSkip,
+      height: 96,
+      backHead: '이렇게 알려주었습니다'
+    }, (v) => {
       SaveSystem.set('epilogue.newFriendName', v || EPI.hello.defaultName);
-      layer.destroy();
       this.nameShown(v || EPI.hello.defaultName);
-    };
-
-    if (field) {
-      const ok = UI.button(this, W / 2, 424, 250, 60, '이름을 말한다', () => done(true),
-        { size: FONT.label, fill: PAL.sun });
-      const skip = UI.button(this, W / 2, 498, 250, 52, EPI.hello.nameSkip, () => done(false),
-        { size: FONT.small });
-      ok.setScrollFactor(0); skip.setScrollFactor(0);
-      layer.add(ok); layer.add(skip);
-      this.time.delayedCall(300, () => field.focus());
-    } else {
-      const ok = UI.button(this, W / 2, 380, 250, 60, EPI.hello.nameSkip, () => done(false),
-        { size: FONT.label, fill: PAL.sun });
-      ok.setScrollFactor(0);
-      layer.add(ok);
-    }
+    });
   }
 
   nameShown(name) {

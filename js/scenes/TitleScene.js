@@ -3,8 +3,9 @@
 window.TitleScene = class TitleScene extends Phaser.Scene {
   constructor() { super('TitleScene'); }
 
-  create() {
+  create(data) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
+    this.openPicker = !!(data && data.picker);
     this.add.image(W / 2, H / 2, 'sky_night').setDisplaySize(W, H);
 
     /* 별 */
@@ -41,16 +42,17 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }
 
     /* 걸어가는 두 사람의 실루엣 */
-    const p1 = this.add.image(W * 0.42, 596, 'player_back').setScale(1.2);
-    const p2 = this.add.image(W * 0.58, 600, 'carlo_back').setScale(1.2);
+    const p1 = this.add.image(W * 0.42, 552, 'player_back').setScale(1.3);
+    const p2 = this.add.image(W * 0.58, 556, 'carlo_back').setScale(1.3);
     this.tweens.add({ targets: [p1, p2], y: '-=4', duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
-    /* 제목 */
-    this.add.text(W / 2, H * 0.17, '오늘,', UI.style(24, PAL.cream)).setOrigin(0.5).setAlpha(0.92);
-    this.add.text(W / 2, H * 0.235, '카를로 아쿠티스와\n함께 걷습니다',
-      UI.style(FONT.title, PAL.cream, { align: 'center' })).setOrigin(0.5);
-    this.add.text(W / 2, H * 0.345, GAME.CORE_LINE,
-      UI.style(FONT.small, '#e6d9c4', { align: 'center' })).setOrigin(0.5).setAlpha(0.9);
+    /* 제목 — 글자가 커졌으니 줄 간격도 함께 넓힙니다 */
+    this.add.text(W / 2, 130, '오늘,', UI.style(FONT.body, PAL.cream)).setOrigin(0.5).setAlpha(0.94);
+    this.add.text(W / 2, 200, '카를로 아쿠티스와\n함께 걷습니다',
+      UI.style(FONT.title, PAL.cream, { align: 'center', lineSpacing: 12 })).setOrigin(0.5);
+    this.add.text(W / 2, 300, GAME.CORE_LINE,
+      UI.style(FONT.small, PAL.dimWarm, { align: 'center', lineSpacing: 7 }))
+      .setOrigin(0.5).setAlpha(0.95);
 
     /* 버튼 */
     const cp = SaveSystem.get('checkpoint', null);
@@ -63,35 +65,35 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day7 = SaveSystem.get('dayCompleted.day7', false);
     const day8 = SaveSystem.get('dayCompleted.day8', false);
     const epi = SaveSystem.get('dayCompleted.epilogue', false);
-    let y = 668;
+    let y = 620;
 
     if (cp && cp.scene) {
-      UI.button(this, W / 2, y, 250, 60, '이어서 걷기', () => this.continueGame(), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, '이어서 걷기', () => this.continueGame(), { size: FONT.body });
     } else if (day1 && !day2) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 2 걷기', () => this.startDay(2), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 2 걷기', () => this.startDay(2), { size: FONT.body });
     } else if (day2 && !day3) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 3 걷기', () => this.startDay(3), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 3 걷기', () => this.startDay(3), { size: FONT.body });
     } else if (day3 && !day4) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 4 걷기', () => this.startDay(4), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 4 걷기', () => this.startDay(4), { size: FONT.body });
     } else if (day4 && !day5) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 5 걷기', () => this.startDay(5), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 5 걷기', () => this.startDay(5), { size: FONT.body });
     } else if (day5 && !day6) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 6 걷기', () => this.startDay(6), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 6 걷기', () => this.startDay(6), { size: FONT.body });
     } else if (day6 && !day7) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 7 걷기', () => this.startDay(7), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 7 걷기', () => this.startDay(7), { size: FONT.body });
     } else if (day7 && !day8) {
-      UI.button(this, W / 2, y, 250, 60, 'DAY 8 걷기', () => this.startDay(8), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, 'DAY 8 걷기', () => this.startDay(8), { size: FONT.body });
     } else if (day8 && !epi) {
-      UI.button(this, W / 2, y, 250, 60, '에필로그 열기', () => this.startDay(9), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, '에필로그 열기', () => this.startDay(9), { size: FONT.body });
     } else if (!day1) {
-      UI.button(this, W / 2, y, 250, 60, '걷기 시작하기', () => this.startDay(1), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, '걷기 시작하기', () => this.startDay(1), { size: FONT.body });
     } else {
-      UI.button(this, W / 2, y, 250, 60, '다시 걷기', () => this.dayPicker(), { size: 19 });
+      UI.button(this, W / 2, y, 268, 66, '다시 걷기', () => this.dayPicker(), { size: FONT.body });
     }
 
-    y += 74;
-    UI.button(this, W / 2, y, 250, 56, 'DAY 선택', () => this.dayPicker(),
-      { size: FONT.small, fill: PAL.cream, alpha: 0.92 });
+    y += 82;
+    UI.button(this, W / 2, y, 268, 60, 'DAY 선택', () => this.dayPicker(),
+      { size: FONT.label, fill: PAL.cream, alpha: 0.94 });
 
     /* 소리 설정 */
     this.bgmBtn = UI.circleButton(this, 44, 48, 24, '♪', () => this.toggle('bgm'), { size: 18 });
@@ -103,8 +105,14 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }, { size: FONT.small, alpha: 0.92 });
     this.refreshSound();
 
-    this.add.text(W / 2, H - 34, 'DAY 1 – DAY 8 · EPILOGUE',
-      UI.style(14, PAL.inkSoft)).setOrigin(0.5).setAlpha(0.9);
+    /* 에필로그까지 마쳤다면 크레딧을 언제든 다시 볼 수 있습니다 */
+    if (epi) {
+      UI.button(this, W / 2, y + 74, 268, 56, '엔딩 크레딧 보기', () => {
+        UI.fadeOut(this, 600, () => this.scene.start('EpCreditsScene', { from: 'TitleScene' }));
+      }, { size: FONT.small, fill: PAL.paper, alpha: 0.94 });
+    }
+
+    UI.footer(this);
 
     /* 첫 터치에 소리 시작 */
     this.input.once('pointerdown', () => {
@@ -114,6 +122,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     });
 
     UI.fadeIn(this, 900);
+    /* 에필로그에서 “다시 걷고 싶은 날 고르기”로 들어오면 바로 목록을 엽니다 */
+    if (this.openPicker) this.time.delayedCall(320, () => this.dayPicker());
   }
 
   refreshSound() {
@@ -166,8 +176,10 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     scrim.fillStyle(0x101a2e, 0.97); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
-    layer.add(this.add.text(W / 2, 96, '어느 날을 걸을까요?',
-      UI.style(21, PAL.cream)).setOrigin(0.5));
+    layer.add(this.add.text(W / 2, 74, '어느 날을 걸을까요?',
+      UI.style(FONT.body, PAL.cream)).setOrigin(0.5));
+    layer.add(this.add.text(W / 2, 108, '위아래로 넘겨보세요',
+      UI.style(FONT.tiny, PAL.dim)).setOrigin(0.5).setAlpha(0.9));
 
     const day1 = SaveSystem.get('dayCompleted.day1', false);
     const day2 = SaveSystem.get('dayCompleted.day2', false);
@@ -189,27 +201,83 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       { n: 9, label: EPI.gate.label, sub: EPI.gate.sub, open: day8done, need: 'DAY 8', bonus: true }
     ];
 
-    let y = 138;
+    /* 아홉 줄에 글자가 커져 한 화면에 다 들어가지 않습니다 — 밀어서 봅니다 */
+    const top = 136, viewH = H - top - 108;
+    const list = this.add.container(0, top);
+    const shape = this.make.graphics({ add: false });
+    shape.fillRect(0, top, W, viewH);
+    list.setMask(shape.createGeometryMask());
+    layer.add(list);
+
+    /* 줄마다 제목·부제·말씀 수를 따로 그려 글이 잘리지 않게 합니다 */
+    let y = 46;
+    const rowW = W - 52, rowH = 84;
     days.forEach((d) => {
       const got = Collection.countOfDay(d.n);
       const all = COLLECTION.byDay(d.n).length;
-      const label = !d.open
-        ? d.label + '\n🔒 ' + d.need + ' 을 마치면 열립니다'
-        : d.bonus
-          ? d.label + '\n' + d.sub                 /* 에필로그는 말씀을 세지 않습니다 */
-          : d.label + '\n' + d.sub + '   (말씀 ' + got + '/' + all + ')';
-      const b = UI.button(this, W / 2, y, W - 70, 58, label, () => {
+      const row = this.add.container(W / 2, y);
+
+      const g = this.add.graphics();
+      const draw = (pressed) => {
+        g.clear();
+        if (!pressed) { g.fillStyle(0x000000, 0.15); g.fillRoundedRect(-rowW / 2, -rowH / 2 + 4, rowW, rowH, 16); }
+        g.fillStyle(HEX(d.open ? PAL.paper : PAL.wallShade), d.open ? 1 : 0.55);
+        g.fillRoundedRect(-rowW / 2, -rowH / 2 + (pressed ? 2 : 0), rowW, rowH, 16);
+        g.lineStyle(2, HEX(PAL.sunDeep), d.open ? 0.6 : 0.28);
+        g.strokeRoundedRect(-rowW / 2, -rowH / 2 + (pressed ? 2 : 0), rowW, rowH, 16);
+      };
+      draw(false);
+      row.add(g);
+
+      row.add(this.add.text(-rowW / 2 + 20, -rowH / 2 + 14, d.label,
+        UI.style(FONT.small, d.open ? PAL.sunDeep : PAL.inkSoft)).setOrigin(0, 0));
+
+      const sub = d.open ? d.sub : '🔒 ' + d.need + ' 을 마치면 열립니다';
+      row.add(this.add.text(-rowW / 2 + 20, 4, sub,
+        UI.style(d.open ? FONT.body : FONT.small, d.open ? PAL.ink : PAL.inkSoft, {
+          wordWrap: { width: rowW - 40 }
+        })).setOrigin(0, 0).setAlpha(d.open ? 1 : 0.85));
+
+      if (d.open && !d.bonus) {
+        row.add(this.add.text(rowW / 2 - 18, -rowH / 2 + 15, '말씀 ' + got + '/' + all,
+          UI.style(FONT.tiny, PAL.inkSoft)).setOrigin(1, 0).setAlpha(0.85));
+      }
+
+      row.setSize(rowW, rowH + 8);
+      row.setInteractive();
+      let downAt = null;
+      row.on('pointerdown', (p) => { downAt = { x: p.x, y: p.y }; draw(true); AudioSystem.tap(); });
+      row.on('pointerout', () => { draw(false); downAt = null; });
+      row.on('pointerupoutside', () => { draw(false); downAt = null; });
+      row.on('pointerup', (p) => {
+        draw(false);
+        const was = downAt; downAt = null;
+        if (!was || Phaser.Math.Distance.Between(was.x, was.y, p.x, p.y) > TOUCH.slop) return;
         if (!d.open) return;
         layer.destroy(); this.picker = null;
         this.startDay(d.n);
-      }, { size: FONT.small, fill: d.open ? PAL.paper : PAL.cream, alpha: d.open ? 1 : 0.6 });
-      layer.add(b);
-      y += 66;
+      });
+
+      list.add(row);
+      y += rowH + 14;
     });
 
-    layer.add(UI.button(this, W / 2, y + 6, 200, 52, '닫기', () => {
+    const max = Math.max(0, y - viewH + 20);
+    let lastY;
+    const move = (p) => {
+      if (!p.isDown || !this.picker) return;
+      if (p.y < top || p.y > top + viewH) return;
+      const dy = p.y - (lastY === undefined ? p.y : lastY);
+      lastY = p.y;
+      list.y = Phaser.Math.Clamp(list.y + dy, top - max, top);
+    };
+    this.input.on('pointermove', move);
+    this.input.on('pointerup', () => { lastY = undefined; });
+
+    layer.add(UI.button(this, W / 2, H - 56, 220, 58, '닫기', () => {
+      this.input.off('pointermove', move);
       layer.destroy(); this.picker = null;
-    }, { size: FONT.small, alpha: 0.9 }));
+    }, { size: FONT.label, alpha: 0.95 }));
   }
 
   continueGame() {

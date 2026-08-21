@@ -232,7 +232,7 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
       { label: F.btnPhoto, fill: PAL.cream, go: () => this.scene.start('EpPhotoBookScene', { from: 'EpFinalScene' }) },
       { label: F.btnCards, fill: PAL.paper, go: () => { this.scene.launch('GalleryScene', { from: 'EpFinalScene' }); this.scene.pause(); } },
       { label: F.btnPlan, fill: PAL.paper, go: () => this.showPlan() },
-      { label: F.btnAgain, fill: PAL.paper, go: () => this.confirmAgain() }
+      { label: '다시 걷고 싶은 날 고르기', fill: PAL.paper, go: () => this.backToPicker() }
     ];
 
     this.btns = rows.map((r, i) => {
@@ -276,26 +276,9 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
     }, { size: FONT.small }));
   }
 
-  confirmAgain() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    if (this.againLayer) return;
-    const layer = this.add.container(0, 0).setDepth(400);
-    this.againLayer = layer;
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x080c16, 0.95); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, H * 0.36, '처음부터 다시 걸을까요?', UI.style(22, PAL.cream))
-      .setOrigin(0.5));
-    layer.add(this.add.text(W / 2, H * 0.43,
-      '지금까지 적은 노트와 모은 말씀,\n그리고 오늘의 단체사진도 지워집니다.',
-      UI.style(FONT.small, '#cbbfae', { align: 'center', lineSpacing: 7 })).setOrigin(0.5));
-
-    layer.add(UI.button(this, W / 2, H * 0.56, 260, 60, '네, 다시 걷겠습니다', () => {
-      SaveSystem.reset();
-      UI.fadeOut(this, 800, () => this.scene.start('TitleScene'));
-    }, { size: FONT.label, fill: PAL.sun }));
-    layer.add(UI.button(this, W / 2, H * 0.56 + 74, 260, 54, '아니요, 그대로 둘게요', () => {
-      layer.destroy(); this.againLayer = null;
-    }, { size: FONT.small }));
+  /* 기록을 지우지 않습니다 — 걷고 싶은 날을 골라 다시 걸을 뿐입니다 */
+  backToPicker() {
+    SaveSystem.set('checkpoint', null);
+    UI.fadeOut(this, 700, () => this.scene.start('TitleScene', { picker: true }));
   }
 };

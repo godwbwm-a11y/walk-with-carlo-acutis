@@ -154,3 +154,24 @@ body {
   font-size: 16px;
   margin: 0;
 }
+
+/* ── PC (마우스와 키보드) ─────────────────────── */
+body.desktop {
+  background:
+    radial-gradient(70% 60% at 50% 8%, #33456f 0%, #1b2a4a 46%, #101a30 100%);
+}
+
+/* 창 높이를 가득 채웁니다 */
+body.desktop #game-shell { padding: 0; }
+
+body.desktop #game canvas {
+  height: 100vh !important;
+  height: 100dvh !important;
+  width: auto !important;
+  max-width: 100vw;
+  border-radius: 0;
+  box-shadow: 0 0 90px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 248, 236, .07);
+}
+
+/* PC 에서는 창 모양이 어떻든 세로로 돌리라는 안내를 하지 않습니다 */
+body.desktop #rotate-guard { display: none !important; }

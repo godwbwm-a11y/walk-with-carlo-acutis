@@ -80,7 +80,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     const titles = {
       1: 'DAY 1 · 금요일', 2: 'DAY 2 · 토요일', 3: 'DAY 3 · 주일',
       4: 'DAY 4 · 월요일', 5: 'DAY 5 · 화요일 · WYD SEOUL',
-      6: 'DAY 6 · 수요일 · 철야와 파견',
+      6: 'DAY 6 · 수요일 · 밤샘기도와 파견',
       7: 'DAY 7 · 목요일 · 나눔',
       8: 'DAY 8 · 금요일 · 이제 내가 걷는다',
       99: '카를로의 하루 · 밀라노'

@@ -102,15 +102,16 @@ window.HeavyBagScene = class HeavyBagScene extends MiniGameScene {
     const list = this.pickList();
 
     list.forEach((s, i) => {
-      const col = i % 4, row = Math.floor(i / 4);
-      const x = 74 + col * 82;
-      const y = 428 + row * 74;
+      /* 돌에 적힐 글자가 읽혀야 해서 돌을 키웠습니다 */
+      const col = i % 3, row = Math.floor(i / 3);
+      const x = 80 + col * 115;
+      const y = 404 + row * 92;
       const big = (s.id === concern);
       const c = this.add.container(x, y).setDepth(30);
-      const img = this.add.image(0, 0, 'stone').setScale(big ? 0.92 : 0.66);
-      const t = this.add.text(0, 1, s.id, UI.style(big ? 15 : 13, PAL.cream)).setOrigin(0.5);
+      const img = this.add.image(0, 0, 'stone').setScale(big ? 1.7 : 1.4);
+      const t = this.add.text(0, 1, s.id, UI.style(big ? FONT.body : FONT.small, PAL.cream)).setOrigin(0.5);
       c.add([img, t]);
-      c.setSize(big ? 62 : 48, big ? 48 : 36);
+      c.setSize(big ? 100 : 84, big ? 76 : 64);
       c.setInteractive({ draggable: true, useHandCursor: true });
       c.isStone = true; c.stone = s; c.homeX = x; c.homeY = y; c.speed = 0; c.big = big;
       c.on('pointerdown', () => { c.speed = 0; c.lastT = 0; });

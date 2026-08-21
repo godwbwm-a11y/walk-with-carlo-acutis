@@ -7,7 +7,8 @@ window.LookAroundScene = class LookAroundScene extends MiniGameScene {
     this.buildFrame({
       from: (data && data.from) || null, card: null, bg: '#6f93b4',
       title: DAY03.look.title,
-      hint: DAY03.look.hint
+      hint: DAY03.look.hint,
+      lightHeader: true             /* 아침 하늘이 밝아 글씨를 진하게 */
     });
 
     const W = GAME.WIDTH, H = GAME.HEIGHT;
@@ -42,7 +43,8 @@ window.LookAroundScene = class LookAroundScene extends MiniGameScene {
     this.makeSpot('cloud', 286, 236, () => this.add.image(286, 236, 'cloud_soft').setDisplaySize(190, 80).setAlpha(0.95));
     this.makeSpot('shoes', 132, 704, () => this.add.image(132, 704, 'shoe_pair').setScale(1.25));
 
-    this.count = this.add.text(W / 2, 122, '', UI.style(FONT.small, '#dfd2bd')).setOrigin(0.5).setDepth(60);
+    this.count = this.add.text(W / 2, this.contentTop(), '',
+      UI.style(FONT.small, PAL.ink)).setOrigin(0.5, 0).setDepth(101);
     this.refresh();
   }
 

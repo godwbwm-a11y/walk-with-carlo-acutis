@@ -179,12 +179,7 @@ window.Day4EndScene = class Day4EndScene extends Phaser.Scene {
     });
     SaveSystem.completeDay(4);
 
-    UI.button(this, W / 2 - 66, H - 96, 176, 58, '처음 화면으로', () => {
-      UI.fadeOut(this, 700, () => this.scene.start('TitleScene'));
-    }, { size: FONT.small }).setDepth(95);
-    UI.button(this, W / 2 + 100, H - 96, 108, 58, '보관함', () => {
-      this.scene.launch('GalleryScene', { from: 'Day4EndScene' });
-      this.scene.pause();
-    }, { size: FONT.small, fill: PAL.cream }).setDepth(95);
+    /* 다음 날로 바로 갈 수도, 오늘은 여기까지 해도 됩니다 */
+    UI.dayEndButtons(this, 4);
   }
 };

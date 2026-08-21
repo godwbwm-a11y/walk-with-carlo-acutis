@@ -216,6 +216,18 @@ TextureFactory.createDay2 = function (scene) {
     g.fillEllipse(34, 54, 44, 26); g.fillEllipse(84, 56, 40, 24); g.fillEllipse(60, 38, 46, 26);
     g.fillStyle(0x8f96a5, 1); g.fillEllipse(56, 30, 30, 18);
   });
+  /* 제대 위에 걸린 큰 십자가 — 머무는 동안 바라볼 수 있습니다 */
+  make(scene, 'cross_wall', 120, 190, function (g) {
+    g.fillStyle(0x000000, 0.14);
+    g.fillRoundedRect(48, 8, 30, 182, 10); g.fillRoundedRect(10, 52, 106, 30, 10);
+    g.fillStyle(0x8a6340, 1);
+    g.fillRoundedRect(45, 4, 30, 182, 10); g.fillRoundedRect(7, 48, 106, 30, 10);
+    g.fillStyle(0xa8814f, 1);
+    g.fillRoundedRect(51, 10, 12, 170, 6); g.fillRoundedRect(13, 54, 94, 11, 5);
+    g.fillStyle(0xd7c07f, 0.9);
+    g.fillCircle(60, 63, 7);
+  });
+
   make(scene, 'cross_small', 40, 62, function (g) {
     g.fillStyle(0x8a6340, 1); g.fillRoundedRect(16, 0, 9, 62, 3); g.fillRoundedRect(4, 16, 33, 9, 3);
     g.fillStyle(0xa8814f, 1); g.fillRoundedRect(18, 2, 5, 58, 2);

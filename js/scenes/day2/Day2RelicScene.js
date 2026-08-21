@@ -100,23 +100,30 @@ window.Day2RelicScene = class Day2RelicScene extends Phaser.Scene {
     this.tweens.add({ targets: [title, b1, b2], alpha: 1, duration: 800 });
   }
 
-  /* 기도문으로 기도하기 */
+  /* 기도문으로 기도하기 — 따라 할 수 있게 천천히, 뒤를 눌러 또렷하게 */
   prayWithText() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const lines = DAY02.prayer.text;
-    const t = this.add.text(W / 2, H * 0.30, '', UI.style(19, PAL.cream, {
-      align: 'center', lineSpacing: 9, wordWrap: { width: W - 70 }
+
+    const plate = this.add.graphics().setDepth(68).setAlpha(0);
+    plate.fillStyle(0x0d1424, 0.74);
+    plate.fillRoundedRect(16, H * 0.21, W - 32, H * 0.46, 22);
+    this.tweens.add({ targets: plate, alpha: 1, duration: 700 });
+    this.prayerPlate = plate;
+
+    const t = this.add.text(W / 2, H * 0.25, '', UI.style(FONT.body, PAL.cream, {
+      align: 'center', lineSpacing: 10, wordWrap: { width: W - 76 }
     })).setOrigin(0.5, 0).setDepth(70);
 
     let shown = [];
     let i = 0;
     const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(1200, () => this.silence()); return; }
+      if (i >= lines.length) { this.time.delayedCall(2000, () => this.silence()); return; }
       shown.push(lines[i++]);
       t.setText(shown.join('\n'));
-      t.setAlpha(0.2);
-      this.tweens.add({ targets: t, alpha: 1, duration: 500 });
-      this.time.delayedCall(lines[i - 1] === '' ? 260 : 900, step);
+      t.setAlpha(0.3);
+      this.tweens.add({ targets: t, alpha: 1, duration: 700 });
+      this.time.delayedCall(lines[i - 1] === '' ? 500 : 1700, step);
     };
     step();
     this.prayerText = t;
@@ -124,51 +131,29 @@ window.Day2RelicScene = class Day2RelicScene extends Phaser.Scene {
 
   /* 내 말로 기도하기 */
   prayWithOwn() {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
     const P = DAY02.prayer;
-
-    const head = this.add.text(W / 2, 210, P.ownHeader, UI.style(22, PAL.cream)).setOrigin(0.5).setDepth(70);
-    this.input.setTopOnly(true);
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 330, width: W - 76, height: 150,
-      placeholder: P.ownPlaceholder, depth: 1200
-    });
-
-    if (!field) {
-      /* 입력이 안 되는 환경이면 기도문으로 이어집니다 */
-      head.destroy();
-      this.prayWithText();
-      return;
-    }
-
-    const note = this.add.text(W / 2, 424, '적지 않아도 괜찮습니다.',
-      UI.style(14, '#cbbfae')).setOrigin(0.5).setDepth(70).setAlpha(0.8);
-
-    const finish = (save) => {
-      const v = field.value();
-      if (save && v) {
-        SaveSystem.set('reflections.day2Prayer', v);
-      }
-      field.destroy();
-      [head, note, saveBtn, skipBtn].forEach(o => { if (o) o.destroy(); });
+    if (!TextInput.supported(this)) { this.prayWithText(); return; }
+    TextInput.ask(this, {
+      question: P.ownHeader,
+      note: '적지 않아도 괜찮습니다.',
+      placeholder: P.ownPlaceholder,
+      okLabel: P.saveBtn,
+      skipLabel: P.noSaveBtn,
+      backHead: '이렇게 기도했습니다'
+    }, (v) => {
+      if (v) SaveSystem.set('reflections.day2Prayer', v);
       this.silence();
-    };
-
-    const saveBtn = UI.button(this, W / 2, 500, 270, 60, P.saveBtn, () => finish(true),
-      { size: FONT.label, fill: PAL.sun });
-    const skipBtn = UI.button(this, W / 2, 574, 270, 54, P.noSaveBtn, () => finish(false),
-      { size: FONT.small });
-    [saveBtn, skipBtn].forEach(b => b.setDepth(70));
-
-    this.time.delayedCall(300, () => field.focus());
+    });
   }
 
   /* 기도 뒤의 침묵 */
   silence() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     if (this.prayerText) {
-      this.tweens.add({ targets: this.prayerText, alpha: 0.55, duration: 1200 });
+      this.tweens.add({ targets: this.prayerText, alpha: 0.7, duration: 1200 });
+    }
+    if (this.prayerPlate) {
+      this.tweens.add({ targets: this.prayerPlate, alpha: 0.55, duration: 1200 });
     }
     this.time.delayedCall(5000, () => {
       const s = this.add.text(W / 2, H * 0.72, DAY02.prayer.silence1,

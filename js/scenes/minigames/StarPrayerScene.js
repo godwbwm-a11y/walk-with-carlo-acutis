@@ -84,36 +84,14 @@ window.StarPrayerScene = class StarPrayerScene extends MiniGameScene {
 
   /* 이름을 적어도 되고, 마음에만 담아도 됩니다 */
   askName(who) {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const layer = this.add.container(0, 0).setDepth(200);
-    const scrim = this.add.graphics();
-    scrim.fillStyle(0x080e1f, 0.92); scrim.fillRect(0, 0, W, H);
-    layer.add(scrim);
-    layer.add(this.add.text(W / 2, 190, who, UI.style(24, PAL.sun)).setOrigin(0.5));
-
-    const field = TextInput.open(this, {
-      x: W / 2, y: 300, width: W - 76, height: 96,
-      placeholder: DAY06.star.placeholder, depth: 1200
-    });
-
-    const done = (save) => {
-      let name = null;
-      if (save && field) { const v = field.value(); if (v) name = v; }
-      if (field) field.destroy();
-      layer.destroy();
-      this.place(who, name);
-    };
-
-    if (field) {
-      layer.add(UI.button(this, W / 2, 420, 260, 58, DAY06.star.nameBtn, () => done(true),
-        { size: FONT.small, fill: PAL.sun }));
-      layer.add(UI.button(this, W / 2, 492, 260, 54, DAY06.star.keepBtn, () => done(false),
-        { size: FONT.small }));
-      this.time.delayedCall(250, () => field.focus());
-    } else {
-      layer.add(UI.button(this, W / 2, 360, 260, 58, DAY06.star.keepBtn, () => done(false),
-        { size: FONT.small, fill: PAL.sun }));
-    }
+    if (!TextInput.supported(this)) { this.place(who, null); return; }
+    TextInput.ask(this, {
+      question: who,
+      placeholder: DAY06.star.placeholder,
+      okLabel: DAY06.star.nameBtn,
+      skipLabel: DAY06.star.keepBtn,
+      depth: 1400
+    }, (v) => this.place(who, v || null));
   }
 
   /* 밤하늘에 별 하나가 남습니다 */

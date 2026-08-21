@@ -231,6 +231,9 @@ window.DAY03 = {
     stay: '조금 더 머문다',
     stand: '자리에서 일어난다',
     standLater: '이제 일어나기',
+    crossHint: '십자가를 누르면 잠시 바라볼 수 있습니다.',
+    crossLine: '아무 말도 하지 않고\n그냥 바라보기만 해도 기도입니다.',
+    crossBack: '다시 자리로',
     touched: '괜찮아요.\n다시 여기 있어 봅시다.'
   },
 

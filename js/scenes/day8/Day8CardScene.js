@@ -68,38 +68,31 @@ window.Day8CardScene = class Day8CardScene extends Phaser.Scene {
     })).setOrigin(0.5).setDepth(90).setAlpha(0);
     this.tweens.add({ targets: q, alpha: 1, duration: 900 });
 
-    const field = TextInput.open(this, {
-      x: W / 2, y: 552, width: W - 76, height: 100, placeholder: C.placeholder, depth: 1200
-    });
-
-    const finish = (save) => {
-      let v = null;
-      if (save && field) v = field.value();
-      if (field) field.destroy();
-      SaveSystem.set('finalCard', {
-        lifePlan: SaveSystem.get('lifePlan', null),
-        becoming: v || null
+    const go = UI.button(this, W / 2, H - 132, 280, 62, C.keepBtn, () => {
+      go.destroy();
+      TextInput.ask(this, {
+        question: C.ask,
+        note: C.placeholder,
+        placeholder: C.placeholder,
+        okLabel: C.keepBtn,
+        skipLabel: C.skipBtn,
+        height: 130,
+        backHead: 'MY CARD 에 이렇게 적었습니다'
+      }, (v) => {
+        SaveSystem.set('finalCard', {
+          lifePlan: SaveSystem.get('lifePlan', null),
+          becoming: v || null
+        });
+        if (v) {
+          q.setText('“' + v + '”').setColor(PAL.sun);
+          this.time.delayedCall(1600, () => this.done());
+        } else {
+          this.done();
+        }
       });
-      if (v) {
-        const b = this.add.text(W / 2, 452, '“' + v + '”', UI.style(19, PAL.sun, {
-          align: 'center', wordWrap: { width: W - 70 }, lineSpacing: 7
-        })).setOrigin(0.5).setDepth(90).setAlpha(0);
-        q.destroy();
-        this.tweens.add({ targets: b, alpha: 1, duration: 800 });
-      }
-      keep.destroy(); if (skip) skip.destroy();
-      this.time.delayedCall(v ? 2400 : 400, () => this.done());
-    };
-
-    const keep = UI.button(this, W / 2, H - 150, 260, 58, C.keepBtn, () => finish(true),
-      { size: FONT.label, fill: PAL.sun });
-    const skip = field ? UI.button(this, W / 2, H - 84, 260, 50, C.skipBtn, () => finish(false),
-      { size: FONT.small }) : null;
-    keep.setDepth(95).setAlpha(0);
-    if (skip) skip.setDepth(95).setAlpha(0);
-    this.tweens.add({ targets: skip ? [keep, skip] : [keep], alpha: 1, duration: 800, delay: 600 });
-
-    if (field) this.time.delayedCall(400, () => field.focus());
+    }, { size: FONT.label, fill: PAL.sun });
+    go.setDepth(95).setAlpha(0);
+    this.tweens.add({ targets: go, alpha: 1, duration: 800, delay: 600 });
   }
 
   done() {

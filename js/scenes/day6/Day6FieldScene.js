@@ -1,4 +1,4 @@
-/* DAY 6 · 철야 장소 — 자리를 만들고, 해가 지고, 별 아래 기도 지향을 놓습니다. */
+/* DAY 6 · 밤샘기도 장소 — 자리를 만들고, 해가 지고, 별 아래 기도 지향을 놓습니다. */
 
 window.Day6FieldScene = class Day6FieldScene extends Phaser.Scene {
   constructor() { super('Day6FieldScene'); }

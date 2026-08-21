@@ -84,6 +84,7 @@ window.Day3ChurchScene = class Day3ChurchScene extends Phaser.Scene {
     });
   }
 
+  /* 미사는 누를 때마다 한 장씩 넘어갑니다 — 저절로 휘 지나가지 않습니다 */
   playShots(i) {
     const shots = DAY03.mass.shots;
     if (i >= shots.length) { this.afterMass(); return; }
@@ -94,12 +95,12 @@ window.Day3ChurchScene = class Day3ChurchScene extends Phaser.Scene {
     this.tweens.add({ targets: c, alpha: 1, duration: 700 });
     if (i === 6) AudioSystem.chime();
 
-    this.time.delayedCall(1500, () => {
+    UI.tapNext(this, () => {
       this.tweens.add({
         targets: c, alpha: 0, duration: 600,
         onComplete: () => { c.destroy(); this.playShots(i + 1); }
       });
-    });
+    }, { depth: 940, delay: 700 });
   }
 
   buildShot(key) {
