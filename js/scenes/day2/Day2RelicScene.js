@@ -111,22 +111,12 @@ window.Day2RelicScene = class Day2RelicScene extends Phaser.Scene {
     this.tweens.add({ targets: plate, alpha: 1, duration: 700 });
     this.prayerPlate = plate;
 
-    const t = this.add.text(W / 2, H * 0.25, '', UI.style(FONT.body, PAL.cream, {
-      align: 'center', lineSpacing: 10, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(70);
-
-    let shown = [];
-    let i = 0;
-    const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(2000, () => this.silence()); return; }
-      shown.push(lines[i++]);
-      t.setText(shown.join('\n'));
-      t.setAlpha(0.3);
-      this.tweens.add({ targets: t, alpha: 1, duration: 700 });
-      this.time.delayedCall(lines[i - 1] === '' ? 500 : 1700, step);
-    };
-    step();
-    this.prayerText = t;
+    const view = PrayerView.open(this, lines, {
+      top: H * 0.25, bottom: H * 0.65, depth: 70, gap: 1700, blankGap: 600, quiet: true,
+      onDone: () => this.time.delayedCall(2000, () => this.silence())
+    });
+    this.prayerText = view.layer;
+    this.prayerView = view;
   }
 
   /* 내 말로 기도하기 */

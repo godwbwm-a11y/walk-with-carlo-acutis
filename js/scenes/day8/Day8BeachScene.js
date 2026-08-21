@@ -374,31 +374,18 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
   prayLines() {
     if (window.MusicSystem) MusicSystem.setWanted(false);
     const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const body = this.add.text(W / 2, 200, '', UI.style(18, PAL.cream, {
-      align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(830);
-    this.prayBody = body;
-
-    const lines = DAY08.prayer.lines;
-    let shown = [], i = 0;
-    const step = () => {
-      if (i >= lines.length) {
+    const view = PrayerView.open(this, DAY08.prayer.lines, {
+      top: 200, bottom: H - 190, depth: 830,
+      onDone: () => {
         this.time.delayedCall(1400, () => {
           const b = UI.button(this, W / 2, H - 120, 240, 56, DAY08.prayer.endBtn, () => {
-            b.destroy(); body.destroy(); this.prayEnd();
+            b.destroy(); view.destroy(); this.prayEnd();
           }, { size: FONT.label, fill: PAL.sun });
           b.setDepth(840);
         });
-        return;
       }
-      shown.push(lines[i++]);
-      if (shown.length > 13) shown.shift();
-      body.setText(shown.join('\n'));
-      body.setAlpha(0.45);
-      this.tweens.add({ targets: body, alpha: 1, duration: 320 });
-      this.time.delayedCall(lines[i - 1] === '' ? 200 : 660, step);
-    };
-    step();
+    });
+    this.prayBody = view.layer;
   }
 
   /* 기도 뒤에 아무 카드도, 축하음도 없습니다. 파도뿐입니다. */

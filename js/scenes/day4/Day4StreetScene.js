@@ -154,42 +154,30 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
       this.strengthText = s;
     }
 
-    const t = this.add.text(W / 2, 196, '', UI.style(18, PAL.cream, {
-      align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(210);
-
-    const lines = DAY04.prayer.lines;
-    let shown = [], i = 0;
-    const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(1200, () => this.prayerEnd(veil, t)); return; }
-      shown.push(lines[i++]);
-      if (shown.length > 13) shown.shift();
-      t.setText(shown.join('\n'));
-      t.setAlpha(0.45);
-      this.tweens.add({ targets: t, alpha: 1, duration: 320 });
-      this.time.delayedCall(lines[i - 1] === '' ? 200 : 680, step);
-    };
-    this.time.delayedCall(900, step);
+    const view = PrayerView.open(this, DAY04.prayer.lines, {
+      top: 196, bottom: H - 224, depth: 210, delay: 900,
+      onDone: () => this.time.delayedCall(1200, () => this.prayerEnd(veil, view))
+    });
   }
 
-  prayerEnd(veil, t) {
+  prayerEnd(veil, view) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const more = UI.button(this, W / 2, H - 176, 250, 56, DAY04.prayer.moreBtn, () => {
       more.destroy(); done.destroy();
-      this.freePrayer(veil, t);
+      this.freePrayer(veil, view);
     }, { size: FONT.small });
     const done = UI.button(this, W / 2, H - 108, 250, 58, DAY04.prayer.endBtn, () => {
       more.destroy(); done.destroy();
-      this.bye(veil, t);
+      this.bye(veil, view);
     }, { size: FONT.label, fill: PAL.sun });
     [more, done].forEach(b => b.setDepth(210).setAlpha(0));
     this.tweens.add({ targets: [more, done], alpha: 1, duration: 800 });
   }
 
-  freePrayer(veil, t) {
+  freePrayer(veil, view) {
     if (window.MusicSystem) MusicSystem.setWanted(false);
     if (this.strengthText) this.strengthText.setAlpha(0.5);
-    if (!TextInput.supported(this)) { this.bye(veil, t); return; }
+    if (!TextInput.supported(this)) { this.bye(veil, view); return; }
     TextInput.ask(this, {
       question: DAY04.prayer.moreHead,
       placeholder: DAY04.prayer.placeholder,
@@ -197,13 +185,14 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
       skipLabel: DAY04.prayer.skipBtn
     }, (v) => {
       if (v) SaveSystem.set('reflections.day4Prayer', v);
-      this.bye(veil, t);
+      this.bye(veil, view);
     });
   }
 
-  bye(veil, t) {
+  bye(veil, view) {
     if (window.MusicSystem) MusicSystem.setWanted(true);
-    const targets = [veil, t];
+    if (view) view.fade(900);
+    const targets = [veil];
     if (this.strengthText) targets.push(this.strengthText);
     this.tweens.add({
       targets: targets, alpha: 0, duration: 900,

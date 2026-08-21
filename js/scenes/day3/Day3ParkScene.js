@@ -68,33 +68,22 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
     this.tweens.add({ targets: veil, alpha: 1, duration: 1000 });
     AudioSystem.bell();
 
-    const t = this.add.text(W / 2, H * 0.22, '', UI.style(19, PAL.cream, {
-      align: 'center', lineSpacing: 9, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(210);
-
-    let shown = [];
-    let i = 0;
-    const step = () => {
-      if (i >= lines.length) {
+    const view = PrayerView.open(this, lines, {
+      top: H * 0.22, bottom: H - 196, depth: 210, delay: 900,
+      onDone: () => {
         this.time.delayedCall(1600, () => {
           const b = UI.button(this, W / 2, H - 120, 240, 58, '아멘', () => {
+            view.fade(900);
             this.tweens.add({
-              targets: [veil, t, b], alpha: 0, duration: 900,
-              onComplete: () => { veil.destroy(); t.destroy(); b.destroy(); this.library_(); }
+              targets: [veil, b], alpha: 0, duration: 900,
+              onComplete: () => { veil.destroy(); b.destroy(); this.library_(); }
             });
           }, { size: FONT.label, fill: PAL.sun });
           b.setDepth(210).setAlpha(0);
           this.tweens.add({ targets: b, alpha: 1, duration: 800 });
         });
-        return;
       }
-      shown.push(lines[i++]);
-      t.setText(shown.join('\n'));
-      t.setAlpha(0.35);
-      this.tweens.add({ targets: t, alpha: 1, duration: 450 });
-      this.time.delayedCall(lines[i - 1] === '' ? 240 : 820, step);
-    };
-    this.time.delayedCall(900, step);
+    });
   }
 
   /* 공원의 작은 책장 */

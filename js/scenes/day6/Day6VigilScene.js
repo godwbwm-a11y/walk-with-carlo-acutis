@@ -104,32 +104,21 @@ window.Day6VigilScene = class Day6VigilScene extends Phaser.Scene {
       this.tweens.add({ targets: t, alpha: 0.55, duration: 900, delay: 400 + i * 300 });
     });
 
-    const body = this.add.text(W / 2, 268, '', UI.style(18, PAL.cream, {
-      align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(810);
-
-    const lines = DAY06.prayer.lines;
-    let shownLines = [], i = 0;
-    const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(1200, () => this.prayerEnd(veil, body, head)); return; }
-      shownLines.push(lines[i++]);
-      if (shownLines.length > 12) shownLines.shift();
-      body.setText(shownLines.join('\n'));
-      body.setAlpha(0.45);
-      this.tweens.add({ targets: body, alpha: 1, duration: 320 });
-      this.time.delayedCall(lines[i - 1] === '' ? 200 : 660, step);
-    };
-    this.time.delayedCall(1600, step);
+    const view = PrayerView.open(this, DAY06.prayer.lines, {
+      top: 268, bottom: H - 200, depth: 810, delay: 1600,
+      onDone: () => this.time.delayedCall(1200, () => this.prayerEnd(veil, view, head))
+    });
   }
 
-  prayerEnd(veil, body, head) {
+  prayerEnd(veil, view, head) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const b = UI.button(this, W / 2, H - 130, 240, 58, DAY06.prayer.endBtn, () => {
       b.destroy();
+      view.fade(1000);
       this.tweens.add({
-        targets: [veil, body, head], alpha: 0, duration: 1000,
+        targets: [veil, head], alpha: 0, duration: 1000,
         onComplete: () => {
-          [veil, body, head].forEach(o => o.destroy());
+          [veil, head].forEach(o => o.destroy());
           this.saintCard();
         }
       });

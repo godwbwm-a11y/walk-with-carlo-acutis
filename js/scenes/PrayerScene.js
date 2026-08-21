@@ -44,21 +44,24 @@ window.PrayerScene = class PrayerScene extends Phaser.Scene {
       });
     }
 
-    /* 기도문 — 따라 할 수 있도록 천천히, 그리고 잘 보이도록 뒤를 눌러 줍니다 */
-    const rows = D.lines.length;
-    const step = 38, top = H * 0.145;
+    /* 기도문 — 따라 바칠 수 있도록 천천히, 그리고 잘 보이도록 뒤를 눌러 줍니다.
+       판이 글보다 훨씬 커 보이지 않도록 먼저 높이를 재어 둡니다. */
+    const TOP = 150;
+    const probe = this.add.text(0, 0, D.lines.join('\n'), UI.style(23, PAL.cream, {
+      align: 'center', lineSpacing: 12, wordWrap: { width: W - 64 }
+    })).setVisible(false);
+    const bodyH = probe.height;
+    probe.destroy();
+    const BOTTOM = Math.min(H - 210, TOP + bodyH + 16);
+
     const plate = this.add.graphics().setDepth(-5).setAlpha(0);
     plate.fillStyle(0x0d1424, 0.55);
-    plate.fillRoundedRect(18, top - 34, W - 36, rows * step + 34, 22);
+    plate.fillRoundedRect(14, TOP - 26, W - 28, BOTTOM - TOP + 46, 22);
     this.tweens.add({ targets: plate, alpha: 1, duration: 900 });
 
     const GAP = 1700;                       // 한 줄이 나오고 다음 줄까지의 시간
-    this.lines = [];
-    D.lines.forEach((line, i) => {
-      const t = this.add.text(W / 2, top + i * step, line,
-        UI.style(FONT.body, PAL.cream, { align: 'center' })).setOrigin(0.5).setAlpha(0).setDepth(-4);
-      this.lines.push(t);
-      this.tweens.add({ targets: t, alpha: line === '' ? 0 : 1, duration: 1200, delay: 700 + i * GAP });
+    this.view = PrayerView.open(this, D.lines, {
+      top: TOP, bottom: BOTTOM, depth: -4, gap: GAP, blankGap: 700, delay: 700, quiet: true
     });
 
     /* 숨을 고르는 원 */

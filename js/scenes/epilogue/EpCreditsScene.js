@@ -124,7 +124,8 @@ window.EpCreditsScene = class EpCreditsScene extends Phaser.Scene {
   update(time, delta) {
     if (this.finished) return;
     const d = Math.min(delta, 50) / 1000;
-    this.roll.y -= (this.fast ? 280 : 72) * d;
+    /* 이름 하나하나를 읽을 수 있을 만큼 천천히 흘러갑니다 */
+    this.roll.y -= (this.fast ? 300 : 40) * d;
 
     if (this.roll.y < -this.rollHeight) this.done();
   }

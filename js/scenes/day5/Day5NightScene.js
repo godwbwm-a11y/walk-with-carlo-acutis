@@ -75,29 +75,19 @@ window.Day5NightScene = class Day5NightScene extends Phaser.Scene {
       });
     });
 
-    const t = this.add.text(W / 2, 250, '', UI.style(18, PAL.cream, {
-      align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(810);
-
-    const lines = DAY05.prayer.lines;
-    let shown = [], i = 0;
-    const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(1200, () => this.askWho(veil, t, head)); return; }
-      shown.push(lines[i++]);
-      if (shown.length > 13) shown.shift();
-      t.setText(shown.join('\n'));
-      t.setAlpha(0.45);
-      this.tweens.add({ targets: t, alpha: 1, duration: 320 });
-      this.time.delayedCall(lines[i - 1] === '' ? 200 : 660, step);
-    };
-    this.time.delayedCall(1400, step);
+    const view = PrayerView.open(this, DAY05.prayer.lines, {
+      top: 250, bottom: H - 190, depth: 810, delay: 1400,
+      onDone: () => this.time.delayedCall(1200, () => this.askWho(veil, view, head))
+    });
   }
 
   /* 누구를 위해 기도할까요 — 짧게 끝냅니다 */
-  askWho(veil, t, head) {
+  askWho(veil, view, head) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
-    t.setText(DAY05.prayer.askWho);
-    t.setY(210);
+    view.destroy();
+    const t = this.add.text(W / 2, 210, DAY05.prayer.askWho, UI.style(21, PAL.cream, {
+      align: 'center', lineSpacing: 8, wordWrap: { width: W - 76 }
+    })).setOrigin(0.5, 0).setDepth(810);
     head.setAlpha(0.4);
 
     const layer = this.add.container(0, 0).setDepth(820);

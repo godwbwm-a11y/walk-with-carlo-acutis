@@ -82,29 +82,19 @@ window.Day7ChurchScene = class Day7ChurchScene extends Phaser.Scene {
       });
     }
 
-    const body = this.add.text(W / 2, 258, '', UI.style(18, PAL.cream, {
-      align: 'center', lineSpacing: 7, wordWrap: { width: W - 76 }
-    })).setOrigin(0.5, 0).setDepth(810);
-
-    const lines = DAY07.prayer.lines;
-    let shown = [], i = 0;
-    const step = () => {
-      if (i >= lines.length) { this.time.delayedCall(1200, () => this.askWho(veil, body, head)); return; }
-      shown.push(lines[i++]);
-      if (shown.length > 12) shown.shift();
-      body.setText(shown.join('\n'));
-      body.setAlpha(0.45);
-      this.tweens.add({ targets: body, alpha: 1, duration: 320 });
-      this.time.delayedCall(lines[i - 1] === '' ? 200 : 660, step);
-    };
-    this.time.delayedCall(1600, step);
+    const view = PrayerView.open(this, DAY07.prayer.lines, {
+      top: 258, bottom: H - 190, depth: 810, delay: 1600,
+      onDone: () => this.time.delayedCall(1200, () => this.askWho(veil, view, head))
+    });
   }
 
   /* 아주 짧은 자유 기도 */
-  askWho(veil, body, head) {
+  askWho(veil, view, head) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
-    body.setText(DAY07.prayer.askWho);
-    body.setY(196);
+    if (view.destroy) view.destroy();
+    const body = this.add.text(W / 2, 196, DAY07.prayer.askWho, UI.style(21, PAL.cream, {
+      align: 'center', lineSpacing: 8, wordWrap: { width: W - 76 }
+    })).setOrigin(0.5, 0).setDepth(810);
     head.setAlpha(0.4);
     /* 오늘의 요약은 잠시 물러납니다 */
     (this.giftRows || []).forEach(t => this.tweens.add({

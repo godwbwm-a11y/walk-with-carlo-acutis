@@ -17,38 +17,15 @@ window.EpPrayerScene = class EpPrayerScene extends Phaser.Scene {
     this.add.text(W / 2, 250, EPI.prayer.head, UI.style(FONT.small, '#8fa5c8'))
       .setOrigin(0.5).setDepth(10).setAlpha(0.9);
 
-    /* 기도문은 한 번에 한 덩이씩 조용히 올라옵니다 */
-    this.body = this.add.text(W / 2, 470, '', UI.style(17, PAL.cream, {
-      align: 'center', lineSpacing: 9, wordWrap: { width: W - 66 }
-    })).setOrigin(0.5).setDepth(10).setAlpha(0);
-
-    this.blocks = EPI.prayer.text.split('\n\n');
-    this.shown = [];
-    this.idx = 0;
+    /* 기도문은 한 덩이씩 천천히 올라옵니다 — 손으로 밀어 앞을 다시 볼 수 있습니다 */
+    this.view = PrayerView.open(this, EPI.prayer.text.split('\n\n'), {
+      top: 296, bottom: H - 196, depth: 10, size: 21,
+      gap: 2600, blankGap: 1200, delay: 1400,
+      onDone: () => this.amenButton()
+    });
+    this.body = this.view.layer;
 
     UI.fadeIn(this, 1100, [20, 26, 44]);
-    this.time.delayedCall(1400, () => this.next());
-  }
-
-  next() {
-    if (this.idx >= this.blocks.length) { this.amenButton(); return; }
-    this.shown.push(this.blocks[this.idx++]);
-
-    /* 길어지면 뒤에서부터 세 덩이만 보여줍니다 */
-    const view = this.shown.slice(-3).join('\n\n');
-    this.body.setText(view).setAlpha(0);
-
-    let size = 17;
-    while (this.body.height > 300 && size > 13) {
-      size--;
-      this.body.setStyle(UI.style(size, PAL.cream, {
-        align: 'center', lineSpacing: 8, wordWrap: { width: GAME.WIDTH - 66 }
-      }));
-    }
-
-    this.tweens.add({ targets: this.body, alpha: 1, duration: 900 });
-    AudioSystem.talk();
-    this.time.delayedCall(2600, () => this.next());
   }
 
   amenButton() {
