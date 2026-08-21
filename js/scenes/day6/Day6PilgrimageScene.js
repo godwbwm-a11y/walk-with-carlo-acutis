@@ -73,6 +73,25 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
       id: 'd6_maria', x: 1330, y: 676, label: '마리아', range: 74, priority: 2, markerY: 590,
       onInteract: () => this.restTalk('maria')
     });
+    /* 그늘에 앉으신 주교님 — 가로세로 낱말퀴즈 */
+    this.add.image(1470, 470, 'shade_tent').setDepth(470).setScale(0.98).setAlpha(0.95);
+    this.bishop = this.add.image(1470, 660, 'd6_bishop').setDepth(660).setScale(1.36);
+    this.tweens.add({ targets: this.bishop, y: 656, duration: 1500, yoyo: true, repeat: -1 });
+    this.bishopItem = this.addInteractable({
+      id: 'd6_bishop', x: 1470, y: 690, label: DAY06.crossword.label,
+      range: 88, priority: 2, markerY: 590,
+      onInteract: () => this.meetBishop()
+    });
+
+    /* 길가의 작은 성당 — 성당 탐험대 */
+    this.wayChurch = this.add.image(1700, 470, 'church_front').setOrigin(0.5, 1)
+      .setDepth(8).setScale(0.92);
+    this.churchItem = this.addInteractable({
+      id: 'd6_church', x: 1700, y: 690, label: DAY06.quest.label,
+      range: 92, priority: 2, markerY: 470,
+      onInteract: () => this.enterChurch()
+    });
+
     this.outItem = this.addInteractable({
       id: 'd6_out', x: 1950, y: 680, label: '밤샘기도 장소로', range: 96, priority: 1, markerY: 570,
       onInteract: () => this.goOut()
@@ -90,6 +109,8 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
     this.disableInteractable('d6_rest');
     this.disableInteractable('d6_jiwoo');
     this.disableInteractable('d6_maria');
+    this.disableInteractable('d6_bishop');
+    this.disableInteractable('d6_church');
     this.disableInteractable('d6_out');
 
     UI.fadeIn(this, 900, [200, 190, 172]);
@@ -131,9 +152,27 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
     this.flags.rest = true;
     AudioSystem.found();
     this.dialogue.say(DAY06.rest.look, () => {
-      this.enableInteractable('d6_out');
-      this.objective.setText('밤샘기도 장소로 가자');
+      this.enableInteractable('d6_bishop');
+      this.objective.setText(DAY06.crossword.objective);
     });
+  }
+
+  /* 주교님과 가로세로 낱말퀴즈 */
+  meetBishop() {
+    if (this.flags.bishop) { this.dialogue.say([{ s: '주교님', t: '이제 슬슬 일어나 볼까.' }]); return; }
+    this.flags.bishop = true;
+    this.disableInteractable('d6_bishop');
+    if (this.stick) this.stick.reset();
+    this.openMiniGame('CrosswordScene');
+  }
+
+  /* 길가의 작은 성당 탐험 */
+  enterChurch() {
+    if (this.flags.church) { this.dialogue.say(['문은 여전히 열려 있다.']); return; }
+    this.flags.church = true;
+    this.disableInteractable('d6_church');
+    if (this.stick) this.stick.reset();
+    this.openMiniGame('ChurchQuestScene');
   }
 
   restTalk(who) {
@@ -144,10 +183,23 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
   }
 
   onMiniGameDone(key) {
-    if (key !== 'PilgrimWalkScene') return;
-    this.flags.walk = true;
-    AudioSystem.chime();
-    this.time.delayedCall(500, () => this.during());
+    if (key === 'PilgrimWalkScene') {
+      this.flags.walk = true;
+      AudioSystem.chime();
+      this.time.delayedCall(500, () => this.during());
+
+    } else if (key === 'CrosswordScene') {
+      /* 주교님이 일어나 함께 걸으십니다 */
+      this.tweens.add({ targets: this.bishop, x: 1560, duration: 2600, ease: 'Sine.easeInOut' });
+      this.enableInteractable('d6_church');
+      this.objective.setText(DAY06.quest.objective);
+      this.setInputLocked(false);
+
+    } else if (key === 'ChurchQuestScene') {
+      this.enableInteractable('d6_out');
+      this.objective.setText('밤샘기도 장소로 가자');
+      this.setInputLocked(false);
+    }
   }
 
   goOut() {

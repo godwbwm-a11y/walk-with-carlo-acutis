@@ -51,6 +51,7 @@
       Day6IntroScene, Day6PilgrimageScene, Day6FieldScene, Day6VigilScene,
       Day6NightScene, Day6DawnScene, Day6MissionScene, Day6NoteScene, Day6EndScene,
       PilgrimWalkScene, OurSpotScene, StarPrayerScene, StayScene, MorningScene, MissionScene,
+      CrosswordScene, ChurchQuestScene,
       Day7RoomScene, Day7SchoolScene, Day7ComputerScene, Day7TownScene,
       Day7ChurchScene, Day7NoteScene, Day7EndScene,
       ExplainScene, MakeCardScene, NetChoiceScene, NoticeScene, ReceivedScene,

@@ -3,6 +3,7 @@
 TextureFactory.createDay6 = function (scene) {
   const make = TextureFactory.make;
   const canvasTex = TextureFactory.canvasTex;
+  const person = TextureFactory.person;
 
   /* ── 하늘 ───────────────────────────────────── */
   canvasTex(scene, 'sky_dawn', 8, 500, function (ctx, w, h) {
@@ -145,6 +146,62 @@ TextureFactory.createDay6 = function (scene) {
     g.lineStyle(3, 0xe0954a, 0.8); g.strokeRoundedRect(0, 0, 300, 200, 18);
     g.fillStyle(0xe0954a, 1); g.fillRoundedRect(0, 0, 300, 40, { tl: 18, tr: 18, bl: 0, br: 0 });
   });
+  /* ── 주교님 ─────────────────────────────────── */
+  /* 실존 인물이 아니라, 자주색 옷과 작은 모자로 알아보는 실루엣입니다. */
+  make(scene, 'd6_bishop', 34, 50, function (g) {
+    person(g, { skin: 0xecd0ac, hair: 0xd8d2c8, shirt: 0x7a5f8a, pants: 0x4a3f56, shoes: 0x3a3038 });
+    g.fillStyle(0x7a5f8a, 1);
+    g.fillRoundedRect(9, 2, 14, 6, 3);                    // 작은 모자
+    g.fillStyle(0xd7c07f, 1);
+    g.fillRect(15, 20, 2.4, 9); g.fillRect(12.6, 22.4, 7, 2.4);   // 가슴 십자가
+  });
+
+  /* ── 성당 안의 자리들 ───────────────────────── */
+  /* 독서대 — 말씀을 선포하는 곳 */
+  make(scene, 'ch_ambo', 64, 78, function (g) {
+    g.fillStyle(0x000000, 0.16); g.fillEllipse(32, 74, 46, 9);
+    g.fillStyle(0x8a6340, 1); g.fillRoundedRect(22, 30, 20, 42, 4);   // 기둥
+    g.fillStyle(0xa8814f, 1); g.fillRoundedRect(14, 68, 36, 8, 3);    // 받침
+    g.fillStyle(0xa8814f, 1); g.fillRoundedRect(6, 18, 52, 18, 4);    // 경사진 판
+    g.fillStyle(0xfdf3e0, 1); g.fillRoundedRect(12, 12, 40, 14, 2);   // 펼친 책
+    g.lineStyle(1.4, 0xc9bda6, 1); g.lineBetween(32, 12, 32, 26);
+    g.fillStyle(0xc9553f, 1); g.fillRect(30, 22, 4, 10);              // 책갈피
+  });
+
+  /* 감실 — 성체를 모셔 두는 곳 */
+  make(scene, 'ch_tabernacle', 58, 66, function (g) {
+    g.fillStyle(0x000000, 0.16); g.fillRoundedRect(6, 10, 48, 54, 6);
+    g.fillStyle(0x8d7b5e, 1); g.fillRoundedRect(2, 6, 52, 56, 6);
+    g.fillStyle(0xd7c07f, 1); g.fillRoundedRect(6, 10, 44, 48, 5);     // 금빛 문
+    g.fillStyle(0xc0a860, 1); g.fillRoundedRect(10, 14, 36, 40, 4);
+    g.fillStyle(0xfdf3e0, 1);
+    g.fillCircle(28, 34, 8); g.fillStyle(0xd7c07f, 1); g.fillCircle(28, 34, 5.4);
+    g.fillStyle(0x7a5f8a, 1); g.fillRoundedRect(2, 0, 52, 10, 3);      // 감실 휘장
+    g.fillStyle(0xd7c07f, 1); g.fillCircle(28, 56, 3);                 // 자물쇠
+  });
+
+  /* 세례대 — 물로 새로 태어나는 자리 */
+  make(scene, 'ch_font', 62, 70, function (g) {
+    g.fillStyle(0x000000, 0.16); g.fillEllipse(31, 66, 46, 9);
+    g.fillStyle(0xb9b2a4, 1); g.fillRoundedRect(22, 28, 18, 34, 4);    // 기둥
+    g.fillStyle(0xc9c2b2, 1); g.fillRoundedRect(12, 58, 38, 8, 3);
+    g.fillStyle(0xc9c2b2, 1); g.fillRoundedRect(4, 14, 54, 22, 8);     // 대야
+    g.fillStyle(0x8fc0d9, 1); g.fillEllipse(31, 20, 42, 12);           // 물
+    g.fillStyle(0xd6ecf6, 0.8); g.fillEllipse(24, 19, 14, 5);
+  });
+
+  /* 고해소 — 용서를 청하는 작은 방 */
+  make(scene, 'ch_confess', 72, 96, function (g) {
+    g.fillStyle(0x000000, 0.16); g.fillRoundedRect(6, 10, 62, 86, 5);
+    g.fillStyle(0x6f5b49, 1); g.fillRoundedRect(2, 4, 66, 88, 5);
+    g.fillStyle(0x8a6340, 1); g.fillRoundedRect(6, 8, 58, 80, 4);
+    g.fillStyle(0x5b4a3c, 1); g.fillRoundedRect(10, 30, 22, 58, 3);    // 문
+    g.fillStyle(0x7a5f8a, 0.9); g.fillRoundedRect(38, 30, 22, 58, 3);  // 휘장
+    g.fillStyle(0x4a3f36, 1);
+    for (let i = 0; i < 5; i++) g.fillRect(14 + i * 3.4, 14, 1.8, 12); // 살창
+    g.fillStyle(0xd7c07f, 1); g.fillRect(34, 0, 4, 8); g.fillRect(31, 2, 10, 3);
+  });
+
   make(scene, 'subway_car', 300, 160, function (g) {
     g.fillStyle(0xc6ced7, 1); g.fillRoundedRect(0, 0, 300, 160, 14);
     g.fillStyle(0xdfe6ec, 1); g.fillRoundedRect(8, 8, 284, 144, 10);
