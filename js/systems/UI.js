@@ -252,8 +252,9 @@ window.UI = (function () {
   /* 작게, 버튼을 건드리지 않을 만큼만 */
   function footer(scene) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const a = scene.add.text(0, 0, GAME.COPYRIGHT, style(FONT.tiny, PAL.dim)).setOrigin(0.5);
-    const b = scene.add.text(0, 0, GAME.LICENSE, style(FONT.tiny, PAL.dim, {
+    /* 푸터 자리의 배경이 밝은 모래색이라 검은 글씨가 가장 잘 읽힙니다 */
+    const a = scene.add.text(0, 0, GAME.COPYRIGHT, style(FONT.tiny, '#000000')).setOrigin(0.5);
+    const b = scene.add.text(0, 0, GAME.LICENSE, style(FONT.tiny, '#000000', {
       align: 'center', wordWrap: { width: W - 28 }, lineSpacing: 2
     })).setOrigin(0.5);
 
@@ -263,7 +264,7 @@ window.UI = (function () {
 
     const c = scene.add.container(W / 2, H - inner / 2 - 10).setDepth(60);
     c.add([a, b]);
-    c.setAlpha(0.7);
+    c.setAlpha(0.9);            // 너무 옅으면 검은색이 회색으로 보입니다
     c.boxH = inner;
     return c;
   }
