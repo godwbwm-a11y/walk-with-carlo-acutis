@@ -198,7 +198,7 @@ window.AudioSystem = (function () {
     wave:   function () { noiseHit(0.9, 420, 0.6, 0.07); },
     found:  function () { tone(587, 0.16, 'triangle', 0.07); setTimeout(function () { tone(880, 0.28, 'triangle', 0.06); }, 110); },
 
-    /* 카를로의 하루 */
+    /* 가롤로의 하루 */
     tram:   function () { tone(1046, 0.5, 'sine', 0.05); setTimeout(function () { tone(1318, 0.4, 'sine', 0.035); }, 130); },
     blip:   function () { tone(760, 0.06, 'square', 0.035); },
     charge: function () { tone(300, 0.08, 'square', 0.03); },

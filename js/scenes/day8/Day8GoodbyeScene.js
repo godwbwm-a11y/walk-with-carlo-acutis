@@ -1,4 +1,4 @@
-/* DAY 8 · 마지막 꿈 — 카를로가 뒤로 물러납니다. “나 말고, 하느님.” */
+/* DAY 8 · 마지막 꿈 — 가롤로가 뒤로 물러납니다. “나 말고, 하느님.” */
 
 window.Day8GoodbyeScene = class Day8GoodbyeScene extends Phaser.Scene {
   constructor() { super('Day8GoodbyeScene'); }
@@ -48,7 +48,7 @@ window.Day8GoodbyeScene = class Day8GoodbyeScene extends Phaser.Scene {
     });
   }
 
-  /* 카를로가 오늘 한 일을 하나씩 세어 줍니다 */
+  /* 가롤로가 오늘 한 일을 하나씩 세어 줍니다 */
   counted(i) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     if (i >= DAY08.goodbye.counted.length) {
@@ -104,7 +104,7 @@ window.Day8GoodbyeScene = class Day8GoodbyeScene extends Phaser.Scene {
     });
   }
 
-  /* 카를로의 인생 계획, 그리고 나의 인생 계획 */
+  /* 가롤로의 인생 계획, 그리고 나의 인생 계획 */
   core() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, G = DAY08.goodbye;
     const a = this.add.text(W / 2, H * 0.30, G.core1, UI.style(24, PAL.cream, {
@@ -178,7 +178,7 @@ window.Day8GoodbyeScene = class Day8GoodbyeScene extends Phaser.Scene {
     });
   }
 
-  /* 카를로는 한쪽으로, 나는 반대쪽으로 */
+  /* 가롤로는 한쪽으로, 나는 반대쪽으로 */
   walkAway() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     if (this.bob) this.bob.stop();

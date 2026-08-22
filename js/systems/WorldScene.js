@@ -11,7 +11,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.worldW = opt.width || GAME.WIDTH;
     this.worldH = opt.height || GAME.HEIGHT;
     this.walkSpeed = opt.speed || 108;
-    this.playerTex = opt.playerTex || 'player';   // 카를로의 하루에서는 카를로가 됩니다
+    this.playerTex = opt.playerTex || 'player';   // 가롤로의 하루에서는 가롤로가 됩니다
     this._stepAt = 0;
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);

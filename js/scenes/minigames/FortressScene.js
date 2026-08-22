@@ -1,10 +1,10 @@
 /* 미니게임 · 한 시간의 게임 — 2000년대 초 오락실과 PC방을 채우던
    각도와 힘으로 포탄을 쏘는 그 게임처럼. 시간 제한도, 지는 것도 없습니다.
-   카를로는 게임을 좋아했지만 일주일에 한 시간만 했습니다.
+   가롤로는 게임을 좋아했지만 일주일에 한 시간만 했습니다.
 
    과녁 두 개를 맞히면 이야기는 이어질 수 있지만, 더 하고 싶으면
    원하는 만큼 더 할 수 있습니다. 난이도도 그때마다 고를 수 있습니다.
-   그만두는 것은 언제나 플레이어가 정합니다 — 카를로가 그랬던 것처럼. */
+   그만두는 것은 언제나 플레이어가 정합니다 — 가롤로가 그랬던 것처럼. */
 
 window.FortressScene = class FortressScene extends MiniGameScene {
   constructor() { super('FortressScene'); }
@@ -84,7 +84,7 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.windText = this.add.text(W / 2, this.PLAY_TOP + 12, '', UI.style(FONT.small, PAL.ink))
       .setOrigin(0.5).setDepth(123);
 
-    /* 카를로의 참견 — 화면 아래 여백에 */
+    /* 가롤로의 참견 — 화면 아래 여백에 */
     this.talk = this.add.text(W / 2, this.PLAY_BOT + 32, '', UI.style(FONT.small, PAL.cream, {
       align: 'center', wordWrap: { width: W - 80 }
     })).setOrigin(0.5).setDepth(130).setAlpha(0);
@@ -480,7 +480,7 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     }
   }
 
-  /* 계속할수록 카를로가 슬며시 건네는 말 — 다그치지는 않습니다 */
+  /* 계속할수록 가롤로가 슬며시 건네는 말 — 다그치지는 않습니다 */
   nudgeLine() {
     const lines = [
       '나이스!',
@@ -515,18 +515,18 @@ window.FortressScene = class FortressScene extends MiniGameScene {
       '오랜만에 소리 내서 웃었다.'
     ];
     if (this.freeHits >= 3) {
-      lines.push({ s: '카를로', t: '많이 했네ㅋㅋ' });
+      lines.push({ s: '가롤로', t: '많이 했네ㅋㅋ' });
       lines.push({ s: '나', t: '…너무 재밌어서.' });
-      lines.push({ s: '카를로', t: '알아. 나도 그랬어.' });
+      lines.push({ s: '가롤로', t: '알아. 나도 그랬어.' });
     } else {
-      lines.push({ s: '카를로', t: '재밌지?' });
+      lines.push({ s: '가롤로', t: '재밌지?' });
       lines.push({ s: '나', t: '어. 진짜 재밌어.' });
     }
-    lines.push({ s: '카를로', t: '나도 이거 진짜 좋아했어.' });
-    lines.push({ s: '카를로', t: '좋아하니까 아껴서 한 거야.' });
+    lines.push({ s: '가롤로', t: '나도 이거 진짜 좋아했어.' });
+    lines.push({ s: '가롤로', t: '좋아하니까 아껴서 한 거야.' });
     if (this.freeHits > 0) {
-      lines.push({ s: '카를로', t: '근데 그만두자고 한 건 너였어.' });
-      lines.push({ s: '카를로', t: '그게 제일 어려운 거야.' });
+      lines.push({ s: '가롤로', t: '근데 그만두자고 한 건 너였어.' });
+      lines.push({ s: '가롤로', t: '그게 제일 어려운 거야.' });
     }
     this.complete(lines);
   }

@@ -2,7 +2,7 @@
 
    담벼락에 박힌 말들을 공으로 떨어뜨립니다.
    공을 받아 치는 것은 주인공입니다. 좌우로 움직이며 받습니다.
-   놓쳐도 지지 않습니다 — 카를로가 주워서 다시 건네주고,
+   놓쳐도 지지 않습니다 — 가롤로가 주워서 다시 건네주고,
    자꾸 놓치면 옆에 와서 같이 받아줍니다. 다 떨어뜨리면 끝납니다. */
 
 window.BrickScene = class BrickScene extends MiniGameScene {
@@ -73,7 +73,7 @@ window.BrickScene = class BrickScene extends MiniGameScene {
     this.meShadow = this.add.image(W / 2, this.PAD_Y + 34, 'shadow')
       .setDepth(46).setScale(1.5).setAlpha(0.4);
 
-    /* 카를로는 아직 옆에 서 있지 않습니다 */
+    /* 가롤로는 아직 옆에 서 있지 않습니다 */
     this.carlo = this.add.image(W / 2, this.PAD_Y, 'carlo_front')
       .setDepth(50).setScale(1.5).setVisible(false);
 
@@ -263,7 +263,7 @@ window.BrickScene = class BrickScene extends MiniGameScene {
     this.time.delayedCall(1300, () => this.serve(600));
   }
 
-  /* 자꾸 놓치면 카를로가 옆에 와서 같이 받아줍니다 */
+  /* 자꾸 놓치면 가롤로가 옆에 와서 같이 받아줍니다 */
   callCarlo() {
     this.helped = true;
     this.padW = 136;

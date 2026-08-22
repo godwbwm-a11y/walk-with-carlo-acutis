@@ -67,7 +67,7 @@ window.Day8EndScene = class Day8EndScene extends Phaser.Scene {
     });
   }
 
-  /* 카를로의 인생 계획 옆에, 나의 인생 계획 */
+  /* 가롤로의 인생 계획 옆에, 나의 인생 계획 */
   carloLine() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, E = DAY08.end;
     const plan = SaveSystem.get('lifePlan', null) || '한 걸음';

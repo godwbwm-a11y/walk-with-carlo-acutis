@@ -42,7 +42,7 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
     this.tweens.add({ targets: this.carlo, y: 583, duration: 1800, yoyo: true, repeat: -1 });
 
     this.carloItem = this.addInteractable({
-      id: 'd4_carlo', x: 1150, y: 596, label: '카를로', range: 96, priority: 2, markerY: 534,
+      id: 'd4_carlo', x: 1150, y: 596, label: '가롤로', range: 96, priority: 2, markerY: 534,
       onInteract: () => this.talkCarlo()
     });
 
@@ -92,7 +92,7 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (this.flags.mirror) { this.dialogue.say([{ s: '카를로', t: '천천히 걸어봐.' }]); return; }
+    if (this.flags.mirror) { this.dialogue.say([{ s: '가롤로', t: '천천히 걸어봐.' }]); return; }
     this.flags.carlo = true;
     this.setInputLocked(true);
     this.dialogue.play(DAY04.yard.meet, () => {
@@ -110,7 +110,7 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
     });
   }
 
-  /* 담벼락 앞에서 — 카를로가 걸어옵니다 */
+  /* 담벼락 앞에서 — 가롤로가 걸어옵니다 */
   lookWall() {
     if (this.flags.wall) { this.dialogue.say(['떨어진 종이들이 바닥에 그대로 있다.']); return; }
     this.flags.wall = true;
@@ -118,7 +118,7 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
     this.setInputLocked(true);
 
     this.dialogue.play(DAY04.bricks.look, () => {
-      /* 카를로가 벤치 쪽에서 담벼락으로 옵니다 */
+      /* 가롤로가 벤치 쪽에서 담벼락으로 옵니다 */
       this.tweens.add({
         targets: this.carlo, x: 1074, duration: 1100, ease: 'Sine.easeInOut',
         onComplete: () => {

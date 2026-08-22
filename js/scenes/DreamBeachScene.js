@@ -1,4 +1,4 @@
-/* DAY 1 · SCENE 3 — 꿈속 해변. 카를로와의 첫 만남과 첫 산책 */
+/* DAY 1 · SCENE 3 — 꿈속 해변. 가롤로와의 첫 만남과 첫 산책 */
 
 window.DreamBeachScene = class DreamBeachScene extends WorldScene {
   constructor() { super('DreamBeachScene'); }
@@ -74,7 +74,7 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
 
     this.createInteractables();
 
-    /* 카를로 — 저 멀리 서 있다 */
+    /* 가롤로 — 저 멀리 서 있다 */
     this.carlo = this.add.sprite(880, 596, 'carlo_back').setOrigin(0.5, 0.86).setDepth(596).setScale(1.12);
     this.carloShadow = this.add.image(880, 599, 'shadow').setDepth(595).setAlpha(0.5).setScale(1.1);
     this.tweens.add({ targets: this.carlo, y: 592, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
@@ -161,7 +161,7 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     this.dialogue.say(lines);
   }
 
-  /* 카를로와 처음 만나는 순간 */
+  /* 가롤로와 처음 만나는 순간 */
   meetCarlo() {
     if (this.met) return;
     this.met = true;
@@ -221,7 +221,7 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     });
   }
 
-  /* 카를로와 메시지를 주고받습니다 */
+  /* 가롤로와 메시지를 주고받습니다 */
   toChat() {
     this.dialogue.play(DAY01.dream.beforeChat, () => {
       if (this.stick) this.stick.reset();
@@ -230,7 +230,7 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     });
   }
 
-  /* 메시지를 마치면, 카를로가 자기 하루로 초대합니다 */
+  /* 메시지를 마치면, 가롤로가 자기 하루로 초대합니다 */
   onChatDone() {
     this.time.delayedCall(400, () => {
       this.dialogue.play(DAY01.dream.afterChat.concat(CARLO_DAY.invite), () => this.toCarloDay());
@@ -262,7 +262,7 @@ window.DreamBeachScene = class DreamBeachScene extends WorldScene {
     this.updateWorld(time, delta);
     if (this.foam2) this.foam2.tilePositionX += 0.12;
 
-    /* 카를로에게 다가가면 첫 만남 */
+    /* 가롤로에게 다가가면 첫 만남 */
     if (!this.met && this.player && Phaser.Math.Distance.Between(this.player.x, this.player.y, this.carlo.x, this.carlo.y) < 120) {
       this.meetCarlo();
     }

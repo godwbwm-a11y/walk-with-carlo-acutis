@@ -4,7 +4,7 @@
    수호천사가 좌우로 움직이며 사탕을 던져, 그 말들이 나에게 닿지 못하게 합니다.
 
    지는 것은 없습니다.
-   말이 자꾸 닿아 힘들어지면 카를로가 천사들과 함께 와서
+   말이 자꾸 닿아 힘들어지면 가롤로가 천사들과 함께 와서
    아래에 포대를 세우고 같이 쏘아 줍니다. 그때부터는 훨씬 수월합니다. */
 
 window.AngelScene = class AngelScene extends MiniGameScene {
@@ -189,7 +189,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
     this.shotAt = now;
 
     if (this.helped) {
-      /* 카를로가 온 뒤로는 사탕이 두 개씩 나갑니다 */
+      /* 가롤로가 온 뒤로는 사탕이 두 개씩 나갑니다 */
       this.throwCandy(this.angel.x - 13, this.ANGEL_Y - 18);
       this.throwCandy(this.angel.x + 13, this.ANGEL_Y - 18);
     } else {
@@ -258,7 +258,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
     if (this.heart <= 2 && !this.helped) this.callCarlo();
   }
 
-  /* ── 카를로와 천사들이 옵니다 ────────────────── */
+  /* ── 가롤로와 천사들이 옵니다 ────────────────── */
   callCarlo() {
     const W = GAME.WIDTH, A = DAY02.angel;
     this.helped = true;

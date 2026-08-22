@@ -124,7 +124,7 @@ window.DialogueBox = class DialogueBox {
     const w = this.nameText.width + 26;
     const x = GAME.WIDTH / 2 - this.boxW / 2 + 10;
     const y = this.boxY - this.boxH / 2 - 30;
-    const color = (name === '카를로' || name === '소년') ? HEX(PAL.clay) : HEX(PAL.sea);
+    const color = (name === '가롤로' || name === '소년') ? HEX(PAL.clay) : HEX(PAL.sea);
     this.namePlate.fillStyle(color, 0.95);
     this.namePlate.fillRoundedRect(x, y, w, 30, 15);
     this.nameText.setPosition(x + 13, y + 15);

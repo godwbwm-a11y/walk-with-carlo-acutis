@@ -78,11 +78,11 @@ window.Day5FestivalScene = class Day5FestivalScene extends WorldScene {
       });
     });
 
-    /* 카를로 */
+    /* 가롤로 */
     this.carlo = this.add.image(230, 640, 'carlo_front').setDepth(640).setScale(1.35);
     this.tweens.add({ targets: this.carlo, y: 636, duration: 840, yoyo: true, repeat: -1 });
     this.addInteractable({
-      id: 'd5_carlo', x: 230, y: 676, label: '카를로', range: 84, priority: 3, markerY: 576,
+      id: 'd5_carlo', x: 230, y: 676, label: '가롤로', range: 84, priority: 3, markerY: 576,
       onInteract: () => this.talkCarlo()
     });
 
@@ -128,12 +128,12 @@ window.Day5FestivalScene = class Day5FestivalScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (!this.flags.hello) { this.dialogue.say([{ s: '카를로', t: '가서 인사 한번 해봐.' }]); return; }
+    if (!this.flags.hello) { this.dialogue.say([{ s: '가롤로', t: '가서 인사 한번 해봐.' }]); return; }
     if (this.talkedCount() < 4) {
-      this.dialogue.say([{ s: '카를로', t: '사람들이랑 더 이야기해봐. 시간 많아.' }]);
+      this.dialogue.say([{ s: '가롤로', t: '사람들이랑 더 이야기해봐. 시간 많아.' }]);
       return;
     }
-    if (this.flags.after) { this.dialogue.say([{ s: '카를로', t: '무대 쪽으로 가볼까?' }]); return; }
+    if (this.flags.after) { this.dialogue.say([{ s: '가롤로', t: '무대 쪽으로 가볼까?' }]); return; }
     this.flags.after = true;
     this.dialogue.play(DAY05.festival.after, () => {
       this.enableInteractable('d5_rhythm');
@@ -157,7 +157,7 @@ window.Day5FestivalScene = class Day5FestivalScene extends WorldScene {
         const met = SaveSystem.get('reflections.day5Friends', []) || [];
         if (met.indexOf(npc.name) === -1) { met.push(npc.name); SaveSystem.set('reflections.day5Friends', met); }
         AudioSystem.found();
-        if (this.talkedCount() >= 4) this.objective.setText('카를로와 이야기해보자');
+        if (this.talkedCount() >= 4) this.objective.setText('가롤로와 이야기해보자');
       };
       if (listens) this.dialogue.play(npc.listen, after);   // 어제 고른 좋은 점이 여기서 쓰입니다
       else after();

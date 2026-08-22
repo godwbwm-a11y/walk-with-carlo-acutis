@@ -1,4 +1,4 @@
-/* 카를로와의 메시지 — 익숙한 채팅 화면처럼 */
+/* 가롤로와의 메시지 — 익숙한 채팅 화면처럼 */
 
 window.ChatScene = class ChatScene extends Phaser.Scene {
   constructor() { super('ChatScene'); }
@@ -54,7 +54,7 @@ window.ChatScene = class ChatScene extends Phaser.Scene {
     });
     this.input.on('pointerup', () => { this.drag = false; });
 
-    Collection.unlock('c1');            // 카를로의 상태메시지
+    Collection.unlock('c1');            // 가롤로의 상태메시지
     this.queue(CHAT.intro, () => this.showTopics());
     UI.fadeIn(this, 400);
   }

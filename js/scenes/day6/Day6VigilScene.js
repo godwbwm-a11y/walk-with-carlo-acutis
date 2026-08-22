@@ -76,7 +76,7 @@ window.Day6VigilScene = class Day6VigilScene extends Phaser.Scene {
     });
   }
 
-  /* 팝업 효과 없이 조용히 들어오는 카를로 카드 */
+  /* 팝업 효과 없이 조용히 들어오는 가롤로 카드 */
   carloCard() {
     Collection.award(this, 'c13', () => this.prayer());
   }

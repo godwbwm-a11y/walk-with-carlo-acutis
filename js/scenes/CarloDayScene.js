@@ -1,5 +1,5 @@
-/* 카를로의 하루 — 2005년 밀라노.
-   여기서는 플레이어가 카를로가 됩니다. 곁에서 걷던 사람이 곧 나 자신이 됩니다.
+/* 가롤로의 하루 — 2005년 밀라노.
+   여기서는 플레이어가 가롤로가 됩니다. 곁에서 걷던 사람이 곧 나 자신이 됩니다.
    길은 아침에서 밤으로 한 방향으로만 이어집니다. 꿈이기 때문입니다. */
 
 window.CarloDayScene = class CarloDayScene extends WorldScene {
@@ -32,7 +32,7 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.stick = new Joystick(this);
     this.createActionButton();
-    this.createPhotoButton('카를로의 하루 · 밀라노');
+    this.createPhotoButton('가롤로의 하루 · 밀라노');
     this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, ' ').setVisible(false);
 

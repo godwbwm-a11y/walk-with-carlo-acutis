@@ -40,18 +40,18 @@ window.Day5VocationScene = class Day5VocationScene extends WorldScene {
       onInteract: () => this.talkSister()
     });
 
-    /* 디지털 전시 부스 — 카를로의 사진 */
+    /* 디지털 전시 부스 — 가롤로의 사진 */
     this.add.image(1620, 500, 'screen_stand').setDepth(500).setScale(1.05);
     this.addInteractable({
       id: 'd5_digital', x: 1620, y: 650, label: '디지털 전시', range: 84, priority: 1, markerY: 430,
       onInteract: () => this.digital()
     });
 
-    /* 카를로 */
+    /* 가롤로 */
     this.carlo = this.add.image(400, 660, 'carlo_front').setDepth(660).setScale(1.35);
     this.tweens.add({ targets: this.carlo, y: 656, duration: 860, yoyo: true, repeat: -1 });
     this.addInteractable({
-      id: 'd5_carlo', x: 400, y: 694, label: '카를로', range: 82, priority: 3, markerY: 596,
+      id: 'd5_carlo', x: 400, y: 694, label: '가롤로', range: 82, priority: 3, markerY: 596,
       onInteract: () => this.talkCarlo()
     });
 
@@ -100,15 +100,15 @@ window.Day5VocationScene = class Day5VocationScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (!this.flags.sister) { this.dialogue.say([{ s: '카를로', t: '저기 수녀님한테 한번 물어봐.' }]); return; }
-    if (!this.flags.heart) { this.dialogue.say([{ s: '카를로', t: '천천히 둘러봐. 정답 없어.' }]); return; }
-    if (!this.flags.digital) { this.dialogue.say([{ s: '카를로', t: '저쪽 화면에 뭐가 있는데.' }]); return; }
-    this.dialogue.say([{ s: '카를로', t: '이제 미사 갈 시간이야.' }]);
+    if (!this.flags.sister) { this.dialogue.say([{ s: '가롤로', t: '저기 수녀님한테 한번 물어봐.' }]); return; }
+    if (!this.flags.heart) { this.dialogue.say([{ s: '가롤로', t: '천천히 둘러봐. 정답 없어.' }]); return; }
+    if (!this.flags.digital) { this.dialogue.say([{ s: '가롤로', t: '저쪽 화면에 뭐가 있는데.' }]); return; }
+    this.dialogue.say([{ s: '가롤로', t: '이제 미사 갈 시간이야.' }]);
   }
 
-  /* 카를로가 자기 카드를 발견합니다 */
+  /* 가롤로가 자기 카드를 발견합니다 */
   digital() {
-    if (this.flags.digital) { this.dialogue.say([{ s: '카를로', t: '사진 잘 나왔지?' }]); return; }
+    if (this.flags.digital) { this.dialogue.say([{ s: '가롤로', t: '사진 잘 나왔지?' }]); return; }
     this.flags.digital = true;
     this.disableInteractable('d5_digital');
     this.dialogue.play(DAY05.vocation.digital, () => {

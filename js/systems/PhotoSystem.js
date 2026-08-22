@@ -85,7 +85,7 @@ window.PhotoSystem = (function () {
       }
       if (mw.t + mw.d + pad * 3 > cv.width) {        // 그래도 좁으면 시각을 뺍니다
         showTime = false;
-        if (mw.t + pad * 2 > cv.width) title = '카를로와 함께 걷습니다';
+        if (mw.t + pad * 2 > cv.width) title = '가롤로와 함께 걷습니다';
       }
 
       const barH = Math.round(titleSize * 2.2);

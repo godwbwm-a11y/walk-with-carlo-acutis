@@ -302,7 +302,7 @@ TextureFactory.createDay2 = function (scene) {
     g.beginPath(); g.arc(46, 30, 9, Phaser.Math.DegToRad(200), Phaser.Math.DegToRad(340), false); g.strokePath();
   });
 
-  /* 카를로가 세우는 포대 */
+  /* 가롤로가 세우는 포대 */
   make(scene, 'd2_battery', 74, 50, function (g) {
     g.fillStyle(0x000000, 0.18); g.fillRoundedRect(4, 34, 68, 14, 6);
     g.fillStyle(0x7d6a52, 1); g.fillRoundedRect(0, 28, 70, 20, 8);    // 모래주머니

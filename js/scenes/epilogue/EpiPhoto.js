@@ -57,7 +57,7 @@ window.EpiPhoto = {
       if (p.id) taps.push({ id: p.id, img: img, x: p.x, y: p.y });
     });
 
-    /* 그리고 맨 뒤에 카를로 */
+    /* 그리고 맨 뒤에 가롤로 */
     const carlo = scene.add.image(EpiPhoto.carlo.x, EpiPhoto.carlo.y, 'carlo_front')
       .setScale(EpiPhoto.carlo.s).setAlpha(opt.carloAlpha === undefined ? 0.95 : opt.carloAlpha);
     c.add(carlo);

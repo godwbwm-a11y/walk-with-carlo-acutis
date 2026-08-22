@@ -113,7 +113,7 @@ window.Day6DawnScene = class Day6DawnScene extends Phaser.Scene {
     } else if (i === 5) {
       for (let r = 0; r < 3; r++)
         c.add(this.add.image(W / 2, cy - 30 + r * 46, 'sleep_row').setScale(0.9 - r * 0.05).setAlpha(0.9));
-    } else if (i >= 6 && i <= 11) {                  /* 지우·루카·마리아·레아·나·카를로 */
+    } else if (i >= 6 && i <= 11) {                  /* 지우·루카·마리아·레아·나·가롤로 */
       const kinds = ['child_front', 'pilgrim_e', 'pilgrim_a', 'pilgrim_c', 'player_front', 'carlo_front'];
       c.add(this.add.image(W / 2, cy, kinds[i - 6]).setScale(3.2));
     } else if (i === 12) {

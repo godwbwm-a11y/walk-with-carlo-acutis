@@ -77,7 +77,7 @@ window.TextureFactory = (function () {
     make(scene, 'player_back', 32, 46, function (g) {
       person(g, { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff, back: true });
     });
-    /* 카를로 — 붉은 폴로와 순례 배낭 */
+    /* 가롤로 — 붉은 폴로와 순례 배낭 */
     make(scene, 'carlo_front', 32, 46, function (g) {
       person(g, { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes });
     });
@@ -310,7 +310,7 @@ window.TextureFactory = (function () {
       g.fillStyle(0x8fc0d9, 1); g.fillCircle(20, 19, 6);
     });
 
-    /* ── 카를로의 하루 · 2005년 밀라노 ─────────── */
+    /* ── 가롤로의 하루 · 2005년 밀라노 ─────────── */
 
     /* 아침 하늘 */
     canvasTex(scene, 'sky_day', 8, 844, function (ctx, w, h) {
@@ -403,7 +403,7 @@ window.TextureFactory = (function () {
       g.fillStyle(0xf2b56b, 1); g.fillRect(92, 4, 3, 18); g.fillTriangle(95, 5, 122, 11, 95, 17);
     });
 
-    /* 카를로의 집 (밀라노 아파트) */
+    /* 가롤로의 집 (밀라노 아파트) */
     make(scene, 'apart_milan', 156, 212, function (g) {
       g.fillStyle(0xe7c79a, 1); g.fillRoundedRect(0, 16, 156, 196, 5);
       g.fillStyle(0xd8b384, 1); g.fillRect(0, 16, 156, 9);

@@ -83,7 +83,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
       6: 'DAY 6 · 수요일 · 밤샘기도와 파견',
       7: 'DAY 7 · 목요일 · 나눔',
       8: 'DAY 8 · 금요일 · 이제 내가 걷는다',
-      99: '카를로의 하루 · 밀라노'
+      99: '가롤로의 하루 · 밀라노'
     };
 
     COLLECTION.days().forEach((day) => {

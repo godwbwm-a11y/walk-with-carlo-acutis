@@ -1,4 +1,4 @@
-/* 미니게임 · 밤거리에서 나누기 — 카를로는 어머니와 끓인 수프를 담아
+/* 미니게임 · 밤거리에서 나누기 — 가롤로는 어머니와 끓인 수프를 담아
    밀라노의 밤거리로 나갔고, 용돈을 모아 침낭을 사서 건넸습니다. */
 
 window.NightShareScene = class NightShareScene extends MiniGameScene {
@@ -194,8 +194,8 @@ window.NightShareScene = class NightShareScene extends MiniGameScene {
       '수프도, 침낭도, 빵도 다 나갔다.',
       '손수레가 가벼워졌다.',
       '돌아가는 길에 아무도 칭찬해 주지 않았다.',
-      { s: '카를로', t: '원래 아무도 몰라.' },
-      { s: '카를로', t: '한 분은 아시고.' }
+      { s: '가롤로', t: '원래 아무도 몰라.' },
+      { s: '가롤로', t: '한 분은 아시고.' }
     ]);
   }
 };

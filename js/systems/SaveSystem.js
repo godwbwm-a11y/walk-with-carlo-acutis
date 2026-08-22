@@ -15,7 +15,7 @@ window.SaveSystem = (function () {
         mainConcern: null,       // DAY1 미니게임
         dislikeReason: null,     // DAY1 벤치 대화
         familyChoice: null,      // DAY1 첫 선택
-        carloSchoolChoice: null, // 카를로의 하루 · 학교에서의 선택
+        carloSchoolChoice: null, // 가롤로의 하루 · 학교에서의 선택
         entrustedConcern: null,
         sundayFeeling: null,
         personalStrength: null,

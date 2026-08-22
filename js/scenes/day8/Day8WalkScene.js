@@ -85,7 +85,7 @@ window.Day8WalkScene = class Day8WalkScene extends WorldScene {
     }));
   }
 
-  /* 가방 — 카를로도, 안내도, 음악도 없습니다 */
+  /* 가방 — 가롤로도, 안내도, 음악도 없습니다 */
   openBag() {
     if (this.flags.bag) {
       if (!this.flags.stone) { this.stonePuzzle(); return; }
@@ -147,7 +147,7 @@ window.Day8WalkScene = class Day8WalkScene extends WorldScene {
     });
   }
 
-  /* DAY 2 에서 카를로가 했던 말을 이번에는 플레이어가 합니다 */
+  /* DAY 2 에서 가롤로가 했던 말을 이번에는 플레이어가 합니다 */
   afterStone(layer) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.dialogue.play(DAY08.walk.stoneDrop, () => {

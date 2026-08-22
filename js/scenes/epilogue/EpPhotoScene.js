@@ -1,4 +1,4 @@
-/* EPILOGUE 7 · 단체사진, 그리고 사진 속 카를로.
+/* EPILOGUE 7 · 단체사진, 그리고 사진 속 가롤로.
    에필로그의 마지막 수집품은 카드가 아니라 이 사진 한 장입니다. */
 
 window.EpPhotoScene = class EpPhotoScene extends Phaser.Scene {
@@ -157,7 +157,7 @@ window.EpPhotoScene = class EpPhotoScene extends Phaser.Scene {
     this.tweens.add({ targets: this.keepBtn, alpha: 1, duration: 800 });
   }
 
-  /* ── 사진 속 카를로 ── */
+  /* ── 사진 속 가롤로 ── */
   noticeCarlo() {
     if (this.zooming) return;
     this.zooming = true;

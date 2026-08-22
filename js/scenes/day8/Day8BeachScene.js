@@ -151,7 +151,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
     /* 어떤 답이어도 나무라지 않습니다 */
     let extra = [];
     if (answer.indexOf('모르겠') >= 0) extra = [F.unknown1, F.unknown2];
-    else if (answer.indexOf('카를로처럼') >= 0) extra = [F.saint1, F.saint2];
+    else if (answer.indexOf('가롤로처럼') >= 0) extra = [F.saint1, F.saint2];
 
     extra.forEach((e, i) => {
       const t = this.add.text(W / 2, 360 + i * 40, e, UI.style(FONT.small, PAL.cream, {
@@ -286,7 +286,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
     this.time.delayedCall(500, () => this.prayer());
   }
 
-  /* 마지막 기도 — 이번에는 카를로가 기도문을 알려주지 않습니다 */
+  /* 마지막 기도 — 이번에는 가롤로가 기도문을 알려주지 않습니다 */
   prayer() {
     const W = GAME.WIDTH, H = GAME.HEIGHT, P = DAY08.prayer;
     const veil = this.add.graphics().setDepth(800);

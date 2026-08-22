@@ -1,4 +1,4 @@
-/* DAY 8 · 카를로 어디 있어? — 퀘스트 표시는 뜨지 않습니다.
+/* DAY 8 · 가롤로 어디 있어? — 퀘스트 표시는 뜨지 않습니다.
    빈 자리마다 지난 날의 목소리가 아주 짧게 들릴 뿐입니다. */
 
 window.Day8SearchScene = class Day8SearchScene extends WorldScene {
@@ -29,7 +29,7 @@ window.Day8SearchScene = class Day8SearchScene extends WorldScene {
         for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 28, 360 - h + 14 + r * 30, 18, 12);
     }
 
-    /* 카를로가 서 있던 자리들 */
+    /* 가롤로가 서 있던 자리들 */
     this.add.image(200, 420, 'store_front').setDepth(420).setScale(0.95);
     this.add.image(560, 380, 'tree_big').setDepth(380).setScale(0.95);
     this.add.image(640, 412, 'bench').setDepth(412).setScale(1.05);
@@ -95,7 +95,7 @@ window.Day8SearchScene = class Day8SearchScene extends WorldScene {
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.stick = new Joystick(this);
     this.createActionButton();
-    this.createPhotoButton('금요일, 카를로가 없는 길');
+    this.createPhotoButton('금요일, 가롤로가 없는 길');
     this.pauseBtn = UI.pauseButton(this);
 
     this.disableInteractable('d8_friend');

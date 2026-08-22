@@ -84,7 +84,7 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
     });
   }
 
-  /* 그리고 카를로의 말 — 이번에는 조금씩 작아집니다 */
+  /* 그리고 가롤로의 말 — 이번에는 조금씩 작아집니다 */
   carloWord() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const t = this.add.text(W / 2, H * 0.36, EPI.final.carlo, UI.style(22, PAL.cream, {
@@ -96,7 +96,7 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
     this.tweens.add({ targets: f, alpha: 1, duration: 900, delay: 1600 });
 
     this.time.delayedCall(4600, () => {
-      /* 카를로의 문장이 천천히 작아지고, 내 카드가 그 자리에 옵니다 */
+      /* 가롤로의 문장이 천천히 작아지고, 내 카드가 그 자리에 옵니다 */
       this.tweens.add({ targets: [t, f], alpha: 0.28, scale: 0.72, y: '-=60', duration: 1600 });
       this.time.delayedCall(1000, () => this.myCard(t, f));
     });

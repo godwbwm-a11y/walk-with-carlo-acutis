@@ -171,7 +171,7 @@ window.Day3StreetScene = class Day3StreetScene extends WorldScene {
     });
   }
 
-  /* 정류장에서 카를로를 만난다 */
+  /* 정류장에서 가롤로를 만난다 */
   atBusStop() {
     if (this.flags.bus) { this.dialogue.say(['버스를 기다린다.']); return; }
     this.flags.bus = true;

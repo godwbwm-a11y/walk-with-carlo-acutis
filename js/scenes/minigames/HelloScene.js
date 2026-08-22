@@ -64,8 +64,8 @@ window.HelloScene = class HelloScene extends MiniGameScene {
     AudioSystem.select();
     this.tweens.add({ targets: this.friend, scale: 1.72, duration: 260, yoyo: true });
 
-    /* 카를로 사진을 보여주는 선택 */
-    const isCarlo = (p.opts[i].indexOf('카를로') !== -1);
+    /* 가롤로 사진을 보여주는 선택 */
+    const isCarlo = (p.opts[i].indexOf('가롤로') !== -1);
     const after = () => {
       this.index++;
       this.tweens.add({

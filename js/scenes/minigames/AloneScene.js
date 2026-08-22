@@ -1,5 +1,5 @@
 /* 미니게임 · 이번에는 혼자 — DAY 3 의 《아무것도 하지 않기》 와 같은 자리입니다.
-   다만 카를로가 없고, 안내도 훨씬 적습니다. 완료 표시도 없습니다. */
+   다만 가롤로가 없고, 안내도 훨씬 적습니다. 완료 표시도 없습니다. */
 
 window.AloneScene = class AloneScene extends MiniGameScene {
   constructor() { super('AloneScene'); }

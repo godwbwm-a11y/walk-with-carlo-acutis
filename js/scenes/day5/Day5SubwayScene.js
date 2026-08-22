@@ -76,7 +76,7 @@ window.Day5SubwayScene = class Day5SubwayScene extends WorldScene {
       priority: 4, onInteract: () => this.checkPhone()
     });
     this.carloItem = this.addInteractable({
-      id: 'd5_carlo', x: 500, y: 690, label: '카를로', marker: true,
+      id: 'd5_carlo', x: 500, y: 690, label: '가롤로', marker: true,
       priority: 3, range: 72, markerY: 606, onInteract: () => this.talkCarlo()
     });
     this.wayItem = this.addInteractable({
@@ -115,7 +115,7 @@ window.Day5SubwayScene = class Day5SubwayScene extends WorldScene {
     this.dialogue.say(DAY05.subway.look[key] || ['…']);
   }
 
-  /* 스마트폰 → 날짜 → 카를로 등장 */
+  /* 스마트폰 → 날짜 → 가롤로 등장 */
   checkPhone() {
     if (this.flags.phone) { this.dialogue.say(['날짜는 그대로다.', '2027년 8월 3일.']); return; }
     this.flags.phone = true;
@@ -160,11 +160,11 @@ window.Day5SubwayScene = class Day5SubwayScene extends WorldScene {
     });
   }
 
-  /* 카를로와의 잡담 — 이탈리아 청년이 알아봅니다 */
+  /* 가롤로와의 잡담 — 이탈리아 청년이 알아봅니다 */
   talkCarlo() {
-    if (this.flags.carlo) { this.dialogue.say([{ s: '카를로', t: '모자 좀 눌러쓸게.' }]); return; }
+    if (this.flags.carlo) { this.dialogue.say([{ s: '가롤로', t: '모자 좀 눌러쓸게.' }]); return; }
     if (!this.flags.way) {
-      this.dialogue.say([{ s: '카를로', t: '저기 환승 통로에서 누가 길을 찾고 있는데?' }]);
+      this.dialogue.say([{ s: '가롤로', t: '저기 환승 통로에서 누가 길을 찾고 있는데?' }]);
       return;
     }
     this.flags.carlo = true;
@@ -181,7 +181,7 @@ window.Day5SubwayScene = class Day5SubwayScene extends WorldScene {
     if (key !== 'WayScene') return;
     this.flags.way = true;
     this.disableInteractable('d5_way');
-    this.objective.setText('카를로와 이야기해보자');
+    this.objective.setText('가롤로와 이야기해보자');
     AudioSystem.chime();
   }
 

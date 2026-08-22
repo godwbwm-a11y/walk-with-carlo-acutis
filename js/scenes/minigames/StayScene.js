@@ -73,7 +73,7 @@ window.StayScene = class StayScene extends MiniGameScene {
     });
   }
 
-  /* 30초 — 카를로의 인생 계획 */
+  /* 30초 — 가롤로의 인생 계획 */
   core() {
     if (this.finished) return;
     this.tweens.add({ targets: this.core1, alpha: 1, duration: 1800 });

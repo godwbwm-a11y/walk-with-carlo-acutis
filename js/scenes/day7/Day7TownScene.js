@@ -39,7 +39,7 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
     this.carlo = this.add.image(220, 690, 'carlo_front').setDepth(690).setScale(1.34);
     this.tweens.add({ targets: this.carlo, y: 686, duration: 860, yoyo: true, repeat: -1 });
     this.addInteractable({
-      id: 'd7_carlo', x: 220, y: 724, label: '카를로', range: 74, priority: 3, markerY: 626,
+      id: 'd7_carlo', x: 220, y: 724, label: '가롤로', range: 74, priority: 3, markerY: 626,
       onInteract: () => this.talkCarlo()
     });
 
@@ -89,9 +89,9 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (!this.flags.notice) { this.dialogue.say([{ s: '카를로', t: '한번 천천히 둘러봐.' }]); return; }
-    if (!this.flags.helped) { this.dialogue.say([{ s: '카를로', t: '한 사람이면 충분해.' }]); return; }
-    this.dialogue.say([{ s: '카를로', t: '성당 쪽으로 걸어볼까?' }]);
+    if (!this.flags.notice) { this.dialogue.say([{ s: '가롤로', t: '한번 천천히 둘러봐.' }]); return; }
+    if (!this.flags.helped) { this.dialogue.say([{ s: '가롤로', t: '한 사람이면 충분해.' }]); return; }
+    this.dialogue.say([{ s: '가롤로', t: '성당 쪽으로 걸어볼까?' }]);
   }
 
   /* 한 사람에게 다가가기 — 모두 돕지 않아도 됩니다 */

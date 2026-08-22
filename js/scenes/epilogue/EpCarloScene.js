@@ -1,4 +1,4 @@
-/* EPILOGUE 4 · 익숙한 사람 — 카를로는 다시 주인공이 되지 않습니다.
+/* EPILOGUE 4 · 익숙한 사람 — 가롤로는 다시 주인공이 되지 않습니다.
    한 문장만 남기고 교회를 가리킵니다. */
 
 window.EpCarloScene = class EpCarloScene extends Phaser.Scene {

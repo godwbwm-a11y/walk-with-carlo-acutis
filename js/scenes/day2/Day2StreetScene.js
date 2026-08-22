@@ -290,7 +290,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
     });
   }
 
-  /* 카를로 */
+  /* 가롤로 */
   eventCarlo() {
     this.setInputLocked(true);
     this.carlo = this.add.sprite(3070, 618, 'carlo_front').setOrigin(0.5, 0.86).setDepth(618).setScale(1.12);
@@ -392,7 +392,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
     this.updateWorld(time, delta);
     if (!this.player) return;
 
-    /* 카를로가 옆에서 함께 걷습니다 */
+    /* 가롤로가 옆에서 함께 걷습니다 */
     if (this.followCarlo && this.carlo && !this.inputLocked) {
       const tx = this.player.x - 52;
       const ty = this.player.y - 4;

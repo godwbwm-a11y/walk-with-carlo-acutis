@@ -49,11 +49,11 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
       this.friends[n[0]] = img;
     });
 
-    /* 카를로 */
+    /* 가롤로 */
     this.carlo = this.add.image(230, 660, 'carlo_front').setDepth(660).setScale(1.34);
     this.tweens.add({ targets: this.carlo, y: 656, duration: 860, yoyo: true, repeat: -1 });
     this.addInteractable({
-      id: 'd6_carlo', x: 230, y: 694, label: '카를로', range: 78, priority: 3, markerY: 598,
+      id: 'd6_carlo', x: 230, y: 694, label: '가롤로', range: 78, priority: 3, markerY: 598,
       onInteract: () => this.talkCarlo()
     });
 
@@ -124,10 +124,10 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
   }
 
   talkCarlo() {
-    if (!this.flags.meet) { this.dialogue.say([{ s: '카를로', t: '저기 친구들 있잖아. 같이 가자.' }]); return; }
-    if (!this.flags.during) { this.dialogue.say([{ s: '카를로', t: '조금 더 걸어볼까?' }]); return; }
-    if (!this.flags.rest) { this.dialogue.say([{ s: '카를로', t: '앞에 그늘이 있대. 잠깐 쉬자.' }]); return; }
-    this.dialogue.say([{ s: '카를로', t: '이제 거의 다 왔어.' }]);
+    if (!this.flags.meet) { this.dialogue.say([{ s: '가롤로', t: '저기 친구들 있잖아. 같이 가자.' }]); return; }
+    if (!this.flags.during) { this.dialogue.say([{ s: '가롤로', t: '조금 더 걸어볼까?' }]); return; }
+    if (!this.flags.rest) { this.dialogue.say([{ s: '가롤로', t: '앞에 그늘이 있대. 잠깐 쉬자.' }]); return; }
+    this.dialogue.say([{ s: '가롤로', t: '이제 거의 다 왔어.' }]);
   }
 
   /* 걷는 동안의 조용한 대화 */

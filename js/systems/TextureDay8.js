@@ -16,7 +16,7 @@ TextureFactory.createDay8 = function (scene) {
     ctx.fillStyle = grd; ctx.fillRect(0, 0, w, h);
   });
 
-  /* 카를로가 없는 자리 — 점선으로만 남은 흔적 */
+  /* 가롤로가 없는 자리 — 점선으로만 남은 흔적 */
   make(scene, 'empty_spot', 64, 64, function (g) {
     g.lineStyle(3, 0x8fa5c8, 0.45);
     for (let i = 0; i < 12; i++) {
