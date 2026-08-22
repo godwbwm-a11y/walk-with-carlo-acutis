@@ -139,7 +139,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
     /* 사탕 */
     for (let i = this.candies.length - 1; i >= 0; i--) {
       const s = this.candies[i];
-      s.y -= 520 * dt;
+      s.y -= 620 * dt;
       s.angle += 420 * dt;
       if (s.y < this.TOP - 10) { s.destroy(); this.candies.splice(i, 1); }
     }
@@ -162,7 +162,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
   /* ── 소음 하나 ───────────────────────────────── */
   spawnBlob() {
     const W = GAME.WIDTH;
-    const words = DAY02.noise.words;
+    const words = DAY02.angel.words || DAY02.noise.words;
     const word = words[Phaser.Math.Between(0, words.length - 1)];
 
     const c = this.add.container(Phaser.Math.Between(60, W - 60), this.TOP + 10).setDepth(60);
@@ -185,17 +185,26 @@ window.AngelScene = class AngelScene extends MiniGameScene {
   fire() {
     if (!this.playing || this.finished || this.dialogue.isOpen) return;
     const now = this.time.now;
-    if (now - this.shotAt < 230) return;              // 너무 빨리 던지지는 못합니다
+    if (now - this.shotAt < 190) return;              // 너무 빨리 던지지는 못합니다
     this.shotAt = now;
-    this.throwCandy(this.angel.x, this.ANGEL_Y - 18);
+
+    if (this.helped) {
+      /* 카를로가 온 뒤로는 사탕이 두 개씩 나갑니다 */
+      this.throwCandy(this.angel.x - 13, this.ANGEL_Y - 18);
+      this.throwCandy(this.angel.x + 13, this.ANGEL_Y - 18);
+    } else {
+      this.throwCandy(this.angel.x, this.ANGEL_Y - 18);
+    }
     AudioSystem.blip();
 
-    /* 카를로의 포대도 함께 쏩니다 */
-    if (this.helped && this.battery) {
-      this.time.delayedCall(90, () => {
-        if (!this.playing) return;
-        this.throwCandy(this.battery.x, this.battery.y - 24);
-        this.tweens.add({ targets: this.battery, y: this.battery.y + 4, duration: 80, yoyo: true });
+    /* 가운데와 양쪽 끝의 포대도 함께 쏩니다 */
+    if (this.helped && this.batteries) {
+      this.batteries.forEach((b, i) => {
+        this.time.delayedCall(70 + i * 45, () => {
+          if (!this.playing || !b.scene) return;
+          this.throwCandy(b.x, b.y - 24);
+          this.tweens.add({ targets: b, y: b.baseY + 4, duration: 80, yoyo: true });
+        });
       });
     }
   }
@@ -257,20 +266,25 @@ window.AngelScene = class AngelScene extends MiniGameScene {
     if (this.btnLeft) [this.btnLeft, this.btnRight, this.btnFire].forEach(b => b.release && b.release());
 
     this.dialogue.play(A.helpCome, () => {
-      /* 포대가 세워지고, 천사 둘이 더 옵니다 */
-      this.battery = this.add.image(W / 2, this.LINE + 26, 'd2_battery')
-        .setDepth(35).setScale(1.2).setAlpha(0);
-      this.tweens.add({ targets: this.battery, alpha: 1, duration: 500 });
+      /* 가운데와 양쪽 끝, 포대 셋을 세웁니다 */
+      this.batteries = [W / 2, 46, W - 46].map((x, i) => {
+        const b = this.add.image(x, this.LINE + 26, 'd2_battery')
+          .setDepth(35).setScale(i === 0 ? 1.2 : 1.0).setAlpha(0);
+        b.baseY = b.y;
+        this.tweens.add({ targets: b, alpha: 1, duration: 500, delay: i * 160 });
+        return b;
+      });
 
-      this.carlo = this.add.image(96, this.LINE + 30, 'carlo_front')
+      this.carlo = this.add.image(W / 2 - 70, this.LINE + 30, 'carlo_front')
         .setDepth(34).setScale(1.15).setAlpha(0);
       this.tweens.add({ targets: this.carlo, alpha: 1, duration: 500, delay: 150 });
 
-      this.helpers = [-118, 118].map((dx, i) => {
-        const a = this.add.image(W / 2 + dx, this.ANGEL_Y + 8, 'd2_angel')
-          .setDepth(38).setScale(1.05).setAlpha(0);
-        this.tweens.add({ targets: a, alpha: 0.95, duration: 500, delay: 250 + i * 150 });
-        this.tweens.add({ targets: a, y: this.ANGEL_Y + 2, duration: 1100, yoyo: true, repeat: -1 });
+      /* 포대마다 천사가 하나씩 붙습니다 */
+      this.helpers = [46, W - 46].map((x, i) => {
+        const a = this.add.image(x, this.LINE - 16, 'd2_angel')
+          .setDepth(38).setScale(1.0).setAlpha(0);
+        this.tweens.add({ targets: a, alpha: 0.95, duration: 500, delay: 260 + i * 150 });
+        this.tweens.add({ targets: a, y: this.LINE - 22, duration: 1100, yoyo: true, repeat: -1 });
         return a;
       });
 
@@ -279,11 +293,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
       this.updateInfo();
       this.flash(A.helpLine);
 
-      /* 함께 오면 훨씬 수월해집니다 */
-      this.level = Object.assign({}, this.level, {
-        fall: this.level.fall * 0.72,
-        gap: this.level.gap * 1.25
-      });
+      /* 소음은 그대로 쏟아집니다 — 대신 이쪽 화력이 세집니다 */
 
       this.time.delayedCall(900, () => { this.playing = true; });
     });

@@ -96,35 +96,54 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
       .setDepth(30).setScale(2.6);
     this.tweens.add({ targets: this.me, y: feetY - 5, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
-    /* 밀려왔다 밀려가는 물 — 사람 앞을 지나갑니다 */
-    const water = this.add.graphics().setDepth(40);
-    this.waterY = H + 40;
+    /* 밀려왔다 밀려가는 물 — 바다(위)에서 해변(아래)으로 내려옵니다.
+       물결은 사람 뒤에 깔리고, 발치에 닿는 거품만 사람 위로 얹힙니다. */
+    const water = this.add.graphics().setDepth(20);      // 사람보다 뒤
+    const foam = this.add.graphics().setDepth(42);       // 발등을 덮는 거품
+    this.waterY = SAND_TOP;                              // 물러나 있는 상태
+
     this.drawWater = (y) => {
       water.clear();
-      if (y > H) return;
+      foam.clear();
+      if (y <= SAND_TOP + 1) return;
+
+      /* 바다에서부터 이 선까지 젖습니다 */
       water.fillStyle(0x6f93b4, 0.5);
-      water.fillRect(0, y, W, H - y + 20);
-      water.fillStyle(0x9fc0d8, 0.45);
-      water.fillRect(0, y, W, 18);
+      water.fillRect(0, SAND_TOP, W, y - SAND_TOP);
+      water.fillStyle(0x9fc0d8, 0.42);
+      water.fillRect(0, y - 20, W, 20);
+
+      /* 앞머리의 흰 거품 */
       water.fillStyle(0xffffff, 0.7);
       for (let i = 0; i < 32; i++) {
         const x = (i * 18 + (y * 0.6) % 36);
-        water.fillCircle(x, y + Math.sin(i * 1.7 + y * 0.05) * 5, Phaser.Math.FloatBetween(3, 7));
+        water.fillCircle(x, y - Math.abs(Math.sin(i * 1.7 + y * 0.05)) * 5, Phaser.Math.FloatBetween(3, 7));
       }
       water.fillStyle(0xffffff, 0.32);
-      water.fillRect(0, y - 4, W, 5);
+      water.fillRect(0, y - 3, W, 5);
+
+      /* 뒤로 남는 잔물결 */
       water.fillStyle(0xffffff, 0.14);
       for (let k = 1; k < 5; k++) {
-        const ly = y + k * 30 + Math.sin(k + y * 0.03) * 6;
-        if (ly > H) break;
+        const ly = y - k * 30 - Math.sin(k + y * 0.03) * 6;
+        if (ly < SAND_TOP) break;
         water.fillRect(20 + k * 14, ly, W - 60 - k * 20, 2);
+      }
+
+      /* 발까지 닿으면 신발 위로 거품이 넘습니다 */
+      if (y > feetY - 26) {
+        const d = Math.min(1, (y - (feetY - 26)) / 34);
+        foam.fillStyle(0xffffff, 0.55 * d);
+        foam.fillEllipse(W / 2, feetY - 4, 96 + d * 30, 12 + d * 6);
+        foam.fillStyle(0x9fc0d8, 0.4 * d);
+        foam.fillEllipse(W / 2, feetY + 2, 76 + d * 24, 9 + d * 4);
       }
     };
     this.drawWater(this.waterY);
 
-    /* 발목까지 왔다가 다시 물러갑니다 */
+    /* 바다에서 내려와 발목까지 왔다가 다시 올라갑니다 */
     this.tweens.add({
-      targets: this, waterY: feetY - 10, duration: 3200, ease: 'Sine.easeInOut',
+      targets: this, waterY: feetY + 8, duration: 3200, ease: 'Sine.easeInOut',
       yoyo: true, repeat: -1, hold: 700, repeatDelay: 1100,
       onUpdate: () => this.drawWater(this.waterY),
       onYoyo: () => AudioSystem.wave(),

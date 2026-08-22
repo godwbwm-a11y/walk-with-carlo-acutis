@@ -66,7 +66,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const day7 = SaveSystem.get('dayCompleted.day7', false);
     const day8 = SaveSystem.get('dayCompleted.day8', false);
     const epi = SaveSystem.get('dayCompleted.epilogue', false);
-    let y = 596;
+    /* 해변에 앉은 두 사람이 가려지지 않도록 단추를 푸터 쪽으로 내립니다 */
+    let y = 666;
 
     if (cp && cp.scene) {
       UI.button(this, W / 2, y, 268, 66, '이어서 걷기', () => this.continueGame(), { size: FONT.body });

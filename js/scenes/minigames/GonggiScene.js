@@ -19,7 +19,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.HAND_Y = 578;          // 손등 높이
     this.REST_Y = this.HAND_Y - 20;
     this.FLOOR = 606;           // 돌이 굴러 떨어지는 바닥
-    this.G = 880;               // 잡을수록 조금씩 더 빨라집니다
+    this.G = 1150;              // 잡을수록 더 빨라집니다
 
     /* ── 돗자리와 마당 ─────────────────────────── */
     const g = this.add.graphics().setDepth(-90);
@@ -71,7 +71,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.state = 'wait';        // wait · ready · air · caught · scatter
     this.cooling = false;
     this.rising = false;
-    this.G = 880;
+    this.G = 1150;
     this.stopped = false;
     this.helpedOnce = false;
     this.stopBtn = null;
@@ -114,7 +114,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     AudioSystem.swipe();
 
     this.stones.forEach((st, i) => {
-      st.vy = -(596 + Phaser.Math.Between(-40, 40));
+      st.vy = -(660 + Phaser.Math.Between(-70, 70));
       st.vx = (i - 2) * 10 + Phaser.Math.Between(-6, 6);
       st.spin = Phaser.Math.Between(-170, 170);
     });
@@ -147,8 +147,8 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
   grab() {
     if (this.cooling) return;
     const inWindow = !this.rising
-      && this.avgY > this.HAND_Y - 88
-      && this.avgY < this.HAND_Y + 16;
+      && this.avgY > this.HAND_Y - 58
+      && this.avgY < this.HAND_Y + 12;
 
     this.swingHand();
 
@@ -158,7 +158,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     AudioSystem.swipe();
     this.flash(EPI.gonggi.whiff);
     this.cooling = true;
-    this.time.delayedCall(430, () => { this.cooling = false; });
+    this.time.delayedCall(520, () => { this.cooling = false; });
   }
 
   swingHand() {
@@ -174,7 +174,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
   catchAll() {
     this.state = 'caught';
     this.count++;
-    this.G = Math.min(1050, 880 + this.count * 28);
+    this.G = Math.min(1550, 1150 + this.count * 70);
     AudioSystem.found();
     this.hand.setTexture('epi_hand_open');
     this.stones.forEach((st, i) => {
