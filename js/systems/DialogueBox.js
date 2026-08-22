@@ -109,7 +109,15 @@ window.DialogueBox = class DialogueBox {
     this.scrollable = false;
   }
 
+  /* 이 상자가 아직 화면에 살아 있는지 — 장면이 물러가면 글자가 먼저 지워집니다.
+     지워진 글자를 만지면 그 자리에서 오류가 나고, 대화가 영영 넘어가지 않습니다. */
+  alive() {
+    return !!(this.text && this.text.scene && this.nameText && this.nameText.scene
+      && this.container && this.container.scene);
+  }
+
   _drawName(name) {
+    if (!this.alive()) return;
     this.namePlate.clear();
     if (!name) { this.nameText.setText(''); return; }
     this.nameText.setText(name);
@@ -124,6 +132,7 @@ window.DialogueBox = class DialogueBox {
 
   /* lines: [{s:'엄마', t:'...'}] 또는 [{t:'서술문'}] */
   play(lines, onDone) {
+    if (!this.alive()) { if (onDone) onDone(); return; }   // 이미 지워진 상자
     this.lines = Array.isArray(lines) ? lines.slice() : [lines];
     this.index = 0;
     this.onDone = onDone || null;
@@ -160,6 +169,8 @@ window.DialogueBox = class DialogueBox {
   }
 
   _show() {
+    /* 상자가 지워졌으면 붙잡지 말고 그대로 마칩니다 */
+    if (!this.alive()) { this.isOpen = false; const cb0 = this.onDone; this.onDone = null; if (cb0) cb0(); return; }
     const line = this.lines[this.index];
     this._drawName(line.s || '');
     this.full = (line && line.t != null) ? String(line.t) : '';
@@ -188,6 +199,7 @@ window.DialogueBox = class DialogueBox {
   }
 
   advance() {
+    if (!this.alive()) { this.close(); return; }
     if (!this.isOpen || this.choiceOpen) return;
     if (this.typing) {                     // 타이핑 중이면 즉시 완성
       if (this.timerEvent) this.timerEvent.remove();
@@ -204,8 +216,8 @@ window.DialogueBox = class DialogueBox {
 
   close() {
     this.isOpen = false;
-    this.container.setVisible(false);
-    this.hit.setVisible(false);
+    if (this.container && this.container.scene) this.container.setVisible(false);
+    if (this.hit && this.hit.scene) this.hit.setVisible(false);
     if (this.timerEvent) this.timerEvent.remove();
     if (this.scene.setInputLocked) this.scene.setInputLocked(false);
     const cb = this.onDone; this.onDone = null;

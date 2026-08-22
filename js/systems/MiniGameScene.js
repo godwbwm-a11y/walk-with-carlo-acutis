@@ -84,15 +84,22 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
 
   leave() {
     const from = this.from;
+    const myKey = this.scene.key;
     UI.fadeOut(this, 450, () => {
+      if (!from) { this.scene.start('TitleScene'); return; }   // 돌아갈 곳이 없으면 처음 화면으로
+
+      /* 먼저 돌아갈 화면을 깨우고, 그 다음에 물러납니다.
+         순서가 바뀌면 부모가 멈춘 채로 남아 아무것도 눌리지 않습니다. */
+      const parent = this.scene.get(from);
+      this.scene.resume(from);
+      if (parent && parent.sys && parent.sys.isSleeping && parent.sys.isSleeping()) this.scene.wake(from);
       this.scene.stop();
-      if (from) {
-        const parent = this.scene.get(from);
-        this.scene.resume(from);
-        if (parent && parent.onMiniGameDone) parent.onMiniGameDone(this.scene.key);
-      } else {
-        this.scene.start('TitleScene');        // 돌아갈 곳이 없으면 처음 화면으로
+
+      /* 정말 깨어났는지 한 번 더 확인합니다 */
+      if (parent && parent.sys && parent.sys.settings.status === Phaser.Scenes.PAUSED) {
+        parent.sys.resume();
       }
+      if (parent && parent.onMiniGameDone) parent.onMiniGameDone(myKey);
     });
   }
 };

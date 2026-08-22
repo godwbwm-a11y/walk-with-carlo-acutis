@@ -260,16 +260,19 @@ window.StoreScene = class StoreScene extends Phaser.Scene {
   leave() {
     if (this.dialogue.isOpen) return;
     AudioSystem.back();
+    const from = this.from;
     UI.fadeOut(this, 450, () => {
-      const from = this.from;
+      if (!from) { this.scene.start('TitleScene'); return; }
+
+      /* 먼저 거리를 깨우고, 그 다음에 가게에서 나옵니다.
+         순서가 바뀌면 거리가 멈춘 채로 남아 걷지도 누르지도 못합니다. */
+      const parent = this.scene.get(from);
+      this.scene.resume(from);
       this.scene.stop();
-      if (from) {
-        this.scene.resume(from);
-        const parent = this.scene.get(from);
-        if (parent && parent.onStoreDone) parent.onStoreDone();
-      } else {
-        this.scene.start('TitleScene');
+      if (parent && parent.sys && parent.sys.settings.status === Phaser.Scenes.PAUSED) {
+        parent.sys.resume();
       }
+      if (parent && parent.onStoreDone) parent.onStoreDone();
     });
   }
 };
