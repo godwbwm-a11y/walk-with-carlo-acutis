@@ -266,4 +266,50 @@ TextureFactory.createDay2 = function (scene) {
     for (let i = 0; i < 9; i++) g.lineBetween(24, 48 + i * 26, 196, 48 + i * 26);
     g.lineStyle(2, 0xc9755a, 0.5); g.lineBetween(38, 12, 38, 268);
   });
+
+  /* ── 수호천사 놀이에 쓰는 그림 ────────────────── */
+
+  /* 수호천사 — 날개가 달린 작은 빛입니다 */
+  make(scene, 'd2_angel', 40, 46, function (g) {
+    g.fillStyle(0xfff3d6, 0.30); g.fillCircle(20, 22, 19);           // 둘레의 빛
+    g.fillStyle(0xf7e9c8, 0.95);
+    g.fillEllipse(7, 22, 15, 24); g.fillEllipse(33, 22, 15, 24);     // 날개
+    g.fillStyle(0xe9d7ab, 0.9);
+    g.fillEllipse(7, 26, 9, 14); g.fillEllipse(33, 26, 9, 14);
+    g.fillStyle(0xdfe9f5, 1); g.fillRoundedRect(12, 18, 16, 22, 7);  // 옷
+    g.fillStyle(0xf0cda8, 1); g.fillCircle(20, 14, 8);               // 얼굴
+    g.fillStyle(0x3b2b22, 1); g.fillCircle(17.4, 14, 1.3); g.fillCircle(22.6, 14, 1.3);
+    g.lineStyle(2, 0xf2d98a, 1); g.strokeEllipse(20, 4, 15, 6);      // 고리
+  });
+
+  /* 사탕 — 던지는 것 */
+  make(scene, 'd2_candy', 22, 16, function (g) {
+    g.fillStyle(0xf7d9a0, 1); g.fillTriangle(0, 3, 0, 13, 6, 8);     // 왼쪽 포장
+    g.fillStyle(0xf7d9a0, 1); g.fillTriangle(22, 3, 22, 13, 16, 8);  // 오른쪽 포장
+    g.fillStyle(0xe8748a, 1); g.fillRoundedRect(5, 1, 12, 14, 6);
+    g.fillStyle(0xfbc7d2, 0.95); g.fillRoundedRect(7, 3, 5, 6, 2.5);
+  });
+
+  /* 마음의 소음 덩어리 — 말이 얹히는 어두운 구름 */
+  make(scene, 'd2_noise_blob', 96, 46, function (g) {
+    g.fillStyle(0x000000, 0.20); g.fillRoundedRect(4, 6, 90, 38, 18);
+    g.fillStyle(0x59617e, 1); g.fillRoundedRect(0, 0, 92, 40, 18);
+    g.fillStyle(0x6a7291, 1); g.fillRoundedRect(4, 3, 84, 20, 12);
+    g.lineStyle(2, 0x8f97b4, 0.75); g.strokeRoundedRect(0, 0, 92, 40, 18);
+    g.fillStyle(0x3d4258, 0.9);
+    g.fillCircle(26, 16, 3); g.fillCircle(66, 16, 3);                 // 눈
+    g.lineStyle(2, 0x3d4258, 0.8);
+    g.beginPath(); g.arc(46, 30, 9, Phaser.Math.DegToRad(200), Phaser.Math.DegToRad(340), false); g.strokePath();
+  });
+
+  /* 카를로가 세우는 포대 */
+  make(scene, 'd2_battery', 74, 50, function (g) {
+    g.fillStyle(0x000000, 0.18); g.fillRoundedRect(4, 34, 68, 14, 6);
+    g.fillStyle(0x7d6a52, 1); g.fillRoundedRect(0, 28, 70, 20, 8);    // 모래주머니
+    g.fillStyle(0x93805f, 1);
+    g.fillRoundedRect(3, 30, 20, 8, 4); g.fillRoundedRect(26, 30, 20, 8, 4); g.fillRoundedRect(49, 30, 18, 8, 4);
+    g.fillStyle(0x5f6f8a, 1); g.fillRoundedRect(24, 6, 22, 26, 9);    // 포신
+    g.fillStyle(0x7a8aa6, 1); g.fillRoundedRect(28, 2, 14, 12, 6);
+    g.fillStyle(0xf2b56b, 1); g.fillCircle(35, 6, 4);
+  });
 };

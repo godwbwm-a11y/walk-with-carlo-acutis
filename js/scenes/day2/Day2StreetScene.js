@@ -311,7 +311,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
   /* ── 미니게임에서 돌아왔을 때 ─────────────── */
   onMiniGameDone(key) {
     if (key === 'OrangeScene') this.afterOrange();
-    else if (key === 'NoiseScene') this.afterNoise();
+    else if (key === 'NoiseScene' || key === 'AngelScene') this.afterNoise();
     else if (key === 'HeavyBagScene') this.afterBag();
   }
 

@@ -108,6 +108,7 @@ window.JegiScene = class JegiScene extends MiniGameScene {
     this.flying = false;
     this.swinging = false;
     this.jv = 0; this.jvx = 0;
+    this.G = 780;
     this.jegi.setPosition(this.me.x + 18, this.FOOT_Y).setAngle(0).setAlpha(1);
     this.jShadow.setVisible(true);
     this.playing = true;
@@ -170,8 +171,8 @@ window.JegiScene = class JegiScene extends MiniGameScene {
       return;
     }
 
-    const reach = Math.abs(this.jegi.x - (this.me.x + 8)) < 52;
-    const height = this.jegi.y > this.FOOT_Y - 118 && this.jegi.y < this.FOOT_Y + 26;
+    const reach = Math.abs(this.jegi.x - (this.me.x + 8)) < 42;
+    const height = this.jegi.y > this.FOOT_Y - 84 && this.jegi.y < this.FOOT_Y + 18;
     if (reach && height && this.jv > 0) {
       this.count++;
       this.updateCount();
@@ -184,10 +185,12 @@ window.JegiScene = class JegiScene extends MiniGameScene {
 
   launch(n) {
     this.flying = true;
-    this.jv = -(this.LIFT + Math.min(n, 6) * 9);
+    this.jv = -(this.LIFT + Math.min(n, 10) * 7);
+    /* 이어 찰수록 조금씩 빨라집니다 */
+    this.G = 780 + Math.min(n, 10) * 26;
     /* 가끔은 옆으로 흘러갑니다 — 따라가서 차야 합니다 */
-    const sideways = n > 0 && Math.random() < 0.62;
-    this.jvx = sideways ? (Math.random() < 0.5 ? -1 : 1) * Phaser.Math.Between(58, 112) : 0;
+    const sideways = n > 0 && Math.random() < 0.82;
+    this.jvx = sideways ? (Math.random() < 0.5 ? -1 : 1) * Phaser.Math.Between(72, 148) : 0;
     if (this.jegi.y > this.FOOT_Y) this.jegi.y = this.FOOT_Y;
     AudioSystem.kick();
   }

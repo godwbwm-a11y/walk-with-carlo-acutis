@@ -319,7 +319,9 @@ window.PassScene = class PassScene extends MiniGameScene {
 
     this.time.delayedCall(1600, () => {
       if (this.finished) return;
-      if (this.myGoals + this.theirGoals >= 3) { this.finish(); return; }
+      /* 먼저 다섯 골을 넣은 쪽이 나오면 한 판이 끝납니다 */
+      const 목표 = EPI.pass.target || 5;
+      if (this.myGoals >= 목표 || this.theirGoals >= 목표) { this.roundOver(); return; }
       this.kickOff(side === 'me' ? 'them' : 'me');
     });
   }
@@ -348,24 +350,65 @@ window.PassScene = class PassScene extends MiniGameScene {
     });
   }
 
-  /* ── 마침 — 이긴 쪽을 부르지 않습니다 ────────── */
-  finish() {
-    const W = GAME.WIDTH;
+  /* ── 한 판이 끝났습니다 — 더 할지 물어봅니다 ── */
+  roundOver() {
+    const W = GAME.WIDTH, P = EPI.pass;
     this.busy = true;
     this.setHint('');
     if (this.actBtn) this.actBtn.setVisible(false);
-    if (this.stick) { this.stick.reset(); if (this.stick.hint) this.stick.hint.setVisible(false); }
+    if (this.stick) this.stick.reset();
+    AudioSystem.chime();
 
     [this.me].concat(this.opps).forEach((p, i) => {
       this.tweens.add({ targets: p, y: p.y - 14, duration: 320, yoyo: true, delay: i * 100 });
     });
-    AudioSystem.chime();
+
+    this.roundText = this.add.text(W / 2, 290,
+      this.myGoals >= (P.target || 5) ? P.winMine : P.winTheirs,
+      UI.style(21, PAL.cream, { align: 'center', wordWrap: { width: W - 70 }, lineSpacing: 6 }))
+      .setOrigin(0.5).setDepth(300).setAlpha(0);
+    this.tweens.add({ targets: this.roundText, alpha: 1, duration: 700 });
+
+    this.time.delayedCall(900, () => {
+      this.againBtn = UI.button(this, W / 2, 700, 250, 62, P.againBtn,
+        () => this.playAgain(), { size: FONT.label, fill: PAL.sun });
+      this.stopBtn = UI.button(this, W / 2, 778, 250, 56, P.stopBtn,
+        () => this.finish(), { size: FONT.small });
+      [this.againBtn, this.stopBtn].forEach(b => b.setDepth(300).setAlpha(0));
+      this.tweens.add({ targets: [this.againBtn, this.stopBtn], alpha: 1, duration: 600 });
+    });
+  }
+
+  playAgain() {
+    if (this.againBtn) { this.againBtn.destroy(); this.againBtn = null; }
+    if (this.stopBtn) { this.stopBtn.destroy(); this.stopBtn = null; }
+    if (this.roundText) { this.roundText.destroy(); this.roundText = null; }
+    this.myGoals = 0;
+    this.theirGoals = 0;
+    this.updateScore();
+    this.setHint(EPI.pass.hint);
+    if (this.actBtn) this.actBtn.setVisible(true);
+    if (this.stick && this.stick.hint) this.stick.hint.setVisible(true);
+    AudioSystem.select();
+    this.kickOff('me');
+  }
+
+  /* ── 마침 — 이긴 쪽을 부르지 않습니다 ────────── */
+  finish() {
+    const W = GAME.WIDTH;
+    this.busy = true;
+    if (this.againBtn) { this.againBtn.destroy(); this.againBtn = null; }
+    if (this.stopBtn) { this.stopBtn.destroy(); this.stopBtn = null; }
+    if (this.roundText) { this.roundText.destroy(); this.roundText = null; }
+    this.setHint('');
+    if (this.actBtn) this.actBtn.setVisible(false);
+    if (this.stick) { this.stick.reset(); if (this.stick.hint) this.stick.hint.setVisible(false); }
 
     const t = this.add.text(W / 2, 300, EPI.pass.doneLine,
       UI.style(22, PAL.cream, { align: 'center', wordWrap: { width: W - 70 }, lineSpacing: 6 }))
       .setOrigin(0.5).setDepth(300).setAlpha(0);
-    this.tweens.add({ targets: t, alpha: 1, duration: 900, delay: 600 });
+    this.tweens.add({ targets: t, alpha: 1, duration: 900, delay: 300 });
 
-    this.time.delayedCall(2600, () => this.complete(EPI.pass.done));
+    this.time.delayedCall(2200, () => this.complete(EPI.pass.done));
   }
 };

@@ -149,8 +149,13 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
 
       this.time.delayedCall(2200, () => {
         this.dialogue.play(DAY02.noise.calmLine, () => {
+          /* 다시 걸으려는데 소음이 또 몰려옵니다 — 수호천사가 나섭니다 */
           const b = UI.button(this, GAME.WIDTH / 2, GAME.HEIGHT - 150, 220, 58, DAY02.noise.goBtn,
-            () => { AudioSystem.setAmbience('room'); this.leave(); }, { size: FONT.label, fill: PAL.sun });
+            () => {
+              UI.fadeOut(this, 600, () => {
+                this.scene.start('AngelScene', { from: this.from });
+              });
+            }, { size: FONT.label, fill: PAL.sun });
           b.setDepth(60);
         });
       });
