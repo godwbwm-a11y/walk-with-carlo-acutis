@@ -169,7 +169,38 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
   }
 
   /* 매 프레임 — 이동과 가까운 대상 찾기 */
+  /* ── 잠긴 채로 남지 않게 지켜봅니다 ─────────────
+     조작이 잠기는 것은 대화나 이벤트가 끝날 때 풀어 주기로 하고 잠급니다.
+     그 풀어 주는 자리가 한 번이라도 어긋나면, 걷지도 들어가지도 못해
+     게임이 멈춘 것처럼 보입니다. 아무 일도 일어나지 않는 채로 오래 잠겨 있으면
+     스스로 풀어 줍니다. */
+  watchLock(time) {
+    if (!this.inputLocked) { this._lockAt = 0; return; }
+
+    const 대화중 = this.dialogue && (this.dialogue.isOpen || this.dialogue.choiceOpen);
+    const 글쓰는중 = !!window.__typing;
+    /* 자막·안내·카드처럼 화면 터치를 기다리는 것이 있으면 기다립니다 */
+    const 터치기다림 = this.children.list.some(o =>
+      o.type === 'Zone' && o.visible !== false && o.input);
+    /* 미니게임 같은 다른 화면이 위에 떠 있으면 기다립니다 */
+    let 위에다른화면 = false;
+    try {
+      위에다른화면 = this.scene.manager.getScenes(true)
+        .some(s => s !== this && s.sys.settings.key !== 'PauseScene');
+    } catch (e) {}
+
+    if (대화중 || 글쓰는중 || 터치기다림 || 위에다른화면) { this._lockAt = 0; return; }
+
+    if (!this._lockAt) { this._lockAt = time; return; }
+    if (time - this._lockAt > 9000) {
+      this._lockAt = 0;
+      this.setInputLocked(false);
+    }
+  }
+
   updateWorld(time, delta) {
+    this.watchLock(time);
+
     const p = this.player;
     /* 장면이 물러나는 중이면 몸이 먼저 사라져 있기도 합니다.
        여기서 한 번 걸러 두지 않으면 갱신 도중에 멈춰 버립니다. */
