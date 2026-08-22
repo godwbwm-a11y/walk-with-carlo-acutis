@@ -597,7 +597,7 @@ window.EPI = {
     carloFrom: '— 성 카를로 아쿠티스',
     mine: '나의 인생 계획',
     noteClose: '탁.',
-    titleFull: '《오늘, 카를로 아쿠티스와 함께 걷습니다》',
+    titleFull: '《오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니다》',
     titleShort: '《오늘, 걷습니다》',
     tomorrow: '그리고 내일은, 내가 걷습니다.',
     notAlone: '혼자가 아니라, 예수님과 함께.',

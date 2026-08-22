@@ -47,10 +47,19 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.tweens.add({ targets: [p1, p2], y: '-=4', duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     /* 제목 — 글자가 커졌으니 줄 간격도 함께 넓힙니다 */
-    /* 제목 첫 줄 — 아래 두 줄과 같은 크기로 읽히도록 */
-    this.add.text(W / 2, 126, '오늘,', UI.style(FONT.title, PAL.cream)).setOrigin(0.5).setAlpha(0.96);
-    this.add.text(W / 2, 200, '카를로 아쿠티스와\n함께 걷습니다',
-      UI.style(FONT.title, PAL.cream, { align: 'center', lineSpacing: 12 })).setOrigin(0.5);
+    /* 제목 — 세 줄이 같은 크기로 읽히되, 이름 줄은 화면에 맞게 줄입니다 */
+    this.add.text(W / 2, 122, '오늘,', UI.style(FONT.title, PAL.cream)).setOrigin(0.5).setAlpha(0.96);
+
+    const nameLine = this.add.text(W / 2, 180, '가롤로(카를로) 아쿠티스와',
+      UI.style(FONT.title, PAL.cream, { align: 'center' })).setOrigin(0.5);
+    let ns = FONT.title;
+    while (nameLine.width > W - 34 && ns > 18) {
+      ns -= 1;
+      nameLine.setStyle(UI.style(ns, PAL.cream, { align: 'center' }));
+    }
+
+    this.add.text(W / 2, 228, '함께 걷습니다',
+      UI.style(FONT.title, PAL.cream, { align: 'center' })).setOrigin(0.5);
     this.add.text(W / 2, 300, GAME.CORE_LINE,
       UI.style(FONT.small, PAL.dimWarm, { align: 'center', lineSpacing: 7 }))
       .setOrigin(0.5).setAlpha(0.95);

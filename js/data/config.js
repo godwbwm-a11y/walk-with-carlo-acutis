@@ -3,7 +3,7 @@
 window.GAME = {
   WIDTH: 390,
   HEIGHT: 844,
-  TITLE: '오늘, 카를로 아쿠티스와 함께 걷습니다',
+  TITLE: '오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니다',
   CORE_LINE: '“항상 예수님과 함께 있는 것,\n이것이 나의 인생 계획입니다.”',
   SAVE_KEY: 'carlo_walk_save_v1',
 

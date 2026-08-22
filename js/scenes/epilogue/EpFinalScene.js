@@ -156,7 +156,9 @@ window.EpFinalScene = class EpFinalScene extends Phaser.Scene {
   titleFades() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const a = this.add.text(W / 2, H * 0.36, '《오늘,', UI.style(25, PAL.cream)).setOrigin(0.5).setDepth(80).setAlpha(0);
-    const b = this.add.text(W / 2, H * 0.42, '카를로 아쿠티스와 함께', UI.style(25, PAL.cream)).setOrigin(0.5).setDepth(80).setAlpha(0);
+    const b = this.add.text(W / 2, H * 0.42, '가롤로(카를로) 아쿠티스와 함께',
+      UI.style(21, PAL.cream, { align: 'center', wordWrap: { width: W - 40 } }))
+      .setOrigin(0.5).setDepth(80).setAlpha(0);
     const c = this.add.text(W / 2, H * 0.48, '걷습니다》', UI.style(25, PAL.cream)).setOrigin(0.5).setDepth(80).setAlpha(0);
 
     this.tweens.add({ targets: [a, b, c], alpha: 1, duration: 1200 });
