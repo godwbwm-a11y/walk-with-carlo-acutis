@@ -7,7 +7,8 @@ window.PassScene = class PassScene extends MiniGameScene {
 
   create(data) {
     this.buildFrame({
-      from: (data && data.from) || null, card: null, bg: '#8aa96b',
+      /* 머리글이 놓이는 띠는 진한 풀색으로 — 밝은 글씨가 또렷하도록 */
+      from: (data && data.from) || null, card: null, bg: '#4e6640',
       title: EPI.pass.title, hint: EPI.pass.hint
     });
 

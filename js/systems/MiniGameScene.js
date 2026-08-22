@@ -25,8 +25,9 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
       .setOrigin(0.5, 0).setDepth(100);
 
     this.hintText = this.add.text(W / 2, this.titleText.y + this.titleText.height + 10, opt.hint || '',
-      UI.style(FONT.small, PAL.dimWarm, { align: 'center', wordWrap: { width: W - 56 }, lineSpacing: 5 }))
-      .setOrigin(0.5, 0).setDepth(100);
+      /* 초록·남색 바탕 위에서도 읽히도록 밝게 잡습니다 */
+      UI.style(FONT.small, PAL.cream, { align: 'center', wordWrap: { width: W - 56 }, lineSpacing: 5 }))
+      .setOrigin(0.5, 0).setDepth(100).setAlpha(0.92);
 
     /* 밝은 배경 위에서는 머리글을 진하게 — 흰 글씨는 안 보였습니다 */
     if (opt.lightHeader) {

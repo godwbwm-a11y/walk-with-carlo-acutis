@@ -23,7 +23,7 @@ window.HeartWordScene = class HeartWordScene extends MiniGameScene {
     this.me = this.add.image(W / 2 - 34, 592, 'player_back').setDepth(592).setScale(1.3);
     this.carlo = this.add.image(W / 2 + 40, 596, 'carlo_back').setDepth(596).setScale(1.3);
 
-    this.note = this.add.text(W / 2, 742, DAY03.heart.note, UI.style(FONT.small, '#dfd2bd'))
+    this.note = this.add.text(W / 2, 742, DAY03.heart.note, UI.style(FONT.small, PAL.ink))
       .setOrigin(0.5).setDepth(40).setAlpha(0.85);
 
     /* 마음의 말들이 천천히 떠다닙니다 */

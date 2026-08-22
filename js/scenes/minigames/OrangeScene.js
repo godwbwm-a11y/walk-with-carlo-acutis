@@ -31,7 +31,7 @@ window.OrangeScene = class OrangeScene extends MiniGameScene {
     this.timeLeft = 15;
 
     this.progress = this.add.text(W / 2, 196, '', UI.style(FONT.body, PAL.cream)).setOrigin(0.5).setDepth(40);
-    this.timerText = this.add.text(W - 34, 196, '', UI.style(FONT.small, '#dfd2bd')).setOrigin(1, 0.5).setDepth(40);
+    this.timerText = this.add.text(W - 34, 196, '', UI.style(FONT.small, PAL.cream)).setOrigin(1, 0.5).setDepth(40);
     this.refresh();
 
     for (let i = 0; i < this.total; i++) this.spawn(i);

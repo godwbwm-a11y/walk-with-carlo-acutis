@@ -6,19 +6,19 @@ TextureFactory.createDay4 = function (scene) {
   /* 말이 적힌 돌덩이 — 담벼락에 박혀 있습니다 */
   make(scene, 'd4_stone', 112, 38, function (g) {
     g.fillStyle(0x000000, 0.18); g.fillRoundedRect(3, 5, 108, 33, 7);
-    g.fillStyle(0x8d8579, 1); g.fillRoundedRect(0, 0, 108, 33, 7);
-    g.fillStyle(0x9c9486, 1); g.fillRoundedRect(2, 2, 104, 24, 6);
-    g.fillStyle(0x7b7367, 0.7); g.fillRoundedRect(2, 24, 104, 7, 3);
-    g.lineStyle(1.5, 0x6d665b, 0.8); g.strokeRoundedRect(0, 0, 108, 33, 7);
+    g.fillStyle(0x6b6459, 1); g.fillRoundedRect(0, 0, 108, 33, 7);
+    g.fillStyle(0x7a7367, 1); g.fillRoundedRect(2, 2, 104, 24, 6);
+    g.fillStyle(0x574f45, 0.8); g.fillRoundedRect(2, 24, 104, 7, 3);
+    g.lineStyle(1.5, 0x4a443b, 0.9); g.strokeRoundedRect(0, 0, 108, 33, 7);
     /* 오래된 자국 몇 개 */
-    g.fillStyle(0x7b7367, 0.45);
+    g.fillStyle(0x574f45, 0.5);
     g.fillCircle(18, 12, 2.2); g.fillCircle(74, 20, 1.8); g.fillCircle(94, 9, 1.5);
   });
 
   /* 금이 간 돌 — 맞은 순간에 잠깐 바뀝니다 */
   make(scene, 'd4_stone_crack', 112, 38, function (g) {
     g.fillStyle(0x000000, 0.18); g.fillRoundedRect(3, 5, 108, 33, 7);
-    g.fillStyle(0x9b9184, 1); g.fillRoundedRect(0, 0, 108, 33, 7);
+    g.fillStyle(0x7a7367, 1); g.fillRoundedRect(0, 0, 108, 33, 7);
     g.lineStyle(1.5, 0x6d665b, 0.9); g.strokeRoundedRect(0, 0, 108, 33, 7);
     g.lineStyle(2, 0x5f584e, 0.9);
     g.lineBetween(38, 0, 46, 16); g.lineBetween(46, 16, 34, 33);

@@ -276,7 +276,9 @@ window.UI = (function () {
     const c = scene.add.container(0, 0).setDepth(900).setScrollFactor(0);
     const back = scene.add.graphics();
     back.fillStyle(0x101a2e, 0.55);
-    back.fillRect(0, y - 74, GAME.WIDTH, 148);
+    /* 아래의 “화면을 누르면 계속됩니다” 까지 덮도록 넉넉히 잡습니다.
+       예전에는 그 줄이 띠 밖으로 나가 배경에 묻혔습니다. */
+    back.fillRect(0, y - 74, GAME.WIDTH, 172);
     back.setAlpha(0);
     const t = scene.add.text(GAME.WIDTH / 2, y, '', style(opt.size || FONT.body, opt.color || PAL.cream, {
       align: 'center', wordWrap: { width: GAME.WIDTH - 76 }, lineSpacing: 8
@@ -379,7 +381,8 @@ window.UI = (function () {
     g.fillCircle(0, 0, 11);
     g.lineStyle(2, HEX(PAL.sunDeep), 0.8);
     g.strokeCircle(0, 0, 11);
-    const t = scene.add.text(0, 0, '·', style(20, PAL.sunDeep)).setOrigin(0.5);
+    /* 흰 동그라미 위에서는 진한 먹빛이 가장 또렷합니다 */
+    const t = scene.add.text(0, 0, '·', style(20, PAL.ink)).setOrigin(0.5);
     t.setText('!');
     t.setFontSize(16);
     c.add([g, t]);

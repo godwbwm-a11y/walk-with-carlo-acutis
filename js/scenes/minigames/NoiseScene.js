@@ -22,7 +22,10 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
     const list = DAY02.noise.words;
     list.forEach((w, i) => this.time.delayedCall(300 + i * 260, () => this.spawn(w)));
 
-    this.tapHint = this.add.text(W / 2, H - 232, '', UI.style(FONT.small, '#dfd2bd', {
+    /* 말들이 떠다니는 범위 — 아래 글과 단추는 건드리지 않습니다 */
+    this.TOP = 170; this.BOTTOM = 590;
+
+    this.tapHint = this.add.text(W / 2, H - 196, '', UI.style(FONT.small, '#dfd2bd', {
       align: 'center', wordWrap: { width: W - 70 }
     })).setOrigin(0.5).setDepth(60);
 
@@ -37,17 +40,19 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
   }
 
   spawn(word) {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const c = this.add.container(Phaser.Math.Between(70, W - 70), Phaser.Math.Between(180, H - 300)).setDepth(40);
     const t = this.add.text(0, 0, word, UI.style(19, PAL.ink)).setOrigin(0.5);
-    const g = this.add.graphics();
     const w = t.width + 30, h = 44;
+    const spot = this.freeSpot(w, h);
+
+    const c = this.add.container(spot.x, spot.y).setDepth(40);
+    const g = this.add.graphics();
     g.fillStyle(0xffffff, 0.95); g.fillRoundedRect(-w / 2, -h / 2, w, h, 22);
     g.lineStyle(2, HEX(PAL.sky), 0.7); g.strokeRoundedRect(-w / 2, -h / 2, w, h, 22);
     c.add([g, t]);
     c.setSize(w, h + 10);
     c.setInteractive();
     c.on('pointerdown', () => this.push(c));
+    c.hw = w / 2; c.hh = h / 2;
     c.speed = Phaser.Math.FloatBetween(0.5, 1.1);
     c.dir = new Phaser.Math.Vector2(Phaser.Math.FloatBetween(-1, 1), Phaser.Math.FloatBetween(-1, 1)).normalize();
     this.words.push(c);
@@ -55,15 +60,54 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
     this.tweens.add({ targets: c, alpha: 1, duration: 400 });
   }
 
+  /* 이미 떠 있는 말들과 가장 덜 겹치는 자리를 찾아 줍니다 */
+  freeSpot(w, h) {
+    const W = GAME.WIDTH;
+    let best = null, bestGap = -1e9;
+    for (let n = 0; n < 26; n++) {
+      const x = Phaser.Math.Between(Math.round(40 + w / 2), Math.round(W - 40 - w / 2));
+      const y = Phaser.Math.Between(this.TOP + 24, this.BOTTOM - 24);
+      let gap = 1e9;
+      this.words.forEach((c) => {
+        const dx = Math.abs(c.x - x) - (c.hw + w / 2);
+        const dy = Math.abs(c.y - y) - (c.hh + h / 2);
+        gap = Math.min(gap, Math.max(dx, dy));
+      });
+      if (gap > 12) return { x: x, y: y };
+      if (gap > bestGap) { bestGap = gap; best = { x: x, y: y }; }
+    }
+    return best;
+  }
+
+  /* 서로 겹치면 살짝 밀어냅니다 — 시끄럽되, 글자는 가리지 않도록 */
+  separate() {
+    const list = this.words;
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        const a = list[i], b = list[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const ox = (a.hw + b.hw + 8) - Math.abs(dx);
+        const oy = (a.hh + b.hh + 8) - Math.abs(dy);
+        if (ox <= 0 || oy <= 0) continue;
+        if (ox < oy) {
+          const s = (dx < 0 ? -1 : 1) * ox * 0.5;
+          a.x -= s; b.x += s;
+        } else {
+          const s = (dy < 0 ? -1 : 1) * oy * 0.5;
+          a.y -= s; b.y += s;
+        }
+      }
+    }
+  }
+
   /* 눌러도 사라지지 않고 자리만 옮깁니다 */
   push(c) {
     if (this.calmed) return;
     AudioSystem.swipe();
     this.taps++;
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const spot = this.freeSpot(c.hw * 2, c.hh * 2);
     this.tweens.add({
-      targets: c, x: Phaser.Math.Between(60, W - 60), y: Phaser.Math.Between(170, H - 290),
-      duration: 420, ease: 'Sine.easeOut'
+      targets: c, x: spot.x, y: spot.y, duration: 420, ease: 'Sine.easeOut'
     });
     if (this.taps === 2) this.tapHint.setText(DAY02.noise.tapHint);
     if (this.taps === 4) this.tapHint.setText('없어지지 않는다. 자리만 바뀐다.');
@@ -114,13 +158,16 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
   }
 
   update(time, delta) {
-    const W = GAME.WIDTH, H = GAME.HEIGHT;
-    const dt = delta / 16.7;
+    const W = GAME.WIDTH;
+    const dt = Math.min(delta, 40) / 16.7;
     this.words.forEach((c) => {
       c.x += c.dir.x * c.speed * dt;
       c.y += c.dir.y * c.speed * dt;
-      if (c.x < 60 || c.x > W - 60) c.dir.x *= -1;
-      if (c.y < 168 || c.y > H - 280) c.dir.y *= -1;
+      if (c.x < 40 + c.hw) { c.x = 40 + c.hw; c.dir.x = Math.abs(c.dir.x); }
+      if (c.x > W - 40 - c.hw) { c.x = W - 40 - c.hw; c.dir.x = -Math.abs(c.dir.x); }
+      if (c.y < this.TOP + c.hh) { c.y = this.TOP + c.hh; c.dir.y = Math.abs(c.dir.y); }
+      if (c.y > this.BOTTOM - c.hh) { c.y = this.BOTTOM - c.hh; c.dir.y = -Math.abs(c.dir.y); }
     });
+    this.separate();
   }
 };

@@ -14,8 +14,31 @@ window.Joystick = class Joystick {
     this.force = 0;
 
     this.gfx = scene.add.graphics().setDepth(870).setScrollFactor(0).setVisible(false);
+
+    /* 안내 글은 밝은 땅 위에도 놓이므로 어두운 판을 깔아 줍니다 */
+    this.hintPlate = scene.add.graphics().setDepth(869).setScrollFactor(0);
     this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - 44, '화면 아래를 눌러 걸어보세요',
       UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.75);
+
+    const drawPlate = () => {
+      const g = this.hintPlate;
+      if (!g || !g.scene) return;
+      g.clear();
+      const t = this.hint;
+      if (!t || !t.scene || !t.visible || t.alpha <= 0.02 || !String(t.text || '').trim()) return;
+      const w = t.width + 26, h = t.height + 10;
+      g.fillStyle(0x101a2e, 0.78);
+      g.fillRoundedRect(t.x - w / 2, t.y - h / 2, w, h, h / 2);
+      g.setAlpha(t.alpha);
+    };
+    this.drawHintPlate = drawPlate;
+
+    /* 장면마다 안내 글을 바꾸거나 옮기므로, 판도 따라가게 합니다 */
+    ['setText', 'setPosition', 'setVisible', 'setAlpha'].forEach((fn) => {
+      const orig = this.hint[fn].bind(this.hint);
+      this.hint[fn] = function () { const r = orig.apply(null, arguments); drawPlate(); return r; };
+    });
+    drawPlate();
 
     this.cursors = scene.input.keyboard ? scene.input.keyboard.createCursorKeys() : null;
     /* PC — 방향키와 WASD 둘 다 */
@@ -33,7 +56,7 @@ window.Joystick = class Joystick {
 
   hideHint() {
     if (this.hint && this.hint.alpha > 0) {
-      this.scene.tweens.add({ targets: this.hint, alpha: 0, duration: 500 });
+      this.scene.tweens.add({ targets: [this.hint, this.hintPlate], alpha: 0, duration: 500 });
     }
   }
 
@@ -117,5 +140,6 @@ window.Joystick = class Joystick {
     this.scene.input.off('pointerupoutside', this._up, this);
     if (this.gfx) this.gfx.destroy();
     if (this.hint) this.hint.destroy();
+    if (this.hintPlate) this.hintPlate.destroy();
   }
 };

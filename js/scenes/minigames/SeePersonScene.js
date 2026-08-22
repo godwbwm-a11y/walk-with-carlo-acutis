@@ -25,7 +25,7 @@ window.SeePersonScene = class SeePersonScene extends MiniGameScene {
     DAY04.see.people.forEach((p, i) => this.makePerson(p, spots[i][0], spots[i][1], i));
 
     this.count = this.add.text(W / 2, this.contentTop(), '',
-      UI.style(FONT.small, PAL.dimWarm)).setOrigin(0.5, 0).setDepth(60);
+      UI.style(FONT.small, PAL.cream)).setOrigin(0.5, 0).setDepth(60);
     this.refresh();
   }
 
