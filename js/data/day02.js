@@ -231,11 +231,12 @@ window.DAY02 = {
 
     levelHead: '어느 정도로 해볼까요?',
     levelNote: '어렵게 골라도 지지는 않습니다.',
+    /* count — 막아내야 할 말의 수 */
     levels: [
-      { key: 'easy',  label: '이지까까',   note: '그래도 만만치 않습니다',   fall: 46, gap: 1000, rows: 5 },
-      { key: 'mid',   label: '안이지까까', note: '꽤 빠릅니다',              fall: 68, gap: 720,  rows: 6 },
-      { key: 'hard',  label: '어려움',     note: '쏟아집니다',                fall: 94, gap: 520,  rows: 8 },
-      { key: 'vhard', label: '아주 어려움', note: '정말 정신없습니다',        fall: 124, gap: 380, rows: 10 }
+      { key: 'easy',  label: '이지까까',   note: '25개 · 천천히',          fall: 46,  gap: 1000, count: 25 },
+      { key: 'mid',   label: '안이지까까', note: '50개 · 꽤 빠르게',       fall: 68,  gap: 720,  count: 50 },
+      { key: 'hard',  label: '어려움',     note: '100개 · 아주 빠르게',     fall: 112, gap: 430,  count: 100 },
+      { key: 'vhard', label: '아주 어려움', note: '150개 · 쏟아집니다',      fall: 152, gap: 290,  count: 150 }
     ],
 
     scoreLabel: '막아낸 말',

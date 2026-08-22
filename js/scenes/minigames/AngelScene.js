@@ -104,7 +104,7 @@ window.AngelScene = class AngelScene extends MiniGameScene {
     this.candies = [];
     this.blocked = 0;
     this.heart = 5;
-    this.waveLeft = this.level.rows * 4;        // 이만큼 막아내면 조용해집니다
+    this.waveLeft = this.level.count || 25;     // 이만큼 막아내면 조용해집니다
     this.spawnAt = 0;
     [this.btnLeft, this.btnRight, this.btnFire].forEach(b => b.setVisible(true));
     this.updateInfo();
