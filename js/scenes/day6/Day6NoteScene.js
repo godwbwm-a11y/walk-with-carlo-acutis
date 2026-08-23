@@ -10,9 +10,9 @@ window.Day6NoteScene = class Day6NoteScene extends Phaser.Scene {
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#16233f');
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 192, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
-    this.add.text(W / 2, 224, N.prev, UI.style(13, '#b3a794')).setOrigin(0.5).setDepth(2);
+    this.add.text(W / 2, 224, N.prev, UI.style(13, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
 
     this.add.text(W / 2, 274, N.head, UI.style(16, PAL.ink, {
       align: 'center', lineSpacing: 6, wordWrap: { width: 214 }
@@ -32,12 +32,12 @@ window.Day6NoteScene = class Day6NoteScene extends Phaser.Scene {
     /* 오늘의 파견 */
     const m = SaveSystem.get('reflections.day6Mission', null);
     const line = this.add.text(W / 2, 500, m ? ('“' + m.sentence + '”') : N.missionTitle,
-      UI.style(19, PAL.sun, { align: 'center', wordWrap: { width: W - 76 }, lineSpacing: 8 }))
+      UI.style(19, PAL.sunDeep, { align: 'center', wordWrap: { width: W - 102 }, lineSpacing: 8 }))
       .setOrigin(0.5).setDepth(2).setAlpha(0);
     this.tweens.add({ targets: line, alpha: 1, duration: 1000, delay: 700 });
 
-    const forgive = this.add.text(W / 2, 580, N.forgive, UI.style(FONT.small, '#cbbfae', {
-      align: 'center', lineSpacing: 6, wordWrap: { width: W - 80 }
+    const forgive = this.add.text(W / 2, 580, N.forgive, UI.style(FONT.small, PAL.inkSoft, {
+      align: 'center', lineSpacing: 6, wordWrap: { width: W - 102 }
     })).setOrigin(0.5).setDepth(2).setAlpha(0);
     this.tweens.add({ targets: forgive, alpha: 1, duration: 1000, delay: 1600 });
 

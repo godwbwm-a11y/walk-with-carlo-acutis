@@ -153,10 +153,19 @@ TextureFactory.createDay2 = function (scene) {
     g.slice(110, 200, 34, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(360), false); g.fillPath();
     g.fillRect(76, 198, 68, 52);
     g.fillStyle(0xa8814f, 1); g.fillRect(80, 202, 28, 48); g.fillRect(112, 202, 28, 48);
-    g.fillStyle(0x8fc0d9, 1);
-    g.slice(110, 128, 22, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(360), false); g.fillPath();
-    g.fillRect(88, 126, 44, 34);
-    g.fillStyle(0xf2b56b, 1); g.fillCircle(110, 132, 9);
+    /* 스테인드글라스 — 둥근 유리 대신 네모 조각을 이어 붙였습니다 */
+    g.fillStyle(0x5c4b3d, 1);
+    g.slice(110, 128, 23, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(360), false); g.fillPath();
+    g.fillRect(87, 126, 46, 35);
+    const 유리 = [0x8fc0d9, 0xf2b56b, 0xc9755a, 0x7ba065, 0x9d8ac4];
+    const 칸x = [90, 104, 118], 칸y = [108, 121, 134, 147];
+    for (let r = 0; r < 칸y.length; r++) {
+      for (let c = 0; c < 칸x.length; c++) {
+        if (r === 0 && c !== 1) continue;          /* 맨 윗줄은 아치 안쪽에만 */
+        g.fillStyle(유리[(r * 2 + c) % 유리.length], 1);
+        g.fillRect(칸x[c], 칸y[r], 12, 11);
+      }
+    }
     g.fillStyle(0xc9755a, 1); g.fillRect(46, 120, 20, 46); g.fillRect(154, 120, 20, 46);
   });
   make(scene, 'pew', 130, 40, function (g) {
@@ -259,6 +268,19 @@ TextureFactory.createDay2 = function (scene) {
     g.fillStyle(0xb59a5c, 1); g.fillRoundedRect(9, 9, 16, 16, 5);
     g.fillStyle(0xf3ece2, 1); g.fillCircle(17, 17, 4);
   });
+  /* 여행 노트 한 면 — 하루치 글이 모두 담기도록 크게 폅니다.
+     작게 그려 넣는 소품용은 아래의 note_book 을 그대로 씁니다. */
+  make(scene, 'note_page', 348, 512, function (g) {
+    g.fillStyle(0x8a6340, 1); g.fillRoundedRect(0, 0, 348, 512, 14);      // 겉표지
+    g.fillStyle(0x7a5637, 1); g.fillRoundedRect(0, 0, 348, 512, 14);
+    g.fillStyle(0x8a6340, 1); g.fillRoundedRect(3, 3, 342, 506, 12);
+    g.fillStyle(0xfdf3e0, 1); g.fillRoundedRect(10, 10, 328, 492, 11);    // 속지
+    g.fillStyle(0xf6ead3, 1); g.fillRoundedRect(10, 10, 328, 34, 11);     // 윗머리
+    g.lineStyle(1.5, 0xe0d3ba, 1);
+    for (let i = 0; i < 17; i++) g.lineBetween(30, 60 + i * 26, 318, 60 + i * 26);
+    g.lineStyle(2, 0xc9755a, 0.45); g.lineBetween(26, 16, 26, 496);       // 붉은 세로선
+  });
+
   make(scene, 'note_book', 220, 280, function (g) {
     g.fillStyle(0x8a6340, 1); g.fillRoundedRect(0, 0, 220, 280, 10);
     g.fillStyle(0xfdf3e0, 1); g.fillRoundedRect(8, 8, 204, 264, 8);

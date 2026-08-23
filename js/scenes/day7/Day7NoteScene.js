@@ -10,7 +10,7 @@ window.Day7NoteScene = class Day7NoteScene extends Phaser.Scene {
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#16233f');
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 194, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
     this.add.text(W / 2, 228, N.head, UI.style(FONT.small, PAL.clay)).setOrigin(0.5).setDepth(2);
 
@@ -18,23 +18,31 @@ window.Day7NoteScene = class Day7NoteScene extends Phaser.Scene {
     const found = SaveSystem.get('reflections.day7Used', null)
       || SaveSystem.get('reflections.day4MainStrength', null)
       || '아직 찾는 중';
-    this.add.text(W / 2, 274, N.foundHead, UI.style(13, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
-    this.add.text(W / 2, 300, found, UI.style(18, PAL.ink, {
-      align: 'center', wordWrap: { width: 214 }
-    })).setOrigin(0.5).setDepth(2);
+    /* 적어 넣은 문장이 길면 아래 줄이 그만큼 밀려납니다 */
+    let y = 266;
+    const 놓기 = (t, style, gap) => {
+      const o = this.add.text(W / 2, y, t, style).setOrigin(0.5, 0).setDepth(2);
+      y += o.height + gap;
+      return o;
+    };
+    놓기(N.foundHead, UI.style(13, PAL.inkSoft, { align: 'center' }), 10);
+    놓기(found, UI.style(18, PAL.ink, {
+      align: 'center', lineSpacing: 5, wordWrap: { width: W - 110 }
+    }), 32);
 
     /* 오늘 그것을 나눈 순간 */
     const help = SaveSystem.get('reflections.day7Help', null);
     const card = SaveSystem.get('reflections.day7Card', null);
     const moment = help || (card ? (card.target + '에게 카드를 만들었다.') : '친구에게 설명해주었다.');
-    this.add.text(W / 2, 350, N.sharedHead, UI.style(13, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
-    this.add.text(W / 2, 376, moment, UI.style(16, PAL.ink, {
-      align: 'center', wordWrap: { width: 214 }
-    })).setOrigin(0.5).setDepth(2);
+    놓기(N.sharedHead, UI.style(13, PAL.inkSoft, { align: 'center' }), 10);
+    놓기(moment, UI.style(16, PAL.ink, {
+      align: 'center', lineSpacing: 5, wordWrap: { width: W - 110 }
+    }), 0);
 
     /* 오늘 만든 카드 */
     if (card) {
-      const c = this.add.container(W / 2, 470).setDepth(4).setScale(0.55);
+      /* 위의 글이 길어진 만큼 카드도 함께 내려옵니다 */
+      const c = this.add.container(W / 2, y + 96).setDepth(4).setScale(0.55);
       c.add(this.add.image(0, 0, 'made_card'));
       c.add(this.add.text(0, -48, card.icon, UI.style(42, PAL.ink)).setOrigin(0.5));
       c.add(this.add.text(0, 26, card.message, UI.style(24, PAL.ink, {

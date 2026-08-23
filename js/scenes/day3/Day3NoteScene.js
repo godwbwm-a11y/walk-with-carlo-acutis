@@ -13,14 +13,20 @@ window.Day3NoteScene = class Day3NoteScene extends Phaser.Scene {
     const N = DAY03.note;
     const word = SaveSystem.get('reflections.day3Heart', null);
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 190, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
     this.add.text(W / 2, 228, N.head, UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
-    this.add.text(W / 2, 274, word ? ('“' + word + '”') : '“…”',
-      UI.style(26, PAL.clay, { align: 'center', wordWrap: { width: W - 110 } })).setOrigin(0.5).setDepth(2);
-
-    this.l1 = this.add.text(W / 2, 344, N.sub, UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setDepth(2).setAlpha(0);
-    this.l2 = this.add.text(W / 2, 388, N.line, UI.style(20, PAL.ink)).setOrigin(0.5).setDepth(2).setAlpha(0);
+    /* 고른 한마디가 길면 아래 줄이 그만큼 밀려납니다 */
+    let y = 256;
+    const 놓기 = (t, style, gap) => {
+      const o = this.add.text(W / 2, y, t, style).setOrigin(0.5, 0).setDepth(2);
+      y += o.height + gap;
+      return o;
+    };
+    놓기(word ? ('“' + word + '”') : '“…”',
+      UI.style(26, PAL.clay, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 110 } }), 40);
+    this.l1 = 놓기(N.sub, UI.style(FONT.small, PAL.inkSoft, { align: 'center' }), 18).setAlpha(0);
+    this.l2 = 놓기(N.line, UI.style(20, PAL.ink, { align: 'center', wordWrap: { width: W - 110 } }), 0).setAlpha(0);
     this.tweens.add({ targets: this.l1, alpha: 1, duration: 900, delay: 600 });
     this.tweens.add({ targets: this.l2, alpha: 1, duration: 900, delay: 1800 });
 

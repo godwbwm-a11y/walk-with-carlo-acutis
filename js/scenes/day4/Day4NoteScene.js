@@ -14,22 +14,26 @@ window.Day4NoteScene = class Day4NoteScene extends Phaser.Scene {
     const list = SaveSystem.get('reflections.day4Strengths', []) || [];
     const main = SaveSystem.get('reflections.day4MainStrength', null);
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 186, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
     this.add.text(W / 2, 222, N.head, UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
 
     const shown = list.slice(0, 4).join('\n') || '아직 잘 모르겠다';
-    this.add.text(W / 2, 258, shown, UI.style(17, PAL.ink, { align: 'center', lineSpacing: 6 }))
-      .setOrigin(0.5, 0).setDepth(2);
+    /* 적어 넣은 좋은 점이 길면 아래 줄이 그만큼 밀려납니다 */
+    let y = 258;
+    const 놓기 = (t, style, gap) => {
+      const o = this.add.text(W / 2, y, t, style).setOrigin(0.5, 0).setDepth(2);
+      y += o.height + gap;
+      return o;
+    };
 
-    if (main) {
-      this.add.text(W / 2, 372, main, UI.style(23, PAL.clay, { align: 'center', wordWrap: { width: W - 110 } }))
-        .setOrigin(0.5).setDepth(2);
-    }
+    놓기(shown, UI.style(17, PAL.ink, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 102 } }), 34);
 
-    this.line = this.add.text(W / 2, 424, N.line, UI.style(FONT.small, PAL.inkSoft, {
+    if (main) 놓기(main, UI.style(23, PAL.clay, { align: 'center', lineSpacing: 6, wordWrap: { width: W - 110 } }), 30);
+
+    this.line = 놓기(N.line, UI.style(FONT.small, PAL.inkSoft, {
       align: 'center', lineSpacing: 6, wordWrap: { width: W - 110 }
-    })).setOrigin(0.5, 0).setDepth(2).setAlpha(0);
+    }), 0).setAlpha(0);
     this.tweens.add({ targets: this.line, alpha: 1, duration: 1000, delay: 900 });
 
     this.dialogue = new DialogueBox(this);

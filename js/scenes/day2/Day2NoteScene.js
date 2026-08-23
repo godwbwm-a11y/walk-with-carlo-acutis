@@ -13,13 +13,16 @@ window.Day2NoteScene = class Day2NoteScene extends Phaser.Scene {
     const N = DAY02.note;
     const concern = SaveSystem.get('reflections.entrustedConcern', null);
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 190, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
     this.add.text(W / 2, 228, N.head, UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
-    this.add.text(W / 2, 274, concern || '오늘의 마음', UI.style(30, PAL.clay)).setOrigin(0.5).setDepth(2);
+    /* 직접 적은 문장이라 길어질 수 있습니다. 위아래로 넉넉히 띄웁니다. */
+    this.add.text(W / 2, 296, concern || '오늘의 마음',
+      UI.style(26, PAL.clay, { align: 'center', lineSpacing: 7, wordWrap: { width: W - 102 } }))
+      .setOrigin(0.5).setDepth(2);
 
-    this.l1 = this.add.text(W / 2, 336, N.line1, UI.style(19, PAL.ink)).setOrigin(0.5).setDepth(2).setAlpha(0);
-    this.l2 = this.add.text(W / 2, 372, N.line2, UI.style(19, PAL.ink)).setOrigin(0.5).setDepth(2).setAlpha(0);
+    this.l1 = this.add.text(W / 2, 372, N.line1, UI.style(19, PAL.ink)).setOrigin(0.5).setDepth(2).setAlpha(0);
+    this.l2 = this.add.text(W / 2, 410, N.line2, UI.style(19, PAL.ink)).setOrigin(0.5).setDepth(2).setAlpha(0);
     this.tweens.add({ targets: this.l1, alpha: 1, duration: 900, delay: 600 });
     this.tweens.add({ targets: this.l2, alpha: 1, duration: 900, delay: 1800 });
 

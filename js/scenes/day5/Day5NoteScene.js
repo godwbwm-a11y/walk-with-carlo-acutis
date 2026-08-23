@@ -10,7 +10,7 @@ window.Day5NoteScene = class Day5NoteScene extends Phaser.Scene {
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#16233f');
 
-    this.add.image(W / 2, 300, 'note_book').setDepth(0).setScale(1.02).setAlpha(0.98);
+    this.add.image(W / 2, 410, 'note_page').setDepth(0).setAlpha(0.98);
     this.add.text(W / 2, 196, N.day, UI.style(FONT.body, PAL.sunDeep)).setOrigin(0.5).setDepth(2);
     this.add.text(W / 2, 226, N.head, UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5).setDepth(2);
 
@@ -22,12 +22,12 @@ window.Day5NoteScene = class Day5NoteScene extends Phaser.Scene {
     N.met.forEach((m) => {
       const met = friends.indexOf(m.name) !== -1;
       this.add.text(W / 2, y, m.name + '  ·  ' + m.from,
-        UI.style(15, met ? PAL.ink : '#b3a794')).setOrigin(0.5).setDepth(2).setAlpha(met ? 1 : 0.5);
+        UI.style(15, met ? PAL.ink : '#9a8a76')).setOrigin(0.5).setDepth(2).setAlpha(met ? 1 : 0.85);
       y += 24;
     });
 
-    const metLine = this.add.text(W / 2, 486, N.metLine, UI.style(20, PAL.sun, {
-      align: 'center', wordWrap: { width: W - 80 }
+    const metLine = this.add.text(W / 2, 486, N.metLine, UI.style(20, PAL.sunDeep, {
+      align: 'center', wordWrap: { width: W - 102 }
     })).setOrigin(0.5).setDepth(2).setAlpha(0);
     this.tweens.add({ targets: metLine, alpha: 1, duration: 1000, delay: 800 });
 

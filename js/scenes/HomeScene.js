@@ -34,7 +34,8 @@ window.HomeScene = class HomeScene extends WorldScene {
     /* 벽 오브젝트 */
     this.addInteractable({
       id: 'home_window', x: 96, y: 152, texture: 'window_warm', originY: 1, depth: 4, scale: 1.15,
-      label: '내다보기', range: 74, markerY: 108,
+      /* 창문은 벽에 붙어 있어 아래에서만 다가갈 수 있습니다. 조금 넉넉하게 잡아 줍니다. */
+      label: '내다보기', range: 90, markerY: 108,
       onInteract: () => this.look('window', 'home_window')
     });
 
@@ -74,7 +75,9 @@ window.HomeScene = class HomeScene extends WorldScene {
     this.add.image(120, 296, 'shadow').setDepth(291).setAlpha(0.6);
     this.tweens.add({ targets: this.mom, y: 289, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.momItem = this.addInteractable({
-      id: 'home_mom', x: 120, y: 300, label: '말 걸기', range: 100, priority: 2, markerY: 246,
+      /* 엄마는 창문·냉장고·식탁 한가운데에 서 계십니다.
+         범위가 넓으면 그 셋이 통째로 가려지므로, 바로 옆에 섰을 때만 잡히게 합니다. */
+      id: 'home_mom', x: 120, y: 300, label: '말 걸기', range: 68, priority: 2, markerY: 246,
       onInteract: () => this.talkToMom()
     });
 

@@ -62,14 +62,16 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
     const word = SaveSystem.get('reflections.day3Heart', '잘 모르겠어요.');
     const lines = DAY03.prayer[word] || DAY03.prayer['잘 모르겠어요.'];
 
-    const veil = this.add.graphics().setDepth(200);
-    veil.fillStyle(0x2b3b60, 0.55); veil.fillRect(0, 0, W, H);
+    /* 공원의 나무·벤치·책장이 모두 y 값만큼 깊이를 가집니다.
+       기도문은 그 위에 놓여야 가려지지 않습니다. */
+    const veil = this.add.graphics().setDepth(800);
+    veil.fillStyle(0x22304f, 0.74); veil.fillRect(0, 0, W, H);
     veil.setAlpha(0);
     this.tweens.add({ targets: veil, alpha: 1, duration: 1000 });
     AudioSystem.bell();
 
     const view = PrayerView.open(this, lines, {
-      top: H * 0.22, bottom: H - 196, depth: 210, delay: 900,
+      top: H * 0.22, bottom: H - 196, depth: 810, delay: 900,
       onDone: () => {
         this.time.delayedCall(1600, () => {
           const b = UI.button(this, W / 2, H - 120, 240, 58, '아멘', () => {
@@ -79,7 +81,7 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
               onComplete: () => { veil.destroy(); b.destroy(); this.library_(); }
             });
           }, { size: FONT.label, fill: PAL.sun });
-          b.setDepth(210).setAlpha(0);
+          b.setDepth(820).setAlpha(0);
           this.tweens.add({ targets: b, alpha: 1, duration: 800 });
         });
       }
@@ -109,7 +111,7 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
 
     const b = UI.button(this, GAME.WIDTH / 2, GAME.HEIGHT - 120, 250, 58, '작은 책장을 살펴본다', open,
       { size: FONT.small, fill: PAL.paper });
-    b.setDepth(210);
+    b.setDepth(820);
     this.libraryBtn = b;
   }
 

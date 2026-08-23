@@ -54,12 +54,22 @@ window.SilenceScene = class SilenceScene extends Phaser.Scene {
       .setOrigin(0.5).setDepth(60).setAlpha(0);
 
     /* 십자가 안내 — 처음 한 번만 조용히 */
-    this.crossHint = this.add.text(W / 2, 320, DAY03.silence.crossHint,
-      UI.style(FONT.small, PAL.dim, { align: 'center', wordWrap: { width: W - 90 } }))
-      .setOrigin(0.5).setDepth(60).setAlpha(0);
-    this.tweens.add({ targets: this.crossHint, alpha: 0.9, duration: 1200, delay: 4200 });
+    /* 제대 위에 겹치면 글씨가 묻혀 버려서, 어두운 바닥에 두고 판을 깔아 줍니다 */
+    this.crossHint = this.add.text(W / 2, 424, DAY03.silence.crossHint,
+      UI.style(FONT.small, PAL.cream, { align: 'center', wordWrap: { width: W - 110 } }))
+      .setOrigin(0.5).setDepth(61).setAlpha(0);
+    this.crossPlate = this.add.graphics().setDepth(60).setAlpha(0);
+    this.crossPlate.fillStyle(0x160f1e, 0.82);
+    this.crossPlate.fillRoundedRect(
+      W / 2 - this.crossHint.width / 2 - 18, 424 - this.crossHint.height / 2 - 11,
+      this.crossHint.width + 36, this.crossHint.height + 22, 14);
+    this.crossPlate.lineStyle(1.5, 0xf2d98a, 0.5);
+    this.crossPlate.strokeRoundedRect(
+      W / 2 - this.crossHint.width / 2 - 18, 424 - this.crossHint.height / 2 - 11,
+      this.crossHint.width + 36, this.crossHint.height + 22, 14);
+    this.tweens.add({ targets: [this.crossHint, this.crossPlate], alpha: 1, duration: 1200, delay: 4200 });
     this.time.delayedCall(11000, () => this.tweens.add({
-      targets: this.crossHint, alpha: 0, duration: 1200
+      targets: [this.crossHint, this.crossPlate], alpha: 0, duration: 1200
     }));
 
     /* 화면을 눌러도 실패가 아닙니다 */
