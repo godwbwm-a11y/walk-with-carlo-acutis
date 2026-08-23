@@ -4,6 +4,8 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
   constructor() { super('VistaScene'); }
 
   create(data) {
+    /* 이 화면은 다른 화면 위에 올라옵니다 — 뒤에 가려지지 않게 맨 앞으로 */
+    this.scene.bringToTop();
     data = data || {};
     this.kind = data.kind || 'wave';
     this.from = data.from || null;

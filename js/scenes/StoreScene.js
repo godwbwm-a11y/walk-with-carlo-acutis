@@ -5,6 +5,8 @@ window.StoreScene = class StoreScene extends Phaser.Scene {
   constructor() { super('StoreScene'); }
 
   create(data) {
+    /* 이 화면은 다른 화면 위에 올라옵니다 — 뒤에 가려지지 않게 맨 앞으로 */
+    this.scene.bringToTop();
     data = data || {};
     this.from = data.from || null;
     this.showBoard = !!data.board;          /* DAY 2 에서만 게시판이 열립니다 */

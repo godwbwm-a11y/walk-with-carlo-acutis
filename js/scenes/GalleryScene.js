@@ -4,6 +4,8 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
   constructor() { super('GalleryScene'); }
 
   create(data) {
+    /* 이 화면은 다른 화면 위에 올라옵니다 — 뒤에 가려지지 않게 맨 앞으로 */
+    this.scene.bringToTop();
     data = data || {};
     this.from = data.from || null;
     this.tab = data.tab || 'word';

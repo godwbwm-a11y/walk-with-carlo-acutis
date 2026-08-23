@@ -4,6 +4,8 @@ window.PauseScene = class PauseScene extends Phaser.Scene {
   constructor() { super('PauseScene'); }
 
   create(data) {
+    /* 이 화면은 다른 화면 위에 올라옵니다 — 뒤에 가려지지 않게 맨 앞으로 */
+    this.scene.bringToTop();
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.from = (data && data.from) || 'TitleScene';
 

@@ -4,6 +4,8 @@
 window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
 
   buildFrame(opt) {
+    /* 이 화면은 다른 화면 위에 올라옵니다 — 뒤에 가려지지 않게 맨 앞으로 */
+    this.scene.bringToTop();
     opt = opt || {};
     this.from = opt.from || null;
     this.cardId = opt.card || null;
