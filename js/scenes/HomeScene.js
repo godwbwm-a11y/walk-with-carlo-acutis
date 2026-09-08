@@ -20,6 +20,18 @@ window.HomeScene = class HomeScene extends WorldScene {
     const baseboard = this.add.graphics().setDepth(1);
     baseboard.fillStyle(HEX(PAL.woodDark), 0.7); baseboard.fillRect(0, 179, W, 10);
 
+    /* 바닥 얼룩 — 타일이 자로 그은 모눈처럼 보이지 않도록 크게 번지는 색을 얹습니다 */
+    const mottle = this.add.graphics().setDepth(0.5);
+    const blobs = [
+      [70, 300, 150, 96, 0xc9a578, 0.16], [250, 380, 190, 120, 0xe0c096, 0.13],
+      [130, 520, 210, 130, 0xc9a578, 0.12], [320, 600, 160, 110, 0xe0c096, 0.14],
+      [200, 760, 240, 120, 0xc9a578, 0.10], [40, 680, 140, 90, 0xe0c096, 0.11]
+    ];
+    blobs.forEach(function (b) {
+      mottle.fillStyle(b[4], b[5]);
+      mottle.fillEllipse(b[0], b[1], b[2], b[3]);
+    });
+
     /* 저녁 햇빛 */
     const sun = this.add.graphics().setDepth(2);
     for (let i = 0; i < 4; i++) {                    // 부드럽게 번지는 늦은 오후 햇빛
@@ -89,6 +101,13 @@ window.HomeScene = class HomeScene extends WorldScene {
     this.createPhotoButton('우리 집 거실');
     this.pauseBtn = UI.pauseButton(this);
     this.objective = UI.objective(this, D.objective);
+
+    /* 창문에서 바닥으로 내려앉는 빛 웅덩이 */
+    Render.lightPool(this, 96, 268, 122, { alpha: 0.30, tint: 0xffd9a0, depth: 2.5, squash: 0.86 });
+    Render.lightPool(this, 62, 430, 96, { alpha: 0.16, tint: 0xffd9a0, depth: 2.5, squash: 1.0 });
+
+    /* 금요일 저녁의 공기 — 따뜻하게 한 겹 덮고 가장자리를 눌러 줍니다 */
+    Render.grade(this, { tint: 0xffdcb4, tintAlpha: 0.55, vignetteAlpha: 0.30 });
 
     UI.fadeIn(this, 800);
 

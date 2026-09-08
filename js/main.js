@@ -6,16 +6,18 @@
     type: Phaser.AUTO,
     parent: 'game',
     backgroundColor: '#16233f',
-    width: GAME.WIDTH,
-    height: GAME.HEIGHT,
+    /* 캔버스는 화소 밀도만큼 크게, 좌표계는 390×844 그대로.
+       카메라를 같은 배율로 당겨서 장면 코드에는 영향이 없습니다. */
+    width: GAME.WIDTH * Render.RES,
+    height: GAME.HEIGHT * Render.RES,
     scale: {
       mode: Phaser.Scale.FIT,          // 화면이 잘리지 않도록 항상 전체를 보여줍니다
       /* 가운데 맞추기는 CSS 에만 맡깁니다.
          Phaser 에도 맡기면 여백으로 한 번, flex 로 또 한 번 —
          두 번 가운데를 맞추다가 화면이 한쪽으로 밀립니다. */
       autoCenter: Phaser.Scale.NO_CENTER,
-      width: GAME.WIDTH,
-      height: GAME.HEIGHT
+      width: GAME.WIDTH * Render.RES,
+      height: GAME.HEIGHT * Render.RES
     },
     render: {
       antialias: true,
@@ -89,9 +91,13 @@
 
   function launch() {
     if (game) return;
+    /* 장면이 하나라도 시작되기 전에 걸어 두어야 빠짐없이 적용됩니다 */
+    Render.patchSceneStart();
+    Render.patchFollow();
     game = new Phaser.Game(config);
     keepAlive(game);
     window.__game = game;
+
 
   }
 

@@ -14,7 +14,7 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.playerTex = opt.playerTex || 'player';   // 가롤로의 하루에서는 가롤로가 됩니다
     this._stepAt = 0;
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
-    this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
+    Render.setBounds(this.cameras.main, 0, 0, this.worldW, this.worldH);
     this.dialogue = new DialogueBox(this);
     this.events.off('resume', this.onResumeWorld, this);   // 장면을 다시 열 때 중복 등록 방지
     this.events.on('resume', this.onResumeWorld, this);
@@ -44,12 +44,27 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
   /* 장식용 오브젝트 */
   addProp(x, y, texture, opt) {
     opt = opt || {};
-    const img = this.add.image(x, y, texture).setOrigin(0.5, opt.originY === undefined ? 0.9 : opt.originY);
+    const originY = opt.originY === undefined ? 0.9 : opt.originY;
+    const img = this.add.image(x, y, texture).setOrigin(0.5, originY);
     img.setDepth(opt.depth === undefined ? y : opt.depth);
     if (opt.scale) img.setScale(opt.scale);
     if (opt.alpha !== undefined) img.setAlpha(opt.alpha);
     if (opt.tint) img.setTint(opt.tint);
     if (opt.solid) this.addSolid(x, y, opt.solidW || img.displayWidth * 0.8, opt.solidH || 16, opt.solidOffY || -4);
+    /* 바닥에 닿는 그림자 — 물건이 떠 보이지 않게 합니다.
+       붙이지 않는 것: 벽에 걸린 것(originY 를 따로 준 것), 물 위나 벽에 있는 것,
+       그리고 건물처럼 큰 것. 건물 밑에 그림자를 깔면 도리어 떠 보입니다. */
+    const airborne = /poster|wall|window|sky|cloud|boat|banner|flag|sign|star/.test(texture);
+    const tooWide = img.displayWidth > 120;
+    const grounded = opt.originY === undefined && opt.shadow !== false && !airborne && !tooWide;
+    if (grounded || opt.shadow === true) {
+      const w = img.displayWidth * (opt.shadowScale || 0.82);
+      const sh = this.add.image(x, y + (opt.shadowOffY || -1), 'shadow')
+        .setDisplaySize(w, w * 0.3)
+        .setAlpha(opt.shadowAlpha === undefined ? 0.5 : opt.shadowAlpha)
+        .setDepth(img.depth - 0.5);
+      img.groundShadow = sh;
+    }
     return img;
   }
 
