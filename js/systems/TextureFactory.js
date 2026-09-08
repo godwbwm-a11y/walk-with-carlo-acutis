@@ -21,17 +21,25 @@ window.TextureFactory = (function () {
   /* ── 사람 그리기 ─────────────────────────────── */
   function person(g, o) {
     const cx = 16;
+    /* o.step 은 걸을 때의 한 장 — 다리를 벌리고 팔을 서로 반대로 살짝 흔듭니다.
+       가만히 선 자세와 번갈아 보여 주면 두 장짜리 걷기가 됩니다. */
+    /* 화면 속 사람은 아주 작아서, 조금 벌려서는 걷는 티가 나지 않습니다.
+       발을 다리보다 더 벌려 실루엣이 확실히 달라지게 합니다. */
+    const sp = o.step ? 4 : 0;          // 다리를 벌리는 폭
+    const fp = o.step ? 6 : 0;          // 발을 벌리는 폭
+    const arm = o.step ? 2.2 : 0;       // 팔이 엇갈리는 높이
+    const leg = o.step ? 11 : 12;       // 벌린 다리는 조금 짧아 보입니다
     g.fillStyle(o.pants, 1);
-    g.fillRoundedRect(cx - 8, 30, 6, 12, 3);
-    g.fillRoundedRect(cx + 2, 30, 6, 12, 3);
+    g.fillRoundedRect(cx - 8 - sp, 30, 6, leg, 3);
+    g.fillRoundedRect(cx + 2 + sp, 30, 6, leg, 3);
     g.fillStyle(o.shoes, 1);
-    g.fillRoundedRect(cx - 9, 40, 8, 5, 2.5);
-    g.fillRoundedRect(cx + 1, 40, 8, 5, 2.5);
+    g.fillRoundedRect(cx - 9 - fp, 40, 8, 5, 2.5);
+    g.fillRoundedRect(cx + 1 + fp, 40, 8, 5, 2.5);
     g.fillStyle(o.shirt, 1);
     g.fillRoundedRect(cx - 11, 16, 22, 17, 7);
     g.fillStyle(o.skin, 1);
-    g.fillRoundedRect(cx - 14, 20, 5, 11, 2.5);
-    g.fillRoundedRect(cx + 9, 20, 5, 11, 2.5);
+    g.fillRoundedRect(cx - 14, 20 + arm, 5, 11, 2.5);
+    g.fillRoundedRect(cx + 9, 20 - arm, 5, 11, 2.5);
     if (o.stripe) {
       g.fillStyle(o.stripe, 1);
       g.fillRoundedRect(cx - 11, 24, 22, 3, 1.5);
@@ -70,20 +78,29 @@ window.TextureFactory = (function () {
       cshirt: 0xc9553f, cpants: 0x4a6fa0, cshoes: 0xf3ece2
     };
 
+    /* 걷는 사람 — 앞·뒤 두 방향, 각각 선 자세와 걷는 자세를 만듭니다.
+       `<이름>_front`, `<이름>_front_walk`, `<이름>_back`, `<이름>_back_walk` 가 나옵니다. */
+    function walker(name, base, backExtra) {
+      ['front', 'back'].forEach(function (dir) {
+        [false, true].forEach(function (step) {
+          const key = name + '_' + dir + (step ? '_walk' : '');
+          make(scene, key, 32, 46, function (g) {
+            const o = Object.assign({}, base, dir === 'back' ? (backExtra || { back: true }) : null);
+            o.step = step;
+            person(g, o);
+          });
+        });
+      });
+    }
+
     /* 주인공 */
-    make(scene, 'player_front', 32, 46, function (g) {
-      person(g, { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff });
-    });
-    make(scene, 'player_back', 32, 46, function (g) {
-      person(g, { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff, back: true });
-    });
+    walker('player',
+      { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff },
+      { back: true });
     /* 가롤로 — 붉은 폴로와 순례 배낭 */
-    make(scene, 'carlo_front', 32, 46, function (g) {
-      person(g, { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes });
-    });
-    make(scene, 'carlo_back', 32, 46, function (g) {
-      person(g, { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes, back: true, bag: 0x6d8f5f });
-    });
+    walker('carlo',
+      { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes },
+      { back: true, bag: 0x6d8f5f });
     /* 엄마 */
     make(scene, 'mom_front', 32, 46, function (g) {
       person(g, { skin: 0xf3cdaa, hair: 0x4a3226, shirt: 0xe2b7c4, pants: 0x7a6a86, shoes: 0xd9cfc4 });

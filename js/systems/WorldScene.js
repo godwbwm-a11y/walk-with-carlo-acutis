@@ -13,6 +13,8 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     this.walkSpeed = opt.speed || 108;
     this.playerTex = opt.playerTex || 'player';   // 가롤로의 하루에서는 가롤로가 됩니다
     this._stepAt = 0;
+    this._frameAt = 0;
+    this._walkFrame = false;
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     Render.setBounds(this.cameras.main, 0, 0, this.worldW, this.worldH);
     this.dialogue = new DialogueBox(this);
@@ -25,6 +27,16 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     const show = !v && !!this.nearTarget;
     if (this.actionBtn) this.actionBtn.setVisible(show);
     if (this.actionLabel) this.actionLabel.setVisible(show);
+  }
+
+  /* 방향과 걸음 여부에 맞는 그림으로 바꿉니다.
+     걷기 그림이 없는 인물이면 조용히 선 자세를 씁니다. */
+  setWalkTexture(dir, stepping) {
+    const p = this.player;
+    if (!p) return;
+    let key = this.playerTex + '_' + dir + (stepping ? '_walk' : '');
+    if (!this.textures.exists(key)) key = this.playerTex + '_' + dir;
+    if (p.texture.key !== key) p.setTexture(key);
   }
 
   createPlayer(x, y) {
@@ -230,17 +242,28 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
     p.setVelocity(vx, vy);
 
     const moving = (vx !== 0 || vy !== 0);
+    const gap = this.stepGap || 330;
     if (moving) {
       const want = vy < -8 ? 'back' : 'front';
-      if (want !== this.facing) { this.facing = want; p.setTexture(this.playerTex + '_' + want); }
+      this.facing = want;
       if (Math.abs(vx) > 6) p.setFlipX(vx < 0);
-      p.setScale(1.12, 1.12 + Math.sin(time / 90) * 0.04);
-      p.setRotation(Math.sin(time / 180) * 0.03);
-      if (time - this._stepAt > (this.stepGap || 330)) {
+      /* 걷는 자세와 선 자세를 발소리의 절반 간격으로 번갈아 보여 줍니다.
+         발이 벌어지는 순간에 소리가 나도록 같은 시계를 씁니다. */
+      if (time - this._frameAt > gap / 2) {
+        this._frameAt = time;
+        this._walkFrame = !this._walkFrame;
+      }
+      this.setWalkTexture(want, this._walkFrame);
+      p.setScale(1.12, 1.12 + Math.sin(time / 90) * 0.03);
+      p.setRotation(Math.sin(time / 180) * 0.02);
+      if (time - this._stepAt > gap) {
         this._stepAt = time;
         if (this.stepSound) this.stepSound(); else AudioSystem.step();
       }
     } else {
+      this._walkFrame = false;
+      this._frameAt = time;
+      this.setWalkTexture(this.facing || 'front', false);
       p.setScale(1.12, 1.12);
       p.setRotation(0);
     }
