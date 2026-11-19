@@ -74,16 +74,7 @@ window.ReceivedScene = class ReceivedScene extends MiniGameScene {
       y += 62;
     });
 
-    const max = Math.max(0, y - (H - 100));
-    if (this.scrollFn) this.input.off('pointermove', this.scrollFn);
-    this.scrollFn = (p) => {
-      if (!p.isDown || p.y < top + 4 || p.y > H - 94) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.scrollFn);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: top + 4, height: (H - 94) - top + 4, min: -(Math.max(0, y - (H - 100))), max: 0 });
   }
 
   /* 두 카드를 잇습니다 */

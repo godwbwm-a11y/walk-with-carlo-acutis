@@ -81,16 +81,7 @@ window.Day6NoteScene = class Day6NoteScene extends Phaser.Scene {
       y += 62;
     });
 
-    const max = Math.max(0, y - 720);
-    if (this.scrollFn) this.input.off('pointermove', this.scrollFn);
-    this.scrollFn = (p) => {
-      if (!p.isDown || p.y < 204 || p.y > 736) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.scrollFn);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 204, height: 736 - 204, min: -(Math.max(0, y - 720)), max: 0 });
   }
 
   askText(question, savePath, onDone) {

@@ -201,6 +201,6 @@ window.DAY01 = {
     carloLine: '그리고 하루 동안,\n나는 가롤로였다.',
     complete: 'DAY 1 완료',
     next: '내일 다시 만나요.',
-    teaser: 'DAY 2 · 토요일 — “나 말고, 하느님.”\n(다음 업데이트에서 이어집니다)'
+    teaser: '내일 · DAY 2 토요일 — “나 말고, 하느님.”'
   }
 };

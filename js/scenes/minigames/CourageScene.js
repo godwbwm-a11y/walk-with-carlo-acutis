@@ -51,14 +51,7 @@ window.CourageScene = class CourageScene extends MiniGameScene {
       y += 66;
     });
 
-    const max = Math.max(0, y - 620);
-    this.input.on('pointermove', (p) => {
-      if (!p.isDown || p.y < 180 || p.y > 640 || !this.layer) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 180, height: 460, min: -Math.max(0, y - 620), max: 0 });
   }
 
   chooseFear(f) {

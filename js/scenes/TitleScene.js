@@ -377,42 +377,49 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       const all = COLLECTION.byDay(d.n).length;
       const row = this.add.container(W / 2, y);
 
-      const g = this.add.graphics();
-      const draw = (pressed) => {
-        g.clear();
-        if (!pressed) { g.fillStyle(0x000000, 0.15); g.fillRoundedRect(-rowW / 2, -rowH / 2 + 4, rowW, rowH, 16); }
-        g.fillStyle(HEX(d.open ? PAL.paper : PAL.wallShade), d.open ? 1 : 0.55);
-        g.fillRoundedRect(-rowW / 2, -rowH / 2 + (pressed ? 2 : 0), rowW, rowH, 16);
-        g.lineStyle(2, HEX(PAL.sunDeep), d.open ? 0.6 : 0.28);
-        g.strokeRoundedRect(-rowW / 2, -rowH / 2 + (pressed ? 2 : 0), rowW, rowH, 16);
-      };
-      draw(false);
-      row.add(g);
+      /* 부드러운 카드 + 왼쪽의 날짜 동그라미 + 말씀을 모은 만큼 차오르는 가는 막대 */
+      const done = !d.bonus && SaveSystem.get('dayCompleted.day' + d.n, false);
+      const bg = this.add.image(0, 0, UI.skin(this, 'btn', rowW, rowH, 20, PAL.paper));
+      row.add(bg);
 
-      row.add(this.add.text(-rowW / 2 + 20, -rowH / 2 + 14, d.label,
-        UI.style(FONT.small, d.open ? PAL.sunDeep : PAL.inkSoft)).setOrigin(0, 0));
+      const bx = -rowW / 2 + 36;
+      const badge = this.add.graphics();
+      if (done) {
+        badge.fillStyle(HEX('#e8984a'), 1); badge.fillCircle(bx, 0, 20);
+        badge.fillStyle(0xffffff, 0.25); badge.fillCircle(bx - 5, -6, 8);
+      } else {
+        badge.fillStyle(HEX(d.bonus ? '#efe2f2' : '#f6ead6'), 1); badge.fillCircle(bx, 0, 20);
+        badge.lineStyle(1.5, HEX(d.bonus ? '#9d8ac4' : '#d9a25a'), 0.8); badge.strokeCircle(bx, 0, 20);
+      }
+      row.add(badge);
+      row.add(this.add.text(bx, 0, d.bonus ? (d.n === 9 ? '✦' : '♪') : String(d.n),
+        UI.style(d.bonus ? 17 : 19, done ? '#ffffff' : (d.bonus ? '#7a5f8a' : PAL.sunDeep), { shadow: false })).setOrigin(0.5));
+      if (done) row.add(this.add.text(bx + 15, 14, '✓', UI.style(12, '#3f7d4a', { shadow: false })).setOrigin(0.5));
 
-      const sub = d.open ? d.sub : '🔒 ' + (d.need || '') + ' 을 마치면 열립니다';
-      row.add(this.add.text(-rowW / 2 + 20, 4, sub,
-        UI.style(d.open ? FONT.body : FONT.small, d.open ? PAL.ink : PAL.inkSoft, {
-          wordWrap: { width: rowW - 40 }
-        })).setOrigin(0, 0).setAlpha(d.open ? 1 : 0.85));
+      const tx = -rowW / 2 + 68;
+      row.add(this.add.text(tx, -rowH / 2 + 15, d.label, UI.style(14, d.bonus ? '#7a5f8a' : PAL.sunDeep)).setOrigin(0, 0));
+      row.add(this.add.text(tx, -2, d.sub, UI.style(18, PAL.ink, { wordWrap: { width: rowW - 90 } })).setOrigin(0, 0));
 
-      if (d.open && !d.bonus) {
-        row.add(this.add.text(rowW / 2 - 18, -rowH / 2 + 15, '말씀 ' + got + '/' + all,
-          UI.style(FONT.tiny, PAL.inkSoft)).setOrigin(1, 0).setAlpha(0.85));
+      if (d.open && !d.bonus && all > 0) {
+        const pw = 54, px = rowW / 2 - 18 - pw, py = -rowH / 2 + 22;
+        row.add(this.add.text(rowW / 2 - 18, -rowH / 2 + 10, got + '/' + all, UI.style(12, PAL.inkSoft)).setOrigin(1, 0));
+        const bar = this.add.graphics();
+        bar.fillStyle(HEX('#eadcc4'), 1); bar.fillRoundedRect(px, py + 8, pw, 4, 2);
+        if (got > 0) { bar.fillStyle(HEX('#e8984a'), 1); bar.fillRoundedRect(px, py + 8, Math.max(4, pw * got / all), 4, 2); }
+        row.add(bar);
       }
 
       row.setSize(rowW, rowH + 8);
       row.setInteractive();
       let downAt = null;
-      row.on('pointerdown', (p) => { downAt = { x: p.x, y: p.y }; draw(true); AudioSystem.tap(); });
-      row.on('pointerout', () => { draw(false); downAt = null; });
-      row.on('pointerupoutside', () => { draw(false); downAt = null; });
+      row.on('pointerdown', (p) => { downAt = { x: p.x, y: p.y }; UI.pressFx(this, row, bg, true); AudioSystem.tap(); });
+      row.on('pointerout', () => { if (downAt) UI.pressFx(this, row, bg, false); downAt = null; });
+      row.on('pointerupoutside', () => { UI.pressFx(this, row, bg, false); downAt = null; });
       row.on('pointerup', (p) => {
-        draw(false);
+        UI.pressFx(this, row, bg, false);
         const was = downAt; downAt = null;
         if (!was || Phaser.Math.Distance.Between(was.x, was.y, p.x, p.y) > TOUCH.slop) return;
+        if (Scroller.caught) return;
         if (!d.open) return;
         layer.destroy(); this.picker = null;
         this.startDay(d.n);
@@ -423,19 +430,9 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     });
 
     const max = Math.max(0, y - viewH + 20);
-    let lastY;
-    const move = (p) => {
-      if (!p.isDown || !this.picker) return;
-      if (p.y < top || p.y > top + viewH) return;
-      const dy = p.y - (lastY === undefined ? p.y : lastY);
-      lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, top - max, top);
-    };
-    this.input.on('pointermove', move);
-    this.input.on('pointerup', () => { lastY = undefined; });
+    Scroller.create(this, { target: list, top: top, height: viewH, min: top - max, max: top });
 
     layer.add(UI.button(this, W / 2, H - 56, 220, 58, '닫기', () => {
-      this.input.off('pointermove', move);
       layer.destroy(); this.picker = null;
     }, { size: FONT.label, alpha: 0.95 }));
   }

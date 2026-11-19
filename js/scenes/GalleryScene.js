@@ -22,8 +22,8 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     this.add.text(W / 2, 46, '보관함', UI.style(22, PAL.cream)).setOrigin(0.5);
     UI.circleButton(this, W - 36, 46, 22, '✕', () => this.close(), { size: 18 });
 
-    this.tabWord = UI.button(this, W / 2 - 88, 116, 158, 54, '말씀', () => this.setTab('word'), { size: FONT.label });
-    this.tabPhoto = UI.button(this, W / 2 + 88, 116, 158, 54, '사진첩', () => this.setTab('photo'), { size: FONT.label });
+    this.tabs = UI.segmented(this, W / 2, 116, 300, 50, ['말씀', '사진첩'], this.tab === 'photo' ? 1 : 0,
+      (i) => this.setTab(i === 1 ? 'photo' : 'word'));
 
     /* 내용이 넘치면 위아래로 끌어서 봅니다 */
     this.content = this.add.container(0, this.viewTop);
@@ -31,21 +31,11 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     shape.fillRect(0, this.viewTop, W, this.viewH);
     this.content.setMask(shape.createGeometryMask());
 
-    this.scrollY = 0; this.maxScroll = 0;
-    this.dragging = false; this.moved = 0;
-
-    this.input.on('pointerdown', (p) => {
-      if (p.y < this.viewTop || p.y > this.viewTop + this.viewH) return;
-      this.dragging = true; this.lastY = p.y; this.moved = 0;
+    this.maxScroll = 0;
+    this.scroller = Scroller.create(this, {
+      target: this.content, top: this.viewTop, height: this.viewH,
+      min: () => this.viewTop - this.maxScroll, max: this.viewTop
     });
-    this.input.on('pointermove', (p) => {
-      if (!this.dragging) return;
-      const dy = p.y - this.lastY;
-      this.lastY = p.y; this.moved += Math.abs(dy);
-      this.scrollY = Phaser.Math.Clamp(this.scrollY + dy, -this.maxScroll, 0);
-      this.content.y = this.viewTop + this.scrollY;
-    });
-    this.input.on('pointerup', () => { this.dragging = false; });
 
     this.hintScroll = this.add.text(W / 2, H - 12, '', UI.style(13, '#8fa5c8')).setOrigin(0.5, 1);
 
@@ -55,18 +45,12 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
 
   setTab(tab) {
     this.tab = tab;
-    this.scrollY = 0; this.content.y = this.viewTop;
+    this.maxScroll = 0; this.scroller.scrollTo(this.viewTop, 0);
     this.content.removeAll(true);
     this.texKeys.forEach(k => { if (this.textures.exists(k)) this.textures.remove(k); });
     this.texKeys = [];
 
-    const on = { fill: PAL.sun, strokeAlpha: 0.9 }, off = { fill: PAL.paper };
-    this.tabWord.destroy(); this.tabPhoto.destroy();
-    const W = GAME.WIDTH;
-    this.tabWord = UI.button(this, W / 2 - 88, 116, 158, 54, '말씀', () => this.setTab('word'),
-      Object.assign({ size: FONT.label }, tab === 'word' ? on : off));
-    this.tabPhoto = UI.button(this, W / 2 + 88, 116, 158, 54, '사진첩', () => this.setTab('photo'),
-      Object.assign({ size: FONT.label }, tab === 'photo' ? on : off));
+    if (this.tabs && this.tabs.index !== (tab === 'photo' ? 1 : 0)) this.tabs.setIndex(tab === 'photo' ? 1 : 0);
 
     if (tab === 'word') this.buildWords(); else this.buildPhotos();
   }

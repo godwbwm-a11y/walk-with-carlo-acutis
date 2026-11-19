@@ -25,13 +25,8 @@ window.DialogueBox = class DialogueBox {
     this.scrim.fillStyle(0x0d1424, 0.42);
     this.scrim.fillRect(0, 0, W, H);
 
-    this.bg = scene.add.graphics();
-    this.bg.fillStyle(0x000000, 0.24);
-    this.bg.fillRoundedRect(W / 2 - boxW / 2 + 2, boxY - boxH / 2 + 6, boxW, boxH, 22);
-    this.bg.fillStyle(HEX(PAL.paper), 0.99);
-    this.bg.fillRoundedRect(W / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 22);
-    this.bg.lineStyle(3, HEX(PAL.sunDeep), 0.7);
-    this.bg.strokeRoundedRect(W / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 22);
+    /* 부드러운 그림자와 가는 테두리의 종이 카드 */
+    this.bg = scene.add.image(W / 2, boxY, UI.skin(scene, 'panel', boxW, boxH, 24, PAL.paper));
 
     this.namePlate = scene.add.graphics();
     this.nameText = scene.add.text(W / 2 - boxW / 2 + 24, boxY - boxH / 2 - 18, '',
@@ -70,17 +65,20 @@ window.DialogueBox = class DialogueBox {
     this.hit = scene.add.zone(W / 2, H / 2, W, H).setOrigin(0.5)
       .setInteractive().setDepth(999).setScrollFactor(0).setVisible(false);
     this._down = null;
-    this.hit.on('pointerdown', (p) => { this._down = { x: p.x, y: p.y, ty: this.text.y }; });
-    this.hit.on('pointermove', (p) => {
-      if (!this._down || !this.scrollable) return;
-      const dy = p.y - this._down.y;
-      this.text.y = Phaser.Math.Clamp(this._down.ty + dy, this.minTextY, this.baseTextY);
-    });
+    this.hit.__blocksScroll = true;             // 대화 중에는 뒤의 목록이 움직이지 않습니다
+    this.hit.on('pointerdown', (p) => { this._down = { x: p.x, y: p.y }; });
     this.hit.on('pointerup', (p) => {
       const d = this._down; this._down = null;
       if (!d) return;
       if (Phaser.Math.Distance.Between(d.x, d.y, p.x, p.y) > TOUCH.slop) return;
+      if (window.Scroller && Scroller.caught) return;    // 미끄러지던 글을 붙잡은 터치
       this.advance();
+    });
+    /* 글이 길면 상자 안에서 부드럽게 밀어 봅니다 */
+    this.textScroll = Scroller.create(scene, {
+      target: this.text, top: boxY - boxH / 2, height: boxH, x: W / 2 - boxW / 2, width: boxW,
+      min: () => this.minTextY, max: () => this.baseTextY, indicator: false, owner: this.hit,
+      enabled: () => this.isOpen && !this.choiceOpen && this.scrollable
     });
 
     /* PC — 스페이스·엔터로도 넘어갑니다 */
@@ -149,8 +147,12 @@ window.DialogueBox = class DialogueBox {
     const x = GAME.WIDTH / 2 - this.boxW / 2 + (fk ? 84 : 10);
     const y = this.boxY - this.boxH / 2 - 30;
     const color = (name === '가롤로' || name === '소년') ? HEX(PAL.clay) : HEX(PAL.sea);
-    this.namePlate.fillStyle(color, 0.95);
+    this.namePlate.fillStyle(0x000000, 0.14);
+    this.namePlate.fillRoundedRect(x, y + 2, w, 30, 15);
+    this.namePlate.fillStyle(color, 1);
     this.namePlate.fillRoundedRect(x, y, w, 30, 15);
+    this.namePlate.fillStyle(0xffffff, 0.16);
+    this.namePlate.fillRoundedRect(x + 2, y + 2, w - 4, 12, 6);
     this.nameText.setPosition(x + 13, y + 15);
   }
 

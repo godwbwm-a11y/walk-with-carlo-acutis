@@ -111,17 +111,10 @@ window.MirrorScene = class MirrorScene extends MiniGameScene {
       y += 60;
     });
     this.listMax = Math.max(0, y - 560);
-    this.scrollY = 0;
-
-    this.input.on('pointermove', (p) => {
-      if (this.stage !== 'choose' || !p.isDown) return;
-      if (p.y < 196 || p.y > 596) return;
-      const dy = p.y - (this.lastY || p.y);
-      this.lastY = p.y;
-      this.scrollY = Phaser.Math.Clamp(this.scrollY + dy, -this.listMax, 0);
-      this.list.y = this.scrollY;
+    Scroller.create(this, {
+      target: this.list, top: 196, height: 400, min: -this.listMax, max: 0,
+      enabled: () => this.stage === 'choose'
     });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
 
     this.doneBtn = UI.button(this, W / 2, 690, 240, 58, DAY04.mirror.doneBtn, () => this.finishChoose(),
       { size: FONT.label, fill: PAL.sun });

@@ -14,12 +14,15 @@ window.HeartStopScene = class HeartStopScene extends MiniGameScene {
     this.picked = [];
 
     this.list = this.add.container(0, 0).setDepth(40);
+    /* 안내 글이 몇 줄이든 그 아래에서 목록을 시작합니다 */
+    const listTop = Math.max(140, this.contentTop());
+    this.listTop = listTop;
     const shape = this.make.graphics({ add: false });
-    shape.fillRect(0, 140, W, 500);
+    shape.fillRect(0, listTop, W, 626 - listTop);
     this.list.setMask(shape.createGeometryMask());
 
     this.cards = [];
-    let y = 186;
+    let y = listTop + 44;
     DAY05.heart.scenes.forEach((label) => {
       const c = this.add.container(W / 2, y);
       const g = this.add.graphics();
@@ -40,6 +43,7 @@ window.HeartStopScene = class HeartStopScene extends MiniGameScene {
       c.on('pointerdown', (p) => { this.downY = p.y; });
       c.on('pointerup', (p) => {                     // 목록을 밀다가 잘못 골라지지 않도록
         if (this.downY !== undefined && Math.abs(p.y - this.downY) > 10) return;
+        if (Scroller.caught) return;
         this.toggle(c);
       });
       this.list.add(c);
@@ -47,16 +51,8 @@ window.HeartStopScene = class HeartStopScene extends MiniGameScene {
       y += 80;
     });
 
-    this.listMax = Math.max(0, y - 600);
-    this.scrollY = 0;
-    this.input.on('pointermove', (p) => {
-      if (!p.isDown || p.y < 150 || p.y > 630) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      this.scrollY = Phaser.Math.Clamp(this.scrollY + dy, -this.listMax, 0);
-      this.list.y = this.scrollY;
-    });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    this.listMax = Math.max(0, y - 588);
+    Scroller.create(this, { target: this.list, top: this.listTop, height: 626 - this.listTop, min: -this.listMax, max: 0 });
 
     this.note = this.add.text(W / 2, 664, DAY05.heart.note, UI.style(FONT.small, '#cbd8ea', {
       align: 'center', wordWrap: { width: W - 60 }

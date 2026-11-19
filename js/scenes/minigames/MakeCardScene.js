@@ -74,16 +74,7 @@ window.MakeCardScene = class MakeCardScene extends MiniGameScene {
       y += 60;
     });
 
-    const max = Math.max(0, y - 680);
-    if (this.scrollFn) this.input.off('pointermove', this.scrollFn);
-    this.scrollFn = (p) => {
-      if (!p.isDown || p.y < 334 || p.y > 686) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.scrollFn);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 334, height: 352, min: -Math.max(0, y - 680), max: 0 });
 
     const w = UI.button(this, W / 2, H - 84, 250, 54, DAY07.make.writeBtn, () => this.writeOwn(),
       { size: FONT.small, fill: PAL.sun });

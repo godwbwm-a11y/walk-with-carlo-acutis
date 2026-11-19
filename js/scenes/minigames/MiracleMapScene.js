@@ -272,23 +272,10 @@ window.MiracleMapScene = class MiracleMapScene extends MiniGameScene {
     content.add(note); y += note.height + 40;   // 아래 안내 문구와 겹치지 않도록
 
     /* 끌어서 넘겨보기 */
-    let scrollY = 0;
     const maxScroll = Math.max(0, y - viewH);
-    let dragging = false, lastY = 0, moved = 0;
-    const onDown = (p) => {
-      if (p.y < viewTop || p.y > viewTop + viewH) return;
-      dragging = true; lastY = p.y; moved = 0;
-    };
-    const onMove = (p) => {
-      if (!dragging) return;
-      const dy = p.y - lastY; lastY = p.y; moved += Math.abs(dy);
-      scrollY = Phaser.Math.Clamp(scrollY + dy, -maxScroll, 0);
-      content.y = viewTop + scrollY;
-    };
-    const onUp = () => { dragging = false; };
-    this.input.on('pointerdown', onDown);
-    this.input.on('pointermove', onMove);
-    this.input.on('pointerup', onUp);
+    const reader = Scroller.create(this, {
+      target: content, top: viewTop, height: viewH, min: viewTop - maxScroll, max: viewTop, parent: layer
+    });
 
     if (maxScroll > 0) {
       const hint = this.add.text(W / 2, bot + 9, CARLO_DAY.miracleScroll,
@@ -298,9 +285,7 @@ window.MiracleMapScene = class MiracleMapScene extends MiniGameScene {
     }
 
     const back = UI.button(this, W / 2, H - 50, 240, 56, CARLO_DAY.miracleClose, () => {
-      this.input.off('pointerdown', onDown);
-      this.input.off('pointermove', onMove);
-      this.input.off('pointerup', onUp);
+      reader.destroy();
       AudioSystem.back();
       this.tweens.add({
         targets: layer, alpha: 0, duration: 300,

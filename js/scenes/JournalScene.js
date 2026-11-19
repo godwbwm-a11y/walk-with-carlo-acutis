@@ -41,8 +41,9 @@ window.JournalScene = class JournalScene extends Phaser.Scene {
     const n = this.add.text(W / 2, H * 0.145, J.next, UI.style(FONT.body, '#d9c9ae')).setOrigin(0.5).setAlpha(0);
     this.tweens.add({ targets: [c, n], alpha: 1, duration: 900, delay: 300 });
 
-    this.add.text(W / 2, H - 168, J.teaser,
-      UI.style(FONT.small, '#c9d6ea', { align: 'center', lineSpacing: 6 })).setOrigin(0.5).setAlpha(0.85);
+    /* 내일의 제목 한 줄 — 단추와 겹치지 않게 단추 위에 둡니다 */
+    this.add.text(W / 2, H - 224, J.teaser.split('\n')[0],
+      UI.style(15, '#c9d6ea', { align: 'center' })).setOrigin(0.5).setAlpha(0.9);
 
     /* 다음 날로 바로 갈 수도, 오늘은 여기까지 해도 됩니다 */
     UI.dayEndButtons(this, 1);

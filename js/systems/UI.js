@@ -70,21 +70,111 @@ window.UI = (function () {
     return g;
   }
 
-  function panel(scene, x, y, w, h, opt) {
+  /* ── 단추와 판의 겉모습(스킨) ─────────────────────────
+     예전에는 도형에 두꺼운 주황 테두리와 딱딱한 그림자를 얹었습니다.
+     이제 캔버스에 한 번 구워 둡니다 — 부드럽게 번진 그림자, 위에서 비치는 옅은 빛,
+     머리카락처럼 가는 테두리, 알약처럼 둥근 모서리. 같은 크기·종류는 한 번만 굽습니다. */
+  const SKIN_PAD = 14;
+
+  function mix(hex, to, t) {
+    const a = Phaser.Display.Color.HexStringToColor(hex), b = Phaser.Display.Color.HexStringToColor(to);
+    const r = Math.round(a.red + (b.red - a.red) * t), g = Math.round(a.green + (b.green - a.green) * t), bl = Math.round(a.blue + (b.blue - a.blue) * t);
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+  function rgba(hex, al) {
+    const c = Phaser.Display.Color.HexStringToColor(hex);
+    return 'rgba(' + c.red + ',' + c.green + ',' + c.blue + ',' + al + ')';
+  }
+
+  /* 종류 — 색의 기준과 그림자 빛깔 */
+  function skinStyle(fill) {
+    const f = (fill || PAL.paper).toLowerCase();
+    if (f === PAL.sun.toLowerCase()) {
+      return { top: '#f9cf8e', bot: '#e8984a', line: 'rgba(170,92,30,0.45)', shadow: 'rgba(160,80,20,0.42)', hi: 'rgba(255,248,230,0.75)', glow: true };
+    }
+    if (f === PAL.paper.toLowerCase() || f === '#fdf3e0') {
+      return { top: '#fffcf6', bot: '#f4e8d3', line: 'rgba(150,105,60,0.26)', shadow: 'rgba(30,20,12,0.26)', hi: 'rgba(255,255,255,0.95)' };
+    }
+    if (f === PAL.cream.toLowerCase()) {
+      return { top: '#fffdf8', bot: '#efe4d2', line: 'rgba(150,105,60,0.22)', shadow: 'rgba(30,20,12,0.24)', hi: 'rgba(255,255,255,0.95)' };
+    }
+    return { top: mix(f, '#ffffff', 0.22), bot: mix(f, '#000000', 0.12), line: rgba(f, 0.55).replace('rgba', 'rgba'), shadow: 'rgba(25,18,12,0.3)', hi: 'rgba(255,255,255,0.45)' };
+  }
+
+  function skinKey(kind, fill, w, h, r) { return 'ui_' + kind + '_' + (fill || 'p').replace('#', '') + '_' + Math.round(w) + 'x' + Math.round(h) + '_' + Math.round(r); }
+
+  /* 둥근 사각형(또는 원) 하나를 굽습니다 — 그림자 자리를 위해 둘레에 여백을 둡니다 */
+  function skin(scene, kind, w, h, r, fill, opt) {
+    opt = opt || {};
+    const key = skinKey(kind, fill, w, h, r) + (opt.flat ? '_f' : '');
+    if (scene.textures.exists(key)) return key;
+    const S = skinStyle(fill);
+    const R = window.HiTex ? HiTex.density(scene, 'prop') : 1;
+    const P = SKIN_PAD;
+    const tex = scene.textures.createCanvas(key, Math.ceil((w + P * 2) * R), Math.ceil((h + P * 2) * R));
+    const c = tex.getContext();
+    c.scale(R, R);
+    const path = function (x, y, ww, hh, rr) {
+      rr = Math.min(rr, ww / 2, hh / 2);
+      c.beginPath();
+      c.moveTo(x + rr, y); c.arcTo(x + ww, y, x + ww, y + hh, rr); c.arcTo(x + ww, y + hh, x, y + hh, rr);
+      c.arcTo(x, y + hh, x, y, rr); c.arcTo(x, y, x + ww, y, rr); c.closePath();
+    };
+    /* 그림자 — 넓게 번진 것과 바로 아래 짙은 것 두 겹 */
+    if (!opt.flat) {
+      c.save();
+      c.shadowColor = S.shadow; c.shadowBlur = 12; c.shadowOffsetY = 5;
+      path(P, P, w, h, r); c.fillStyle = S.bot; c.fill();
+      c.shadowColor = 'rgba(0,0,0,0.12)'; c.shadowBlur = 2; c.shadowOffsetY = 1;
+      c.fill();
+      c.restore();
+    }
+    /* 몸통 — 위가 밝고 아래로 갈수록 살짝 짙게 */
+    const g = c.createLinearGradient(0, P, 0, P + h);
+    g.addColorStop(0, S.top); g.addColorStop(1, S.bot);
+    path(P, P, w, h, r); c.fillStyle = g; c.fill();
+    /* 위쪽 가장자리의 빛 */
+    c.save(); path(P, P, w, h, r); c.clip();
+    const hg = c.createLinearGradient(0, P, 0, P + Math.min(h * 0.55, 30));
+    hg.addColorStop(0, S.hi); hg.addColorStop(1, 'rgba(255,255,255,0)');
+    c.globalAlpha = 0.55; c.fillStyle = hg; c.fillRect(P, P, w, Math.min(h * 0.55, 30)); c.globalAlpha = 1;
+    c.restore();
+    /* 가는 테두리 둘 — 바깥은 그늘, 안쪽은 빛 */
+    c.lineWidth = 1; c.strokeStyle = S.line; path(P + 0.5, P + 0.5, w - 1, h - 1, r - 0.5); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,0.55)'; path(P + 1.5, P + 1.5, w - 3, h - 3, r - 1.5); c.stroke();
+    if (window.HiTex) HiTex.mark(tex, R);
+    tex.refresh();
+    return key;
+  }
+
+  function plate(scene, x, y, w, h, opt) {
     opt = opt || {};
     const g = scene.add.graphics();
-    const r = opt.radius === undefined ? 18 : opt.radius;
-    if (opt.shadow !== false) {
-      g.fillStyle(0x000000, 0.16);
-      g.fillRoundedRect(x - w / 2 + 2, y - h / 2 + 5, w, h, r);
-    }
-    g.fillStyle(HEX(opt.fill || PAL.paper), opt.alpha === undefined ? 0.97 : opt.alpha);
-    g.fillRoundedRect(x - w / 2, y - h / 2, w, h, r);
-    if (opt.stroke !== false) {
-      g.lineStyle(2, HEX(opt.strokeColor || PAL.sun), opt.strokeAlpha === undefined ? 0.55 : opt.strokeAlpha);
-      g.strokeRoundedRect(x - w / 2, y - h / 2, w, h, r);
-    }
+    g.fillStyle(HEX(opt.fill || '#101a2e'), opt.alpha === undefined ? 0.72 : opt.alpha);
+    g.fillRoundedRect(x - w / 2, y - h / 2, w, h, opt.radius === undefined ? 20 : opt.radius);
     return g;
+  }
+
+  /* 판 — 종이처럼 부드러운 카드. 예전처럼 장면에 바로 놓이고, 컨테이너에 넣어도 됩니다 */
+  function panel(scene, x, y, w, h, opt) {
+    opt = opt || {};
+    const r = opt.radius === undefined ? 22 : opt.radius;
+    const key = skin(scene, 'panel', w, h, r, opt.fill || PAL.paper, { flat: opt.shadow === false });
+    const img = scene.add.image(x, y, key);
+    if (opt.alpha !== undefined) img.setAlpha(opt.alpha);
+    return img;
+  }
+
+  /* 누를 때의 움직임 — 살짝 작아졌다가 놓으면 탄력 있게 돌아옵니다 */
+  function pressFx(scene, c, bg, down) {
+    scene.tweens.killTweensOf(c);
+    if (down) {
+      scene.tweens.add({ targets: c, scaleX: 0.965, scaleY: 0.965, duration: 70, ease: 'Quad.easeOut' });
+      if (bg && bg.setTint) bg.setTint(0xece4d8);
+    } else {
+      scene.tweens.add({ targets: c, scaleX: 1, scaleY: 1, duration: 220, ease: 'Back.easeOut' });
+      if (bg && bg.clearTint) bg.clearTint();
+    }
   }
 
   /* 넉넉한 크기의 기본 버튼 (최소 높이 56) */
@@ -92,26 +182,17 @@ window.UI = (function () {
     opt = opt || {};
     h = Math.max(h, TOUCH.min);
     const c = scene.add.container(x, y);
-    const g = scene.add.graphics();
-    const fill = HEX(opt.fill || PAL.paper);
-    const line = HEX(opt.strokeColor || PAL.sunDeep);
-
-    function draw(pressed) {
-      g.clear();
-      const off = pressed ? 2 : 0;
-      if (!pressed) { g.fillStyle(0x000000, 0.15); g.fillRoundedRect(-w / 2, -h / 2 + 4, w, h, 16); }
-      g.fillStyle(fill, opt.alpha === undefined ? 1 : opt.alpha);
-      g.fillRoundedRect(-w / 2, -h / 2 + off, w, h, 16);
-      g.lineStyle(2, line, opt.strokeAlpha === undefined ? 0.6 : opt.strokeAlpha);
-      g.strokeRoundedRect(-w / 2, -h / 2 + off, w, h, 16);
-    }
-    draw(false);
+    /* 한 줄짜리는 알약 모양, 여러 줄짜리 큰 단추는 둥근 카드 모양 */
+    const r = opt.radius !== undefined ? opt.radius : (h <= 64 ? h / 2 : 20);
+    const bg = scene.add.image(0, 0, skin(scene, 'btn', w, h, r, opt.fill || PAL.paper));
+    if (opt.alpha !== undefined) bg.setAlpha(opt.alpha);
 
     const t = scene.add.text(0, 0, label, style(opt.size || FONT.label, opt.color || PAL.ink, {
-      align: 'center', wordWrap: { width: w - 26 }
+      align: 'center', wordWrap: { width: w - 34 }
     })).setOrigin(0.5);
+    if (opt.alpha !== undefined && opt.alpha < 0.5) t.setAlpha(Math.max(0.45, opt.alpha + 0.2));
 
-    c.add([g, t]);
+    c.add([bg, t]);
     c.setSize(w, h + 12);          // 손가락이 조금 빗나가도 눌리도록 여유를 둡니다
     c.setInteractive();
 
@@ -119,51 +200,92 @@ window.UI = (function () {
     let downAt = null;
     c.on('pointerdown', function (p) {
       downAt = { x: p.x, y: p.y };
-      draw(true); t.y = 2; AudioSystem.tap();
+      pressFx(scene, c, bg, true); AudioSystem.tap();
     });
     c.on('pointerup', function (p) {
-      draw(false); t.y = 0;
+      pressFx(scene, c, bg, false);
       /* 누른 자리에서 크게 밀렸다면 누른 것으로 치지 않습니다.
          누른 순간을 보지 못했다면(버튼이 뒤늦게 생겼다면) 그대로 넣습니다. */
       const was = downAt; downAt = null;
       if (was && Phaser.Math.Distance.Between(was.x, was.y, p.x, p.y) > TOUCH.slop) return;
+      if (window.Scroller && Scroller.caught) return;     // 미끄러지던 목록을 멈추려던 터치
       if (onClick) onClick();
     });
-    c.on('pointerout', function () { draw(false); t.y = 0; downAt = null; });
-    c.on('pointerupoutside', function () { draw(false); t.y = 0; downAt = null; });
+    c.on('pointerout', function () { if (downAt) pressFx(scene, c, bg, false); downAt = null; });
+    c.on('pointerupoutside', function () { pressFx(scene, c, bg, false); downAt = null; });
     c.setLabel = function (s) { t.setText(s); };
     return c;
   }
 
-  /* 원형 아이콘 버튼 */
+  /* 원형 아이콘 버튼 — 반투명한 유리알 같은 동그라미 */
   function circleButton(scene, x, y, r, glyph, onClick, opt) {
     opt = opt || {};
     r = Math.max(r, TOUCH.min / 2);
     const c = scene.add.container(x, y);
-    const g = scene.add.graphics();
-    function draw(p) {
-      g.clear();
-      if (!p) { g.fillStyle(0x000000, 0.16); g.fillCircle(0, 4, r); }
-      g.fillStyle(HEX(opt.fill || PAL.paper), opt.alpha === undefined ? 0.94 : opt.alpha);
-      g.fillCircle(0, p ? 2 : 0, r);
-      g.lineStyle(2, HEX(opt.strokeColor || PAL.sunDeep), 0.6);
-      g.strokeCircle(0, p ? 2 : 0, r);
-    }
-    draw(false);
+    const bg = scene.add.image(0, 0, skin(scene, 'circ', r * 2, r * 2, r, opt.fill || PAL.paper));
+    bg.setAlpha(opt.alpha === undefined ? 0.96 : Math.max(opt.alpha, 0.9));
     const t = scene.add.text(0, 0, glyph, style(opt.size || 22, opt.color || PAL.ink)).setOrigin(0.5);
-    c.add([g, t]);
+    c.add([bg, t]);
     c.setSize(r * 2 + 16, r * 2 + 16);
     c.setInteractive(new Phaser.Geom.Circle(r + 8, r + 8, r + 8), Phaser.Geom.Circle.Contains);
     let downAt = null;
-    c.on('pointerdown', function (p) { downAt = { x: p.x, y: p.y }; draw(true); AudioSystem.tap(); });
+    c.on('pointerdown', function (p) { downAt = { x: p.x, y: p.y }; pressFx(scene, c, bg, true); AudioSystem.tap(); });
     c.on('pointerup', function (p) {
-      draw(false);
+      pressFx(scene, c, bg, false);
       const was = downAt; downAt = null;
       if (was && Phaser.Math.Distance.Between(was.x, was.y, p.x, p.y) > TOUCH.slop) return;
       if (onClick) onClick();
     });
-    c.on('pointerout', function () { draw(false); downAt = null; });
-    c.on('pointerupoutside', function () { draw(false); downAt = null; });
+    c.on('pointerout', function () { if (downAt) pressFx(scene, c, bg, false); downAt = null; });
+    c.on('pointerupoutside', function () { pressFx(scene, c, bg, false); downAt = null; });
+    /* 글자 대신 선으로 그린 그림을 얹을 때 */
+    c.icon = function (draw) {
+      const g = scene.add.graphics();
+      draw(g);
+      c.add(g);
+      return c;
+    };
+    return c;
+  }
+
+  /* 탭 — 어두운 알약 위를 밝은 손잡이가 미끄러져 옮겨 갑니다 */
+  function segmented(scene, x, y, w, h, labels, index, onChange) {
+    const c = scene.add.container(x, y);
+    const n = labels.length, sw = (w - 8) / n;
+    const track = scene.add.graphics();
+    track.fillStyle(0x0b1222, 0.5); track.fillRoundedRect(-w / 2, -h / 2, w, h, h / 2);
+    track.lineStyle(1, 0xffffff, 0.14); track.strokeRoundedRect(-w / 2 + 0.5, -h / 2 + 0.5, w - 1, h - 1, h / 2);
+    const thumb = scene.add.image(0, 0, skin(scene, 'btn', sw, h - 8, (h - 8) / 2, PAL.sun));
+    c.add([track, thumb]);
+    const texts = labels.map(function (l, i) {
+      const t = scene.add.text(-w / 2 + 4 + sw * (i + 0.5), 0, l, style(FONT.label, PAL.cream)).setOrigin(0.5);
+      c.add(t);
+      return t;
+    });
+    const place = function (i, animate) {
+      const tx = -w / 2 + 4 + sw * (i + 0.5);
+      scene.tweens.killTweensOf(thumb);
+      if (animate) scene.tweens.add({ targets: thumb, x: tx, duration: 260, ease: 'Cubic.easeOut' });
+      else thumb.x = tx;
+      texts.forEach(function (t, k) {
+        t.setColor(k === i ? PAL.ink : PAL.cream);
+        t.setShadow(0, 0, '#000', 0, false, false);
+        if (k !== i) t.setShadow(0, 1, 'rgba(6,10,22,0.7)', 3, true, true);
+      });
+      c.index = i;
+    };
+    place(index || 0, false);
+    c.setSize(w, h + 10);
+    c.setInteractive();
+    c.on('pointerup', function (p) {
+      const lx = p.x - x + w / 2;
+      const i = Phaser.Math.Clamp(Math.floor(lx / (w / n)), 0, n - 1);
+      if (i === c.index) return;
+      AudioSystem.tap();
+      place(i, true);
+      if (onChange) onChange(i);
+    });
+    c.setIndex = function (i) { place(i, true); };
     return c;
   }
 
@@ -441,39 +563,28 @@ window.UI = (function () {
     w = Math.max(w, TOUCH.min);
     h = Math.max(h, TOUCH.min);
     const c = scene.add.container(x, y);
-    const g = scene.add.graphics();
-    const fill = HEX(opt.fill || PAL.paper);
-    const line = HEX(opt.strokeColor || PAL.sunDeep);
-    const round = opt.round === undefined ? 18 : opt.round;
-
-    function draw(pressed) {
-      g.clear();
-      if (!pressed) { g.fillStyle(0x000000, 0.16); g.fillRoundedRect(-w / 2, -h / 2 + 4, w, h, round); }
-      g.fillStyle(fill, opt.alpha === undefined ? 0.96 : opt.alpha);
-      g.fillRoundedRect(-w / 2, -h / 2 + (pressed ? 2 : 0), w, h, round);
-      g.lineStyle(2, line, opt.strokeAlpha === undefined ? 0.6 : opt.strokeAlpha);
-      g.strokeRoundedRect(-w / 2, -h / 2 + (pressed ? 2 : 0), w, h, round);
-    }
-    draw(false);
+    const round = opt.round === undefined ? 20 : opt.round;
+    const bg = scene.add.image(0, 0, skin(scene, 'btn', w, h, round, opt.fill || PAL.paper));
+    if (opt.alpha !== undefined) bg.setAlpha(opt.alpha);
 
     const t = scene.add.text(0, 0, label, style(opt.size || FONT.label, opt.color || PAL.ink, {
       align: 'center', wordWrap: { width: w - 20 }
     })).setOrigin(0.5);
 
-    c.add([g, t]);
+    c.add([bg, t]);
     c.setSize(w, h);
     c.setInteractive();
     c.isDown = false;
 
     function press() {
       if (c.isDown) return;
-      c.isDown = true; draw(true); t.y = 2;
+      c.isDown = true; pressFx(scene, c, bg, true);
       if (opt.quiet !== true) AudioSystem.tap();
       if (c.onPress) c.onPress();
     }
     function release() {
       if (!c.isDown) return;
-      c.isDown = false; draw(false); t.y = 0;
+      c.isDown = false; pressFx(scene, c, bg, false);
       if (c.onRelease) c.onRelease();
     }
     c.on('pointerdown', press);
@@ -487,10 +598,16 @@ window.UI = (function () {
   }
 
   function pauseButton(scene, sceneKeyToResume) {
-    const b = circleButton(scene, GAME.WIDTH - 34, 44, 21, '❙❙', function () {
+    const b = circleButton(scene, GAME.WIDTH - 34, 44, 21, '', function () {
       scene.scene.pause();
       scene.scene.launch('PauseScene', { from: scene.scene.key });
-    }, { size: 15, alpha: 0.85 });
+    }, { size: 15, alpha: 0.92 });
+    /* 글자(❙❙) 대신 두 개의 둥근 막대 */
+    b.icon(function (g) {
+      g.fillStyle(HEX(PAL.ink), 0.85);
+      g.fillRoundedRect(-6.5, -7.5, 4.6, 15, 2.3);
+      g.fillRoundedRect(1.9, -7.5, 4.6, 15, 2.3);
+    });
     b.setDepth(890).setScrollFactor(0);
     return b;
   }
@@ -505,6 +622,9 @@ window.UI = (function () {
     panel: panel,
     button: button,
     circleButton: circleButton,
+    skin: skin,
+    pressFx: pressFx,
+    segmented: segmented,
     padButton: padButton,
     caption: caption,
     objective: objective,

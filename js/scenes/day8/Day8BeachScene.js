@@ -115,14 +115,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
     layer.add(this.add.text(W / 2, 676, DAY08.faith.scrollHint, UI.style(13, '#8fa5c8'))
       .setOrigin(0.5).setAlpha(0.9));
 
-    const max = Math.max(0, y - 686);
-    this.input.on('pointermove', (p) => {
-      if (!p.isDown || !this.faithLayer || p.y < 190 || p.y > 656) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 190, height: 656 - 190, min: -(Math.max(0, y - 686)), max: 0 });
 
     layer.add(UI.button(this, W / 2, H - 92, 250, 54, F.writeBtn, () => this.faithWrite(),
       { size: FONT.small, fill: PAL.sun }));
@@ -226,16 +219,7 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
     layer.add(this.add.text(W / 2, 682, DAY08.faith.scrollHint, UI.style(13, '#8fa5c8'))
       .setOrigin(0.5).setAlpha(0.9));
 
-    const max = Math.max(0, y - 664);
-    if (this.planScroll) this.input.off('pointermove', this.planScroll);
-    this.planScroll = (p) => {
-      if (!p.isDown || !this.planLayer || p.y < 144 || p.y > 660) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.planScroll);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 144, height: 660 - 144, min: -(Math.max(0, y - 664)), max: 0 });
 
     layer.add(UI.button(this, W / 2, H - 88, 250, 54, P.writeBtn, () => this.planWrite(),
       { size: FONT.small, fill: PAL.sun }));

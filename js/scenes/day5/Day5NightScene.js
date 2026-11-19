@@ -108,14 +108,7 @@ window.Day5NightScene = class Day5NightScene extends Phaser.Scene {
       y += 62;
     });
 
-    const max = Math.max(0, y - 660);
-    this.input.on('pointermove', (p) => {
-      if (!p.isDown || p.y < 284 || p.y > 676) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 284, height: 676 - 284, min: -(Math.max(0, y - 660)), max: 0 });
   }
 
   /* 받침에 따라 “을 / 를” 을 골라 붙입니다 */

@@ -102,41 +102,16 @@ window.PrayerView = (function () {
       finish();
     }
 
-    let downY = null, downTextY = 0, moved = 0;
-    zone.on('pointerdown', (p) => { downY = p.y; downTextY = text.y; moved = 0; });
-    zone.on('pointermove', (p) => {
-      if (downY === null) return;
-      const dy = p.y - downY;
-      moved = Math.max(moved, Math.abs(dy));
-      if (moved > 6 && canScroll()) {
+    /* 손으로 밀면 따라오고, 놓으면 부드럽게 미끄러집니다. 가볍게 누르면 남은 줄이 한꺼번에. */
+    const scroller = Scroller.create(scene, {
+      target: text, top: top, height: viewH, min: lowest, max: top, depth: depth, tapZone: zone,
+      onTap: function () { revealAll(); },
+      onDragStart: function () {
         scene.tweens.killTweensOf(text);
         text.setAlpha(1);
-        text.y = downTextY + dy;
-        clamp();
-        holdUntil = Date.now() + 4000;
-        if (hint && hint.scene && hint.alpha > 0) {
-          scene.tweens.add({ targets: hint, alpha: 0, duration: 500 });
-        }
-      }
-    });
-    function release() {
-      const was = downY !== null;
-      const small = moved <= 6;
-      downY = null;
-      if (was && small) revealAll();
-    }
-    zone.on('pointerup', release);
-    zone.on('pointerupoutside', () => { downY = null; });
-    zone.on('pointerout', () => { downY = null; });
-
-    /* PC — 휠로도 움직입니다 */
-    zone.on('wheel', (p, dx, dy) => {
-      if (!canScroll()) return;
-      scene.tweens.killTweensOf(text);
-      text.setAlpha(1);
-      text.y -= dy * 0.5;
-      clamp();
-      holdUntil = Date.now() + 4000;
+        if (hint && hint.scene && hint.alpha > 0) scene.tweens.add({ targets: hint, alpha: 0, duration: 500 });
+      },
+      onMove: function () { holdUntil = Date.now() + 4000; }
     });
 
     /* ── 밀어 볼 수 있다는 작은 안내 ─────────────

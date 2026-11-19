@@ -130,16 +130,7 @@ window.MissionScene = class MissionScene extends MiniGameScene {
       y += 62;
     });
 
-    const max = Math.max(0, y - 750);
-    if (this.scrollFn) this.input.off('pointermove', this.scrollFn);
-    this.scrollFn = (p) => {
-      if (!p.isDown || p.y < 384 || p.y > 756) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.scrollFn);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 384, height: 756 - 384, min: -(Math.max(0, y - 750)), max: 0 });
   }
 
   /* 두 데이터를 잇습니다 */

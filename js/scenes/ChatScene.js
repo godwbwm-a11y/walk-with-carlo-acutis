@@ -25,9 +25,10 @@ window.ChatScene = class ChatScene extends Phaser.Scene {
     head.fillStyle(HEX('#2b3b60'), 1); head.fillRect(0, 0, W, this.headH);
     this.add.circle(48, 50, 21, HEX(PAL.clay)).setDepth(21);
     this.add.image(48, 52, 'carlo_front').setScale(0.72).setDepth(22);
-    this.add.text(80, 36, CHAT.name, UI.style(19, PAL.cream)).setOrigin(0, 0.5).setDepth(21);
-    this.add.text(80, 62, CHAT.status, UI.style(13, '#b9c6df', { wordWrap: { width: W - 130 } }))
-      .setOrigin(0, 0.5).setDepth(21).setAlpha(0.9);
+    /* 이름 아래에 상태 메시지 — 두 줄이 되어도 이름과 겹치지 않게 위에서부터 놓습니다 */
+    this.add.text(80, 30, CHAT.name, UI.style(19, PAL.cream)).setOrigin(0, 0.5).setDepth(21);
+    this.add.text(80, 46, CHAT.status, UI.style(13, '#b9c6df', { wordWrap: { width: W - 130 }, lineSpacing: 2 }))
+      .setOrigin(0, 0).setDepth(21).setAlpha(0.9);
     UI.circleButton(this, W - 32, 46, 20, '✕', () => this.finish(), { size: 16 }).setDepth(21);
 
     /* 메시지가 쌓이는 곳 */
@@ -45,16 +46,10 @@ window.ChatScene = class ChatScene extends Phaser.Scene {
       UI.style(FONT.small, PAL.ink)).setOrigin(0.5).setDepth(30).setAlpha(0.75);
 
     /* 위아래로 끌어 지난 메시지 보기 */
-    this.input.on('pointerdown', (p) => {
-      if (p.y < this.headH || p.y > this.replyTop) return;
-      this.drag = true; this.lastY = p.y;
+    this.scroller = Scroller.create(this, {
+      target: this.list, top: this.headH, height: this.replyTop - this.headH,
+      min: () => this.minY(), max: this.headH + 12, depth: 25
     });
-    this.input.on('pointermove', (p) => {
-      if (!this.drag) return;
-      const dy = p.y - this.lastY; this.lastY = p.y;
-      this.list.y = Phaser.Math.Clamp(this.list.y + dy, this.minY(), this.headH + 12);
-    });
-    this.input.on('pointerup', () => { this.drag = false; });
 
     Collection.unlock('c1');            // 가롤로의 상태메시지
     this.queue(CHAT.intro, () => this.showTopics());
@@ -66,8 +61,10 @@ window.ChatScene = class ChatScene extends Phaser.Scene {
     return Math.min(this.headH + 12, this.headH + 12 + visible - this.flowY);
   }
 
+  /* 새 말이 오면 맨 아래로 — 부드럽게 따라 내려갑니다 */
   scrollToEnd() {
-    this.list.y = this.minY();
+    if (this.scroller) this.scroller.toMin(260);
+    else this.list.y = this.minY();
   }
 
   /* 말풍선 하나 */

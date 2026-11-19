@@ -24,19 +24,11 @@ window.Day8ReviewScene = class Day8ReviewScene extends Phaser.Scene {
     shape.fillRect(0, this.viewTop, W, this.viewH);
     this.content.setMask(shape.createGeometryMask());
 
-    this.scrollY = 0; this.maxScroll = 0;
-    this.dragging = false;
-    this.input.on('pointerdown', (p) => {
-      if (p.y < this.viewTop || p.y > this.viewTop + this.viewH) return;
-      this.dragging = true; this.lastY = p.y;
+    this.maxScroll = 0;
+    this.scroller = Scroller.create(this, {
+      target: this.content, top: this.viewTop, height: this.viewH,
+      min: () => this.viewTop - this.maxScroll, max: this.viewTop
     });
-    this.input.on('pointermove', (p) => {
-      if (!this.dragging) return;
-      const dy = p.y - this.lastY; this.lastY = p.y;
-      this.scrollY = Phaser.Math.Clamp(this.scrollY + dy, -this.maxScroll, 0);
-      this.content.y = this.viewTop + this.scrollY;
-    });
-    this.input.on('pointerup', () => { this.dragging = false; });
 
     this.build();
     UI.fadeIn(this, 400);

@@ -58,16 +58,7 @@ window.StarPrayerScene = class StarPrayerScene extends MiniGameScene {
       y += 62;
     });
 
-    const max = Math.max(0, y - 630);
-    this.input.off('pointermove', this.scrollFn);
-    this.scrollFn = (p) => {
-      if (!p.isDown || !this.layer || p.y < 154 || p.y > 646) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    };
-    this.input.on('pointermove', this.scrollFn);
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 154, height: 646 - 154, min: -(Math.max(0, y - 630)), max: 0 });
 
     /* 이미 하나라도 골랐으면 그만둘 수 있습니다 */
     if (this.picked.length > 0) {

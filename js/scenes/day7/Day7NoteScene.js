@@ -104,14 +104,7 @@ window.Day7NoteScene = class Day7NoteScene extends Phaser.Scene {
     list.add(UI.button(this, W / 2, y + 2, W - 60, 52, N.practiceSkip, () => this.choose(-1, layer),
       { size: FONT.small, alpha: 0.9 }));
 
-    const max = Math.max(0, y + 40 - 720);
-    this.input.on('pointermove', (p) => {
-      if (!p.isDown || p.y < 184 || p.y > 736) return;
-      const dy = p.y - (this.lastY === undefined ? p.y : this.lastY);
-      this.lastY = p.y;
-      list.y = Phaser.Math.Clamp(list.y + dy, -max, 0);
-    });
-    this.input.on('pointerup', () => { this.lastY = undefined; });
+    Scroller.create(this, { target: list, top: 184, height: 736 - 184, min: -(Math.max(0, y + 40 - 720)), max: 0 });
   }
 
   choose(i, layer) {
