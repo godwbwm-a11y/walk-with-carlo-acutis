@@ -1,14 +1,142 @@
 /* 모든 그림을 코드로 직접 그립니다 — 외부 이미지 에셋이 없어 저작권 걱정이 없습니다.
-   따뜻한 색, 단순한 도형, 알아보기 쉬운 실루엣을 원칙으로 합니다. */
+   따뜻한 색, 알아보기 쉬운 실루엣을 원칙으로 하되, 빛과 재질로 실감을 더합니다. */
 
 window.TextureFactory = (function () {
+
+  /* ── 그림 굽기 ─────────────────────────────────
+     장면이 쓰는 크기(w × h)는 그대로 두고, 실제 화소는 화면 밀도만큼 촘촘하게 굽습니다(HiTex).
+     구운 뒤에는 빛과 재질을 얹습니다 — 위·왼쪽에서 오는 빛, 둘레의 옅은 그늘, 아주 옅은 결.
+     사람(person)이 들어간 그림은 사람만 캔버스 2D 로 따로 그리고(Figure),
+     그 앞뒤에 그린 도형과 순서를 지켜 겹칩니다. */
+
+  /* 빛·재질을 얹지 않는 그림 — 반복 무늬, 빛과 그림자, 화면 장식 */
+  const NO_SHADE = /(_tile$|^tile|floor_|wall_tile|train_wall|train_floor|grass|seafoam|road_|shadow|glow|^dot$|spark|star|footprint|_foot$|card|icon|map_pin|bubble|noise|band|battery|zip|vignette|nebula)/;
+
+  /* 화면을 통째로 덮는 큰 그림은 메모리를 아끼려 1 배로 둡니다 */
+  const HUGE = 160000;
 
   function make(scene, key, w, h, fn) {
     if (scene.textures.exists(key)) return;
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    g.__people = [];
     fn(g, w, h);
-    g.generateTexture(key, w, h);
+
+    const figure = g.__people.length > 0;
+    let R = window.HiTex ? HiTex.density(scene, figure ? 'figure' : 'prop') : 1;
+    if (w * h > HUGE) R = 1;
+    const W = Math.ceil(w * R), H = Math.ceil(h * R);
+    g.setScale(R);
+
+    let tex;
+    if (!figure) {
+      g.generateTexture(key, W, H);
+      tex = scene.textures.get(key);
+      if (!NO_SHADE.test(key)) shade(tex.getSourceImage(), w, h, R, key);
+    } else {
+      /* 사람 앞에 그린 것 → 사람 → 사람 뒤에 그린 것, 차례대로 */
+      tex = scene.textures.createCanvas(key, W, H);
+      const canvas = tex.getSourceImage();
+      const ctx = tex.getContext();
+      const all = g.commandBuffer.slice();
+      let from = 0;
+      const paint = function (to) {
+        if (to > from) {
+          g.commandBuffer = all.slice(from, to);
+          g.generateTexture(canvas, W, H);
+        }
+        from = to;
+      };
+      g.__people.forEach(function (p) {
+        paint(p.at);
+        Figure.render(ctx, p.o, R);
+      });
+      paint(all.length);
+    }
+    if (window.HiTex) HiTex.mark(tex, R);
+    tex.refresh();
     g.destroy();
+  }
+
+  /* 둘레가 꽉 찬 그림(이어 붙여 쓰는 배경 등)인지 — 이어 붙인 곳에 금이 가지 않게 */
+  function borders(canvas) {
+    const W = canvas.width, H = canvas.height;
+    const d = canvas.getContext('2d').getImageData(0, 0, W, H).data;
+    const a = function (x, y) { return d[(y * W + x) * 4 + 3] > 200 ? 1 : 0; };
+    let l = 0, r = 0, t = 0, b = 0;
+    const sy = Math.max(1, Math.floor(H / 24)), sx = Math.max(1, Math.floor(W / 24));
+    let ny = 0, nx = 0;
+    for (let y = 0; y < H; y += sy) { l += a(0, y); r += a(W - 1, y); ny++; }
+    for (let x = 0; x < W; x += sx) { t += a(x, 0); b += a(x, H - 1); nx++; }
+    return { side: Math.max(l, r) / ny, cap: Math.max(t, b) / nx };
+  }
+
+  function shade(canvas, w, h, R, key) {
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const bd = borders(canvas);
+    const joins = bd.side > 0.7;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-atop';
+    /* 위에서 오는 빛, 아래로 갈수록 가라앉는 그늘 */
+    let g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, 'rgba(255,248,234,0.17)');
+    g.addColorStop(0.45, 'rgba(255,248,234,0)');
+    g.addColorStop(1, 'rgba(38,22,14,0.22)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    /* 왼쪽에서 오는 빛 — 이어 붙이는 그림에는 얹지 않습니다 */
+    if (!joins) {
+      g = ctx.createLinearGradient(0, 0, W, 0);
+      g.addColorStop(0, 'rgba(255,242,220,0.07)');
+      g.addColorStop(0.5, 'rgba(0,0,0,0)');
+      g.addColorStop(1, 'rgba(30,18,10,0.1)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+    ctx.restore();
+
+    if (!joins && bd.cap <= 0.7) bevel(canvas, R);
+    if (w * h >= 2400) grain(ctx, W, H, R, key);
+  }
+
+  /* 빛이 오는 쪽(왼쪽 위) 둘레는 밝게, 반대쪽(오른쪽 아래) 둘레는 그늘지게.
+     모양을 비켜 놓고 빼면 반대편 가장자리만 남는 원리입니다 — 납작한 그림에 두께가 생깁니다. */
+  function bevel(canvas, R) {
+    const W = canvas.width, H = canvas.height;
+    const rim = function (dx, dy, color) {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const x = c.getContext('2d');
+      x.drawImage(canvas, 0, 0);
+      x.globalCompositeOperation = 'destination-out';
+      x.drawImage(canvas, dx, dy);
+      x.globalCompositeOperation = 'source-in';
+      x.fillStyle = color; x.fillRect(0, 0, W, H);
+      return c;
+    };
+    const a = Math.max(1, Math.round(R * 0.9));
+    const b = Math.max(1, Math.round(R * 1.25));
+    const lit = rim(a, a, 'rgba(255,246,228,0.22)');
+    const dim = rim(-b, -b, 'rgba(36,20,12,0.28)');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.drawImage(lit, 0, 0);
+    ctx.drawImage(dim, 0, 0);
+    ctx.restore();
+  }
+
+  /* 재질 — 나무·돌·천에 있는 아주 옅은 결. 그림마다 같은 결이 나오도록 이름으로 씨앗을 정합니다 */
+  function grain(ctx, W, H, R, key) {
+    let s = 7;
+    for (let i = 0; i < key.length; i++) s = (s * 31 + key.charCodeAt(i)) >>> 0;
+    const rnd = function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    const n = Math.round(W * H / 90);
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.fillStyle = 'rgba(255,250,240,0.035)';
+    for (let i = 0; i < n; i++) { const z = R * (0.4 + rnd() * 0.6); ctx.fillRect(rnd() * W, rnd() * H, z, z); }
+    ctx.fillStyle = 'rgba(36,22,14,0.045)';
+    for (let i = 0; i < n; i++) { const z = R * (0.4 + rnd() * 0.6); ctx.fillRect(rnd() * W, rnd() * H, z, z); }
+    ctx.restore();
   }
 
   function canvasTex(scene, key, w, h, fn) {
@@ -19,7 +147,18 @@ window.TextureFactory = (function () {
   }
 
   /* ── 사람 그리기 ─────────────────────────────── */
+  /* 사람은 이제 Figure 가 캔버스 2D 로 그립니다(빛과 그늘, 얼굴, 머리결, 옷 주름).
+     여기서는 '이 자리에 사람이 있다' 고 적어 두기만 하고, make() 가 순서에 맞춰 그립니다.
+     make() 밖에서 불린 경우에만 예전처럼 도형으로 그립니다. */
   function person(g, o) {
+    if (g.__people && window.Figure) {
+      g.__people.push({ at: g.commandBuffer.length, o: Object.assign({}, o) });
+      return;
+    }
+    legacyPerson(g, o);
+  }
+
+  function legacyPerson(g, o) {
     const cx = 16;
     /* o.step 은 걸을 때의 한 장 — 다리를 벌리고 팔을 서로 반대로 살짝 흔듭니다.
        가만히 선 자세와 번갈아 보여 주면 두 장짜리 걷기가 됩니다. */
@@ -99,11 +238,13 @@ window.TextureFactory = (function () {
       { back: true });
     /* 가롤로 — 붉은 폴로와 순례 배낭 */
     walker('carlo',
-      { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes },
+      { skin: P.skin, hair: 0x2b2119, shirt: P.cshirt, pants: P.cpants, shoes: P.cshoes,
+        hairStyle: 'wavy', collar: 'polo' },
       { back: true, bag: 0x6d8f5f });
     /* 엄마 */
     make(scene, 'mom_front', 32, 46, function (g) {
-      person(g, { skin: 0xf3cdaa, hair: 0x4a3226, shirt: 0xe2b7c4, pants: 0x7a6a86, shoes: 0xd9cfc4 });
+      person(g, { skin: 0xf3cdaa, hair: 0x4a3226, shirt: 0xe2b7c4, pants: 0x7a6a86, shoes: 0xd9cfc4,
+        hairStyle: 'long' });
     });
 
     make(scene, 'shadow', 34, 14, function (g) {
@@ -607,13 +748,12 @@ window.TextureFactory = (function () {
 
     /* 사람들 */
     make(scene, 'friend_front', 32, 46, function (g) {
-      person(g, { skin: 0xefc79f, hair: 0x4b3a2c, shirt: 0x7fa9c4, pants: 0x50607a, shoes: 0xe8e2d6 });
-      g.fillStyle(0xb98a5e, 1); g.fillRoundedRect(24, 20, 3, 24, 1.5);
-      g.fillRoundedRect(21, 20, 9, 3, 1.5);
+      person(g, { skin: 0xefc79f, hair: 0x4b3a2c, shirt: 0x7fa9c4, pants: 0x50607a, shoes: 0xe8e2d6,
+        crutch: true });
     });
     make(scene, 'friend_back', 32, 46, function (g) {
-      person(g, { skin: 0xefc79f, hair: 0x4b3a2c, shirt: 0x7fa9c4, pants: 0x50607a, shoes: 0xe8e2d6, back: true });
-      g.fillStyle(0xb98a5e, 1); g.fillRoundedRect(24, 20, 3, 24, 1.5);
+      person(g, { skin: 0xefc79f, hair: 0x4b3a2c, shirt: 0x7fa9c4, pants: 0x50607a, shoes: 0xe8e2d6,
+        back: true, crutch: true });
     });
     make(scene, 'bully_a', 32, 46, function (g) {
       person(g, { skin: 0xf2ceac, hair: 0x1f1a16, shirt: 0x5f6b7a, pants: 0x3b4351, shoes: 0xd6d0c6 });

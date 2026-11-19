@@ -35,16 +35,19 @@ TextureFactory.createDay2 = function (scene) {
 
   /* ── 사람들 ─────────────────────────────────── */
   make(scene, 'child_front', 32, 46, function (g) {
-    person(g, { skin: 0xf8dcbe, hair: 0x6b4a2f, shirt: 0xf2c94c, pants: 0x4a7fb5, shoes: 0xffffff, stripe: 0xffffff });
+    person(g, { skin: 0xf8dcbe, hair: 0x6b4a2f, shirt: 0xf2c94c, pants: 0x4a7fb5, shoes: 0xffffff, stripe: 0xffffff,
+      child: true });
   });
   make(scene, 'grandma_front', 32, 46, function (g) {
-    person(g, { skin: 0xf0d6bb, hair: 0xd9d3ca, shirt: 0xb9a7c4, pants: 0x6f6478, shoes: 0xcfc6bb });
+    person(g, { skin: 0xf0d6bb, hair: 0xd9d3ca, shirt: 0xb9a7c4, pants: 0x6f6478, shoes: 0xcfc6bb,
+      hairStyle: 'bun', longSleeve: true, cardigan: true });
   });
   make(scene, 'clerk_front', 32, 46, function (g) {
     person(g, { skin: 0xf6d3b0, hair: 0x2f2820, shirt: 0x3f5a80, pants: 0x30425e, shoes: 0xe8e2d8, stripe: 0xf3ece2 });
   });
   make(scene, 'resident_front', 32, 46, function (g) {
-    person(g, { skin: 0xf3cdaa, hair: 0x4a3226, shirt: 0x6f9b6a, pants: 0x7b6b58, shoes: 0xd9cfc4 });
+    person(g, { skin: 0xf3cdaa, hair: 0x4a3226, shirt: 0x6f9b6a, pants: 0x7b6b58, shoes: 0xd9cfc4,
+      hairStyle: 'bob' });
   });
   make(scene, 'villager_front', 32, 46, function (g) {
     person(g, { skin: 0xf6d3b0, hair: 0x3b3128, shirt: 0xd9a06a, pants: 0x4c4f63, shoes: 0xe4ddd2 });

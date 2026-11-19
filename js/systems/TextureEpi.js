@@ -34,19 +34,19 @@ TextureFactory.createEpi = function (scene) {
   /* ── 세계에서 온 친구들 ─────────────────────── */
   /* 옷 색과 머리색만 다른 단순한 실루엣입니다. 실존 인물을 그리지 않습니다. */
   const crew = [
-    { id: 'leo',  skin: 0xe8be96, hair: 0x2f2119, shirt: 0xd86a4a, pants: 0x38507a, shoes: 0xf2ece0, bag: 0x5f7f9d },
-    { id: 'ita',  skin: 0xf0cda8, hair: 0x40301f, shirt: 0x5f8f6a, pants: 0x8a7a5e, shoes: 0xe6dfd2, bag: 0x9d6a52 },
-    { id: 'phi',  skin: 0xd9a878, hair: 0x1d1712, shirt: 0xf0c05a, pants: 0x46566e, shoes: 0xefe7d8, bag: 0x6f8f5f },
-    { id: 'fra',  skin: 0xf5d8ba, hair: 0x7a5a36, shirt: 0x6d80c0, pants: 0x3f4a63, shoes: 0xe8e2d6, bag: 0xc08a5e },
-    { id: 'bra',  skin: 0xb98255, hair: 0x241a14, shirt: 0x4fa39a, pants: 0x5c4a3c, shoes: 0xf0e8da, bag: 0xd0a05c },
-    { id: 'spa',  skin: 0xecc59c, hair: 0x33241a, shirt: 0xb45f8e, pants: 0x4a4a5e, shoes: 0xeae2d4, bag: 0x7f9a6a }
+    { id: 'leo',  skin: 0xe8be96, hair: 0x2f2119, shirt: 0xd86a4a, pants: 0x38507a, shoes: 0xf2ece0, bag: 0x5f7f9d, hairStyle: 'short' },
+    { id: 'ita',  skin: 0xf0cda8, hair: 0x40301f, shirt: 0x5f8f6a, pants: 0x8a7a5e, shoes: 0xe6dfd2, bag: 0x9d6a52, hairStyle: 'long' },
+    { id: 'phi',  skin: 0xd9a878, hair: 0x1d1712, shirt: 0xf0c05a, pants: 0x46566e, shoes: 0xefe7d8, bag: 0x6f8f5f, hairStyle: 'short' },
+    { id: 'fra',  skin: 0xf5d8ba, hair: 0x7a5a36, shirt: 0x6d80c0, pants: 0x3f4a63, shoes: 0xe8e2d6, bag: 0xc08a5e, hairStyle: 'wavy' },
+    { id: 'bra',  skin: 0xb98255, hair: 0x241a14, shirt: 0x4fa39a, pants: 0x5c4a3c, shoes: 0xf0e8da, bag: 0xd0a05c, hairStyle: 'curly' },
+    { id: 'spa',  skin: 0xecc59c, hair: 0x33241a, shirt: 0xb45f8e, pants: 0x4a4a5e, shoes: 0xeae2d4, bag: 0x7f9a6a, hairStyle: 'ponytail' }
   ];
   crew.forEach(function (c) {
     make(scene, 'epi_' + c.id + '_front', 32, 46, function (g) {
-      person(g, { skin: c.skin, hair: c.hair, shirt: c.shirt, pants: c.pants, shoes: c.shoes });
+      person(g, { skin: c.skin, hair: c.hair, shirt: c.shirt, pants: c.pants, shoes: c.shoes, hairStyle: c.hairStyle });
     });
     make(scene, 'epi_' + c.id + '_back', 32, 46, function (g) {
-      person(g, { skin: c.skin, hair: c.hair, shirt: c.shirt, pants: c.pants, shoes: c.shoes, back: true, bag: c.bag });
+      person(g, { skin: c.skin, hair: c.hair, shirt: c.shirt, pants: c.pants, shoes: c.shoes, hairStyle: c.hairStyle, back: true, bag: c.bag });
     });
   });
 

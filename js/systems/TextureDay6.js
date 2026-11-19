@@ -149,11 +149,9 @@ TextureFactory.createDay6 = function (scene) {
   /* ── 주교님 ─────────────────────────────────── */
   /* 실존 인물이 아니라, 자주색 옷과 작은 모자로 알아보는 실루엣입니다. */
   make(scene, 'd6_bishop', 34, 50, function (g) {
-    person(g, { skin: 0xecd0ac, hair: 0xd8d2c8, shirt: 0x7a5f8a, pants: 0x4a3f56, shoes: 0x3a3038 });
-    g.fillStyle(0x7a5f8a, 1);
-    g.fillRoundedRect(9, 2, 14, 6, 3);                    // 작은 모자
-    g.fillStyle(0xd7c07f, 1);
-    g.fillRect(15, 20, 2.4, 9); g.fillRect(12.6, 22.4, 7, 2.4);   // 가슴 십자가
+    /* 자주색 수단, 작은 모자(주케토), 가슴 십자가 */
+    person(g, { skin: 0xecd0ac, hair: 0xd8d2c8, shirt: 0x7a5f8a, pants: 0x4a3f56, shoes: 0x3a3038,
+      robe: true, cap: 0x7a4f86, cross: 0xd7c07f, roman: true });
   });
 
   /* ── 성당 안의 자리들 ───────────────────────── */

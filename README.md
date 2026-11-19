@@ -435,6 +435,7 @@ js/data/              config.js, day01.js ~ day08.js, epilogue.js(에필로그),
                       credits.js(엔딩 크레딧), collection.js(말씀),
                       chat.js(채팅), carloday.js(가롤로의 하루)
 js/systems/           SaveSystem, AudioSystem, TextureFactory,
+                      Figure(사람 그리기), HiTex(촘촘한 텍스처),
                       TextureDay2/3/5/6/7/8, TextureEpi, UI,
                       DialogueBox, Joystick, Collection, JourneyText(기록을 한 줄로),
                       PhotoSystem, TextInput,
@@ -502,6 +503,12 @@ HTML5 · CSS3 · JavaScript ES6+ · Phaser 3 · Web Audio API · localStorage.
 모든 그림은 `js/systems/TextureFactory.js` 에서 단순한 도형으로 직접 그려 만들고,
 파도 소리·방의 공기·화음·효과음은 `js/systems/AudioSystem.js` 에서
 Web Audio API로 실시간 합성합니다. 기존 게임이나 애니메이션의 캐릭터를 모방하지 않았습니다.
+
+- 그림은 화면 화소 밀도(최대 2배)만큼 촘촘하게 구워지고, 사람은 한 단계 더(최대 3배) 촘촘합니다.
+  `HiTex.js` 가 텍스처의 resolution 을 읽어 장면 코드에는 예전 크기 그대로 보이게 합니다.
+- 물건에는 위에서 오는 빛의 그늘·테두리·모서리 하이라이트·옅은 결이 자동으로 더해집니다.
+- 사람은 `Figure.js` 가 캔버스에 직접 그립니다 — 머리 모양(곱슬·물결·단발·긴 머리·묶음·쪽머리),
+  눈동자와 눈빛, 옷의 주름과 그늘, 신발 밑창, 베일·로만 칼라·주케토·목발·배낭까지.
 
 ## 배포
 

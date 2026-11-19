@@ -26,36 +26,35 @@ TextureFactory.createDay5 = function (scene) {
 
   /* ── 세계에서 온 청년들 ─────────────────────── */
   const pilgrims = [
-    { key: 'pilgrim_a', skin: 0xe8b98c, hair: 0x2a1c14, shirt: 0xe0a04a, pants: 0x4a5f7f, shoes: 0xf3ece2 },
-    { key: 'pilgrim_b', skin: 0x9a6b4a, hair: 0x1b1310, shirt: 0x4f8f7a, pants: 0x3b4a5e, shoes: 0xe8e2d6 },
-    { key: 'pilgrim_c', skin: 0xf7dcc0, hair: 0xc9a25e, shirt: 0xc06a86, pants: 0x5a5f78, shoes: 0xffffff },
-    { key: 'pilgrim_d', skin: 0xf3d6b4, hair: 0x201812, shirt: 0x6d84c0, pants: 0x3a4152, shoes: 0xe6ded2 },
-    { key: 'pilgrim_e', skin: 0xd9a274, hair: 0x2e2016, shirt: 0x8e6fae, pants: 0x4c4a5c, shoes: 0xf0e9dd },
-    { key: 'pilgrim_f', skin: 0xf6d3b0, hair: 0x4a3020, shirt: 0x6faa5c, pants: 0x59605e, shoes: 0xefe7da }
+    { key: 'pilgrim_a', skin: 0xe8b98c, hair: 0x2a1c14, shirt: 0xe0a04a, pants: 0x4a5f7f, shoes: 0xf3ece2, hairStyle: 'short' },
+    { key: 'pilgrim_b', skin: 0x9a6b4a, hair: 0x1b1310, shirt: 0x4f8f7a, pants: 0x3b4a5e, shoes: 0xe8e2d6, hairStyle: 'curly' },
+    { key: 'pilgrim_c', skin: 0xf7dcc0, hair: 0xc9a25e, shirt: 0xc06a86, pants: 0x5a5f78, shoes: 0xffffff, hairStyle: 'long', eye: 0x4f7896 },
+    { key: 'pilgrim_d', skin: 0xf3d6b4, hair: 0x201812, shirt: 0x6d84c0, pants: 0x3a4152, shoes: 0xe6ded2, hairStyle: 'wavy' },
+    { key: 'pilgrim_e', skin: 0xd9a274, hair: 0x2e2016, shirt: 0x8e6fae, pants: 0x4c4a5c, shoes: 0xf0e9dd, hairStyle: 'bob' },
+    { key: 'pilgrim_f', skin: 0xf6d3b0, hair: 0x4a3020, shirt: 0x6faa5c, pants: 0x59605e, shoes: 0xefe7da, hairStyle: 'ponytail' }
   ];
   pilgrims.forEach(function (p) {
     make(scene, p.key, 32, 46, function (g) {
-      person(g, { skin: p.skin, hair: p.hair, shirt: p.shirt, pants: p.pants, shoes: p.shoes });
+      person(g, { skin: p.skin, hair: p.hair, shirt: p.shirt, pants: p.pants, shoes: p.shoes,
+        hairStyle: p.hairStyle, eye: p.eye });
     });
     make(scene, p.key + '_back', 32, 46, function (g) {
       person(g, {
         skin: p.skin, hair: p.hair, shirt: p.shirt, pants: p.pants, shoes: p.shoes,
-        back: true, bag: 0x8a6340
+        hairStyle: p.hairStyle, back: true, bag: 0x8a6340
       });
     });
   });
 
   /* 수도자와 사제 */
   make(scene, 'sister_front', 32, 46, function (g) {
-    person(g, { skin: 0xf3cdaa, hair: 0x3a4a5e, shirt: 0x50607a, pants: 0x50607a, shoes: 0x3a3a44 });
-    g.fillStyle(0x50607a, 1); g.fillRoundedRect(5, 1, 22, 12, 5);   // 베일
-    g.fillStyle(0xf3cdaa, 1); g.fillCircle(16, 9, 6.4);
-    g.fillStyle(0x3b2b22, 1); g.fillCircle(13.4, 9, 1.3); g.fillCircle(18.6, 9, 1.3);
-    g.fillStyle(0xf3ece2, 1); g.fillRect(14, 18, 4, 8); g.fillRect(12, 20, 8, 3);
+    /* 베일과 발목까지 오는 수도복, 가슴의 흰 십자가 */
+    person(g, { skin: 0xf3cdaa, hair: 0x3a4a5e, shirt: 0x50607a, pants: 0x50607a, shoes: 0x3a3a44,
+      veil: 0x3e4c63, robe: true, cross: 0xf3ece2 });
   });
   make(scene, 'priest_front', 32, 46, function (g) {
-    person(g, { skin: 0xf6d3b0, hair: 0x4a4038, shirt: 0x2f333c, pants: 0x2f333c, shoes: 0x2a2a30 });
-    g.fillStyle(0xf3ece2, 1); g.fillRect(12, 17, 8, 3);             // 로만칼라
+    person(g, { skin: 0xf6d3b0, hair: 0x4a4038, shirt: 0x2f333c, pants: 0x2f333c, shoes: 0x2a2a30,
+      roman: true });                                                  // 로만칼라
   });
 
   /* ── 지하철 ─────────────────────────────────── */
