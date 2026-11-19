@@ -90,6 +90,7 @@ window.Day3ChurchScene = class Day3ChurchScene extends Phaser.Scene {
     if (i >= shots.length) { this.afterMass(); return; }
 
     const c = this.buildShot(shots[i].key);
+    if (window.Cine) Cine.still(this, c, { full: true, tone: 'church', cy: GAME.HEIGHT / 2, zoom: 1.035 });
     c.setAlpha(0);
     this.shotLayer.add(c);
     this.tweens.add({ targets: c, alpha: 1, duration: 700 });

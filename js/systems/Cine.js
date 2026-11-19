@@ -110,5 +110,103 @@ window.Cine = (function () {
     return out;
   }
 
-  return { glitter, rays, motes };
+  /* ── 몽타주의 한 컷을 영화의 한 장면처럼 ─────────────
+     어두운 화면에 그림 하나만 떠 있던 컷 뒤에, 은은한 빛이 고인 액자를 깔고
+     아주 천천히 다가가는 카메라(켄 번스)를 겁니다. 그림 자체는 바꾸지 않습니다. */
+  const TONES = {
+    church:  { inner: '#5a4a3c', mid: '#3a2f2a', edge: '#17131a', glow: 0xffd9a0, line: 'rgba(242,201,140,0.55)' },
+    evening: { inner: '#5b5277', mid: '#353556', edge: '#121526', glow: 0xffc8a0, line: 'rgba(240,190,160,0.5)' },
+    dawn:    { inner: '#7a6a5a', mid: '#3f4560', edge: '#121828', glow: 0xffe3b0, line: 'rgba(250,220,170,0.55)' },
+    night:   { inner: '#2f3f66', mid: '#1c2745', edge: '#0a0f1e', glow: 0xbfd4ff, line: 'rgba(190,210,250,0.45)' }
+  };
+  function ensureFrame(scene, tone, w, h) {
+    const key = 'cine_frame_' + tone + '_' + w + 'x' + h;
+    if (scene.textures.exists(key)) return key;
+    const T = TONES[tone] || TONES.church;
+    const R = window.HiTex ? HiTex.density(scene, 'prop') : 1;
+    const t = scene.textures.createCanvas(key, Math.ceil(w * R), Math.ceil(h * R));
+    const c = t.getContext();
+    c.scale(R, R);
+    const r = 22;
+    const path = function () {
+      c.beginPath(); c.moveTo(r, 0); c.arcTo(w, 0, w, h, r); c.arcTo(w, h, 0, h, r); c.arcTo(0, h, 0, 0, r); c.arcTo(0, 0, w, 0, r); c.closePath();
+    };
+    path();
+    const g = c.createRadialGradient(w / 2, h * 0.42, 10, w / 2, h * 0.5, Math.max(w, h) * 0.7);
+    g.addColorStop(0, T.inner); g.addColorStop(0.55, T.mid); g.addColorStop(1, T.edge);
+    c.fillStyle = g; c.fill();
+    /* 필름의 결 */
+    c.save(); path(); c.clip();
+    let sd = 7;
+    for (let i = 0; i < w * h / 30; i++) {
+      sd = (sd * 1664525 + 1013904223) >>> 0; const x = (sd / 4294967296) * w;
+      sd = (sd * 1664525 + 1013904223) >>> 0; const y = (sd / 4294967296) * h;
+      c.fillStyle = (i % 2) ? 'rgba(255,245,225,0.05)' : 'rgba(0,0,0,0.08)';
+      c.fillRect(x, y, 1, 1);
+    }
+    c.restore();
+    /* 얇은 금빛 테두리 */
+    c.lineWidth = 1.5; c.strokeStyle = T.line; path(); c.stroke();
+    c.lineWidth = 0.8; c.strokeStyle = 'rgba(255,255,255,0.08)';
+    c.beginPath(); c.moveTo(r, 6); c.lineTo(w - r, 6); c.stroke();
+    if (window.HiTex) HiTex.mark(t, R);
+    t.refresh();
+    return key;
+  }
+
+  /* c: 컷을 담은 컨테이너(0,0 에 놓이고 아이들은 화면 좌표로 그려져 있음)
+     opt: { cx, cy, w, h, tone, full } — full 이면 액자 없이 천천히 다가가기와 먼지만 */
+  function still(scene, c, opt) {
+    opt = opt || {};
+    const W = GAME.WIDTH;
+    const cx = opt.cx === undefined ? W / 2 : opt.cx;
+    const cy = opt.cy === undefined ? GAME.HEIGHT * 0.40 : opt.cy;
+    const tone = opt.tone || 'church';
+    const T = TONES[tone] || TONES.church;
+    if (!opt.full) {
+      const fw = opt.w || W - 40, fh = opt.h || 330;
+      const frame = scene.add.image(cx, cy, ensureFrame(scene, tone, fw, fh));
+      const glow = scene.add.image(cx, cy - 10, 'lamp_glow').setDisplaySize(fw * 0.95, fh * 0.8)
+        .setTint(T.glow).setAlpha(0.32).setBlendMode(Phaser.BlendModes.ADD);
+      c.addAt(glow, 0);
+      c.addAt(frame, 0);
+      scene.tweens.add({ targets: glow, alpha: 0.18, duration: 2600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      /* 액자 밖으로 삐져나온 그림(군중 줄 등)은 액자 안쪽에서 잘라 냅니다 */
+      const mg = scene.make.graphics({ add: false });
+      mg.fillRoundedRect(cx - fw / 2 + 1, cy - fh / 2 + 1, fw - 2, fh - 2, 21);
+      c.setMask(mg.createGeometryMask());
+      c.once('destroy', function () { mg.destroy(); });
+      /* 액자 안을 떠도는 빛 알갱이 */
+      for (let i = 0; i < 10; i++) {
+        const px = cx - fw / 2 + 20 + Math.random() * (fw - 40), py = cy - fh / 2 + 20 + Math.random() * (fh - 40);
+        const d = scene.add.image(px, py, 'dot').setScale(0.1 + Math.random() * 0.16).setTint(T.glow)
+          .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0);
+        c.add(d);
+        scene.tweens.add({ targets: d, alpha: 0.25 + Math.random() * 0.35, duration: 1400 + Math.random() * 1200, yoyo: true, repeat: -1, delay: Math.random() * 1500 });
+        scene.tweens.add({ targets: d, y: py - 14 - Math.random() * 12, x: px + (Math.random() * 2 - 1) * 10, duration: 5000 + Math.random() * 3000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      }
+    } else {
+      for (let i = 0; i < 14; i++) {
+        const px = Math.random() * W, py = 140 + Math.random() * (GAME.HEIGHT - 280);
+        const d = scene.add.image(px, py, 'dot').setScale(0.1 + Math.random() * 0.18).setTint(T.glow)
+          .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0);
+        c.add(d);
+        scene.tweens.add({ targets: d, alpha: 0.2 + Math.random() * 0.3, duration: 1600 + Math.random() * 1200, yoyo: true, repeat: -1, delay: Math.random() * 1500 });
+        scene.tweens.add({ targets: d, y: py - 20, duration: 6000 + Math.random() * 3000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      }
+    }
+    /* 아주 천천히 다가가는 카메라 — 컷이 머무는 동안 3~4% 커집니다 */
+    const z = { s: 1 };
+    const tw = scene.tweens.add({
+      targets: z, s: opt.zoom || 1.04, duration: opt.duration || 7000, ease: 'Sine.easeOut',
+      onUpdate: function () {
+        if (!c.scene) { tw.stop(); return; }
+        c.setScale(z.s);
+        c.setPosition(cx * (1 - z.s), cy * (1 - z.s));
+      }
+    });
+    return c;
+  }
+
+  return { glitter, rays, motes, still };
 })();

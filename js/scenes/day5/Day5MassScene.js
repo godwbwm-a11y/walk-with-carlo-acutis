@@ -71,6 +71,7 @@ window.Day5MassScene = class Day5MassScene extends Phaser.Scene {
     const next = () => {
       if (i >= cuts.length) { this.time.delayedCall(900, () => this.smallOne()); return; }
       const art = this.drawCut(i);
+      if (window.Cine) Cine.still(this, art, { tone: 'evening' });
       label.setText(cuts[i]);
       label.setAlpha(0);
       art.setAlpha(0);

@@ -913,6 +913,267 @@ window.Props = (function () {
     box(c, 112, 15, 18, 6, 1, '#2f3b52'); line(c, 115, 18, 127, 18, 1, '#f6e3b8');
   };
 
+  /* ── 미사와 기도 ─────────────────────────── */
+  const GOLD = function (c, x0, y0, x1, y1) { return lg(c, x0, y0, x1, y1, [[0, '#fbe7a8'], [0.45, '#dcb75f'], [1, '#9c7731']]); };
+
+  /* 사람들의 뒷머리와 어깨 — 머리색·피부색·옷이 저마다 다릅니다 */
+  function crowdHead(c, x, y, rnd, opt) {
+    const shirts = ['#4a5f7f', '#6f5b49', '#50607a', '#7a5f8a', '#4f7d6a', '#8a6340', '#5d7c9a', '#b0574a', '#c9a55a', '#e8e1d4'];
+    const hairs = ['#2b2119', '#3b2a1e', '#1f1a17', '#5a3b26', '#8a6a42', '#c9a46a', '#2b2119'];
+    const skins = ['#f1cfae', '#dcb894', '#c69a74', '#a87652', '#7d5539'];
+    const sh = shirts[Math.floor(rnd() * shirts.length)];
+    const w = opt.w, top = y;
+    box(c, x - w / 2, top + opt.neck, w, opt.h, w * 0.38, lg(c, x - w / 2, 0, x + w / 2, 0, [[0, sh], [1, 'rgba(0,0,0,0.35)']]));
+    c.fillStyle = sh; c.globalAlpha = 0.85; rr(c, x - w / 2, top + opt.neck, w * 0.75, opt.h, w * 0.38); c.fill(); c.globalAlpha = 1;
+    const r = opt.r * (0.9 + rnd() * 0.2);
+    ell(c, x, top + r * 0.2, r * 0.92, r, skins[Math.floor(rnd() * skins.length)]);
+    const hair = hairs[Math.floor(rnd() * hairs.length)];
+    c.beginPath(); c.ellipse(x, top, r * 1.02, r * 1.05, 0, Math.PI * 0.95, Math.PI * 2.05); c.lineTo(x + r, top + r * 0.5); c.quadraticCurveTo(x, top + r * 1.1, x - r, top + r * 0.5); c.closePath();
+    c.fillStyle = hair; c.fill();
+    ell(c, x - r * 0.35, top - r * 0.45, r * 0.35, r * 0.18, 'rgba(255,255,255,0.18)');
+    const roll = rnd();
+    if (roll < 0.12) { box(c, x - r, top - r * 1.05, r * 2, r * 0.8, r * 0.4, '#c9553f'); box(c, x - r * 0.2, top - r * 0.4, r * 1.6, r * 0.25, 1, '#a8402f'); }
+    else if (roll < 0.2) { c.beginPath(); c.ellipse(x, top + r * 0.3, r * 1.15, r * 1.35, 0, Math.PI, 0); c.fillStyle = '#f3ece2'; c.fill(); }
+  }
+  P.crowd_row = function (c, w, h, rnd) {
+    for (let i = 0; i < 16; i++) crowdHead(c, 8 + i * 25 + (rnd() - 0.5) * 3, 10 + (rnd() - 0.5) * 2, rnd, { w: 18, h: 30, neck: 5, r: 7 });
+    /* 사이사이 깃발 */
+    [[70, '#3f6f8f'], [230, '#c9553f'], [330, '#4f7d6a']].forEach(function (f) {
+      line(c, f[0], 0, f[0], 22, 1, '#8a8f99');
+      c.beginPath(); c.moveTo(f[0] + 1, 1); c.quadraticCurveTo(f[0] + 8, -1, f[0] + 14, 4); c.quadraticCurveTo(f[0] + 8, 8, f[0] + 1, 8); c.closePath(); c.fillStyle = f[1]; c.fill();
+    });
+  };
+  P.sleep_row = function (c, w, h, rnd) {
+    const cols = [['#6f8fae', '#45627f'], ['#8c7fa0', '#5f5476'], ['#7f9f6f', '#56744a'], ['#a8814f', '#7a5a34'], ['#5f8fae', '#3f6a88'], ['#a07f7f', '#765656']];
+    for (let i = 0; i < 8; i++) {
+      const x = 4 + i * 50, col = cols[i % cols.length];
+      contact(c, x + 22, 40, 24, 3, 0.3);
+      box(c, x, 14, 44, 26, 12, lg(c, 0, 14, 0, 40, [[0, col[0]], [1, col[1]]]));
+      /* 침낭의 누빈 줄 */
+      for (let k = 1; k < 4; k++) line(c, x + 12 + k * 7, 16, x + 12 + k * 7, 38, 0.8, 'rgba(255,255,255,0.18)');
+      line(c, x + 4, 17, x + 40, 17, 0.8, 'rgba(255,255,255,0.3)');
+      /* 얼굴과 머리 — 잠든 사람 */
+      ell(c, x + 8, 17, 6.4, 6.8, ['#f1cfae', '#dcb894', '#c69a74', '#a87652'][i % 4]);
+      c.beginPath(); c.ellipse(x + 8, 16, 7.2, 7.2, 0, Math.PI, Math.PI * 2); c.fillStyle = ['#2b2119', '#5a3b26', '#1f1a17', '#8a6a42'][(i + 1) % 4]; c.fill();
+      line(c, x + 5.5, 19, x + 7.5, 19.4, 0.7, '#5a3b26'); line(c, x + 9, 19.4, x + 11, 19, 0.7, '#5a3b26');
+      box(c, x + 1, 22, 15, 6, 3, '#f3ece2');
+    }
+  };
+  P.altar_far = function (c, w, h, rnd) {
+    ell(c, 100, 44, 70, 40, 'rgba(255,224,170,0.18)');
+    box(c, 40, 40, 120, 40, 5, lg(c, 0, 40, 0, 80, [[0, '#fbf6ee'], [1, '#dcd0bc']]));
+    box(c, 36, 38, 128, 7, 3, lg(c, 0, 38, 0, 45, [[0, '#ffffff'], [1, '#e8dfcf']]));
+    box(c, 40, 76, 120, 8, 2, lg(c, 0, 76, 0, 84, [[0, '#d9c2a3'], [1, '#a8936f']]));
+    line(c, 44, 46, 156, 46, 0.8, '#d7c07f');
+    /* 십자가 */
+    box(c, 96, 0, 8, 42, 1.5, lg(c, 96, 0, 104, 0, [[0, '#b58b5f'], [1, '#6e4c2f']]));
+    box(c, 82, 12, 36, 8, 1.5, lg(c, 0, 12, 0, 20, [[0, '#b58b5f'], [1, '#6e4c2f']]));
+    /* 촛불 둘 */
+    [62, 138].forEach(function (x) {
+      ell(c, x, 30, 9, 11, 'rgba(255,205,130,0.35)');
+      box(c, x - 2.5, 30, 5, 10, 1, '#fffaf0');
+      c.beginPath(); c.moveTo(x, 22); c.quadraticCurveTo(x + 3.2, 28, x, 31); c.quadraticCurveTo(x - 3.2, 28, x, 22);
+      c.fillStyle = lg(c, 0, 22, 0, 31, [[0, '#ffe08a'], [1, '#f2953b']]); c.fill();
+    });
+  };
+  P.wyd_cross = function (c, w, h, rnd) {
+    /* 오래 들고 다닌 나무 십자가 — 결과 손때 */
+    box(c, 37, 0, 16, 200, 3, lg(c, 37, 0, 53, 0, [[0, '#a87a50'], [0.5, '#8a6340'], [1, '#5f4128']]));
+    grain(c, 38, 1, 14, 198, rnd, 'rgba(50,28,12,0.3)', 4, true);
+    box(c, 6, 46, 78, 15, 3, lg(c, 0, 46, 0, 61, [[0, '#b58b5f'], [0.5, '#8a6340'], [1, '#5f4128']]));
+    grain(c, 7, 47, 76, 13, rnd, 'rgba(50,28,12,0.3)', 3);
+    c.fillStyle = 'rgba(0,0,0,0.18)'; c.fillRect(37, 61, 16, 4);
+    line(c, 39, 2, 39, 198, 1, 'rgba(255,230,190,0.3)');
+    ell(c, 45, 53.5, 3, 3, GOLD(c, 42, 50, 48, 57));
+  };
+  P.monstrance = function (c, w, h, rnd) {
+    ell(c, 30, 40, 30, 30, 'rgba(255,236,180,0.25)');
+    /* 빛살 */
+    for (let i = 0; i < 24; i++) {
+      const a = (i / 24) * Math.PI * 2, L = i % 2 ? 24 : 28.5;
+      c.beginPath();
+      c.moveTo(30 + Math.cos(a - 0.07) * 15, 40 + Math.sin(a - 0.07) * 15);
+      c.lineTo(30 + Math.cos(a) * L, 40 + Math.sin(a) * L);
+      c.lineTo(30 + Math.cos(a + 0.07) * 15, 40 + Math.sin(a + 0.07) * 15);
+      c.closePath(); c.fillStyle = GOLD(c, 0, 12, 60, 70); c.fill();
+    }
+    ell(c, 30, 40, 16.5, 16.5, GOLD(c, 14, 24, 46, 56));
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; ell(c, 30 + Math.cos(a) * 14.2, 40 + Math.sin(a) * 14.2, 1.3, 1.3, i % 3 ? '#fff3cf' : '#c9553f'); }
+    /* 유리와 성체 */
+    ell(c, 30, 40, 11.5, 11.5, '#fffaf0');
+    ell(c, 30, 40, 10, 10, rg(c, 28, 38, 1, 10, [[0, '#ffffff'], [1, '#f2e7cf']]));
+    line(c, 30, 34, 30, 46, 0.8, 'rgba(200,170,110,0.6)'); line(c, 24, 40, 36, 40, 0.8, 'rgba(200,170,110,0.6)');
+    /* 위 십자가와 받침 */
+    box(c, 28, 4, 4, 13, 1, GOLD(c, 28, 0, 32, 0)); box(c, 24, 8, 12, 3.6, 1, GOLD(c, 0, 8, 0, 12));
+    box(c, 27, 57, 6, 26, 2, GOLD(c, 27, 0, 33, 0));
+    ell(c, 30, 64, 5, 3, GOLD(c, 25, 61, 35, 67));
+    ell(c, 30, 86, 17, 5, GOLD(c, 13, 81, 47, 91));
+    ell(c, 30, 84.5, 14, 3, 'rgba(255,245,210,0.5)');
+  };
+  P.bible_book = function (c, w, h, rnd) {
+    box(c, 1, 2, 44, 56, 4, 'rgba(40,20,15,0.25)');
+    /* 책장 단면 */
+    box(c, 38, 3, 6, 50, 1.5, lg(c, 38, 0, 44, 0, [[0, '#f6efe1'], [1, '#d8cdb8']]));
+    for (let y = 6; y < 52; y += 2) line(c, 39, y, 43.5, y, 0.4, 'rgba(150,130,100,0.4)');
+    box(c, 0, 0, 40, 56, 4, lg(c, 0, 0, 40, 56, [[0, '#7d4a3e'], [1, '#55302a']]));
+    box(c, 3.5, 3, 33, 50, 3, lg(c, 0, 0, 40, 56, [[0, '#94594b'], [1, '#6b3f36']]));
+    c.setLineDash([1.4, 1.2]); rr(c, 5.5, 5, 29, 46, 2); c.lineWidth = 0.6; c.strokeStyle = 'rgba(230,200,140,0.5)'; c.stroke(); c.setLineDash([]);
+    box(c, 18, 12, 4, 30, 1, GOLD(c, 18, 0, 22, 0)); box(c, 11, 20, 18, 4, 1, GOLD(c, 0, 20, 0, 24));
+    /* 리본 책갈피 */
+    c.beginPath(); c.moveTo(30, 53); c.lineTo(30, 59); c.lineTo(32, 57); c.lineTo(34, 59); c.lineTo(34, 53); c.fillStyle = '#c9553f'; c.fill();
+    line(c, 1.5, 4, 1.5, 52, 1, 'rgba(255,230,210,0.25)');
+  };
+  P.candle_small = function (c, w, h, rnd) {
+    ell(c, 10, 9, 9, 10, 'rgba(255,200,120,0.3)');
+    box(c, 5, 12, 10, 22, 3, lg(c, 5, 0, 15, 0, [[0, '#fffaf0'], [0.6, '#f3e9d6'], [1, '#d8cbb3']]));
+    ell(c, 10, 12.5, 5, 1.6, '#fff6e2');
+    line(c, 10, 12, 10, 9.5, 0.8, '#3d2c20');
+    c.beginPath(); c.moveTo(10, 1); c.quadraticCurveTo(14, 8, 10, 11); c.quadraticCurveTo(6, 8, 10, 1);
+    c.fillStyle = lg(c, 0, 1, 0, 11, [[0, '#ffe08a'], [0.6, '#f6a446'], [1, '#f2b56b']]); c.fill();
+    ell(c, 10, 8, 1.6, 2.6, '#fffbe6');
+    line(c, 6.5, 13, 6.5, 17, 1, '#fffaf0');
+  };
+  P.rosary = function (c, w, h, rnd) {
+    /* 끈 */
+    c.beginPath(); c.ellipse(14, 12, 9, 8, 0, 0, Math.PI * 2); c.lineWidth = 0.6; c.strokeStyle = 'rgba(80,60,90,0.6)'; c.stroke();
+    line(c, 14, 20, 14, 23, 0.6, 'rgba(80,60,90,0.6)');
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2 + Math.PI / 2;
+      const x = 14 + Math.cos(a) * 9, y = 12 + Math.sin(a) * 8;
+      ell(c, x, y, 2.2, 2.2, rg(c, x - 0.7, y - 0.7, 0.2, 2.4, [[0, '#c6a9d6'], [1, '#5f456f']]));
+    }
+    box(c, 12.5, 22, 3, 12, 1, GOLD(c, 12, 0, 16, 0)); box(c, 9, 25, 10, 3, 1, GOLD(c, 0, 25, 0, 28));
+  };
+  P.cross_small = function (c, w, h, rnd) {
+    box(c, 16, 0, 9, 62, 2.5, lg(c, 16, 0, 25, 0, [[0, '#b58b5f'], [0.5, '#8a6340'], [1, '#5f4128']]));
+    box(c, 4, 16, 33, 9, 2.5, lg(c, 0, 16, 0, 25, [[0, '#b58b5f'], [0.5, '#8a6340'], [1, '#5f4128']]));
+    grain(c, 17, 1, 7, 60, rnd, 'rgba(50,28,12,0.3)', 2, true);
+    line(c, 18, 2, 18, 60, 0.8, 'rgba(255,230,190,0.35)');
+  };
+  P.relic_case = function (c, w, h, rnd) {
+    ell(c, 65, 52, 70, 46, 'rgba(255,224,160,0.22)');
+    box(c, 0, 74, 130, 36, 6, '#6e4c2f');
+    plank(c, 0, 74, 130, 34, 6, '#9a7048', '#b58b5f', '#7d5838', rnd, 4);
+    box(c, 6, 78, 118, 6, 2, 'rgba(255,230,190,0.15)');
+    box(c, 10, 24, 110, 54, 8, GOLD(c, 10, 24, 120, 78));
+    for (let i = 0; i < 9; i++) ell(c, 18 + i * 11.8, 27, 1.4, 1.4, '#fff3cf');
+    box(c, 18, 30, 94, 42, 6, 'rgba(255,250,236,0.85)');
+    ell(c, 65, 52, 34, 13, 'rgba(242,181,107,0.35)');
+    ell(c, 65, 52, 9, 6, rg(c, 65, 52, 0.5, 9, [[0, '#ffffff'], [1, '#f2d6a0']]));
+    c.fillStyle = 'rgba(255,255,255,0.5)';
+    c.beginPath(); c.moveTo(24, 70); c.lineTo(46, 32); c.lineTo(56, 32); c.lineTo(34, 70); c.fill();
+    box(c, 62, 0, 6, 26, 1.5, GOLD(c, 62, 0, 68, 0)); box(c, 50, 8, 30, 6, 1.5, GOLD(c, 0, 8, 0, 14));
+  };
+  P.pc_crt = function (c, w, h, rnd) {
+    contact(c, 30, 60, 26, 2, 0.25);
+    box(c, 0, 0, 56, 48, 6, lg(c, 0, 0, 56, 48, [[0, '#ebe5d6'], [1, '#c4bca9']]));
+    box(c, 5, 5, 46, 34, 4, '#2f3b52');
+    box(c, 7, 7, 42, 30, 3, rg(c, 28, 22, 2, 30, [[0, '#9cc6dc'], [1, '#4f7d98']]));
+    /* 화면 — 2005년의 웹페이지 */
+    box(c, 9, 9, 38, 4, 1, '#d6e7f1'); box(c, 9, 15, 12, 18, 1, 'rgba(255,255,255,0.55)');
+    for (let i = 0; i < 4; i++) line(c, 24, 17 + i * 4, 45, 17 + i * 4, 1, 'rgba(255,255,255,0.6)');
+    c.fillStyle = 'rgba(255,255,255,0.22)'; c.beginPath(); c.moveTo(9, 36); c.lineTo(24, 8); c.lineTo(31, 8); c.lineTo(16, 36); c.fill();
+    for (let y = 8; y < 37; y += 2) line(c, 7, y, 49, y, 0.3, 'rgba(0,0,0,0.08)');
+    box(c, 18, 48, 20, 6, 2, '#c4bdac'); box(c, 10, 53, 36, 5, 2, lg(c, 0, 53, 0, 58, [[0, '#d6cfbf'], [1, '#a8a090']]));
+    box(c, 58, 14, 20, 54, 4, lg(c, 58, 0, 78, 0, [[0, '#ebe5d6'], [1, '#bdb5a3']]));
+    box(c, 61, 20, 14, 3, 1.5, '#9aa0a8'); box(c, 61, 26, 14, 3, 1.5, '#9aa0a8');
+    ell(c, 68, 60, 2.4, 2.4, '#8ad07f'); ell(c, 68, 60, 4, 4, 'rgba(138,208,127,0.3)');
+  };
+  P.big_backpack = function (c, w, h, rnd) {
+    contact(c, 30, 74, 26, 3, 0.35);
+    box(c, 18, 0, 10, 14, 4, '#4d5a43'); box(c, 32, 0, 10, 14, 4, '#4d5a43');
+    box(c, 4, 10, 52, 62, 12, lg(c, 4, 0, 56, 0, [[0, '#7f9470'], [0.6, '#6b7f5c'], [1, '#4f5f43']]));
+    c.setLineDash([1.6, 1.4]); rr(c, 7, 13, 46, 56, 10); c.lineWidth = 0.6; c.strokeStyle = 'rgba(230,240,215,0.4)'; c.stroke(); c.setLineDash([]);
+    box(c, 9, 16, 42, 26, 8, lg(c, 0, 16, 0, 42, [[0, '#8fa47c'], [1, '#6b7f5c']]));
+    line(c, 12, 28, 48, 28, 1, '#4d5a43'); box(c, 27, 25, 6, 6, 1.5, '#d7a04f');
+    box(c, 12, 48, 36, 16, 5, lg(c, 0, 48, 0, 64, [[0, '#647553'], [1, '#4a573f']]));
+    box(c, 14, 54, 32, 4, 1, '#d7a04f');
+    /* 매단 침낭 */
+    box(c, 6, 66, 48, 10, 5, lg(c, 0, 66, 0, 76, [[0, '#6f8fae'], [1, '#45627f']]));
+    line(c, 18, 66, 18, 76, 1.2, '#3d3a3a'); line(c, 42, 66, 42, 76, 1.2, '#3d3a3a');
+    /* 순례 배지 */
+    ell(c, 44, 22, 3.6, 3.6, '#f3ece2'); line(c, 44, 19.2, 44, 25, 1, '#8a6340'); line(c, 41.8, 21, 46.2, 21, 1, '#8a6340');
+  };
+  P.stone = function (c, w, h, rnd) {
+    contact(c, 30, 42, 28, 4, 0.35);
+    c.beginPath(); c.moveTo(4, 30); c.quadraticCurveTo(2, 12, 18, 8); c.quadraticCurveTo(34, 3, 46, 9); c.quadraticCurveTo(59, 18, 56, 32);
+    c.quadraticCurveTo(48, 44, 28, 44); c.quadraticCurveTo(8, 43, 4, 30); c.closePath();
+    c.fillStyle = lg(c, 0, 6, 40, 46, [[0, '#a3aab8'], [0.5, '#7c8290'], [1, '#575d6a']]); c.fill();
+    ell(c, 22, 15, 10, 4, 'rgba(255,255,255,0.2)');
+    line(c, 30, 12, 35, 26, 0.6, 'rgba(45,50,60,0.45)'); line(c, 35, 26, 42, 30, 0.6, 'rgba(45,50,60,0.45)');
+    for (let i = 0; i < 60; i++) { c.fillStyle = rnd() < 0.5 ? 'rgba(255,255,255,0.12)' : 'rgba(30,35,45,0.14)'; c.fillRect(8 + rnd() * 44, 10 + rnd() * 30, 0.8, 0.8); }
+  };
+
+  /* ── 밤의 서울 ─────────────────────────── */
+  P.seoul_night_block = function (c, w, h, rnd) {
+    /* 먼 빌딩 — 옅게 */
+    let x = -6;
+    while (x < 390) {
+      const bw = 26 + rnd() * 30, bh = 120 + rnd() * 110;
+      c.fillStyle = 'rgba(52,66,100,0.55)'; c.fillRect(x, 260 - bh - 20, bw, bh + 20);
+      x += bw + 2;
+    }
+    /* 가까운 빌딩 */
+    const hs = [120, 180, 96, 210, 140, 170, 110];
+    x = -10;
+    for (let i = 0; i < hs.length; i++) {
+      const bw = 46 + (i % 3) * 18, bh = hs[i], top = 260 - bh;
+      c.fillStyle = lg(c, x, 0, x + bw, 0, [[0, i % 2 ? '#2f3b5c' : '#2a3452'], [1, '#1b2238']]);
+      c.fillRect(x, top, bw, bh);
+      line(c, x, top + 0.5, x + bw, top + 0.5, 1, 'rgba(160,180,220,0.35)');
+      /* 옥상 — 물탱크나 안테나 */
+      if (i % 3 === 0) { box(c, x + bw * 0.6, top - 8, 12, 8, 1, '#232b44'); }
+      else { line(c, x + bw * 0.3, top, x + bw * 0.3, top - 14, 1, '#4a5578'); ell(c, x + bw * 0.3, top - 14, 1.6, 1.6, '#ff6a5a'); }
+      /* 창 — 몇 개만 켜져 있고 색이 조금씩 다릅니다 */
+      const cols = Math.max(2, Math.floor((bw - 8) / 11));
+      for (let r = 0; top + 10 + r * 13 < 254; r++) {
+        for (let k = 0; k < cols; k++) {
+          const wx = x + 6 + k * 11, wy = top + 10 + r * 13;
+          const on = rnd();
+          let col = 'rgba(20,26,44,0.6)';
+          if (on < 0.32) col = rnd() < 0.7 ? '#f6d79a' : '#cfe3ff';
+          else if (on < 0.4) col = 'rgba(246,215,154,0.45)';
+          c.fillStyle = col; c.fillRect(wx, wy, 6, 7);
+        }
+      }
+      x += bw + 12;
+    }
+    /* 간판 몇 개 */
+    [[30, 212, '#ef7f6a'], [176, 206, '#6fc2b0'], [300, 218, '#f2c46b']].forEach(function (p) {
+      box(c, p[0] - 1, p[1] - 1, 34, 12, 2, 'rgba(255,255,255,0.12)');
+      box(c, p[0], p[1], 32, 10, 2, p[2]);
+      line(c, p[0] + 5, p[1] + 5, p[0] + 26, p[1] + 5, 1.6, 'rgba(255,255,255,0.75)');
+    });
+    /* 거리의 불빛 */
+    c.fillStyle = lg(c, 0, 220, 0, 260, [[0, 'rgba(255,200,130,0)'], [1, 'rgba(255,200,130,0.35)']]); c.fillRect(0, 220, 390, 40);
+  };
+  P.vigil_stage = function (c, w, h, rnd) {
+    /* 지붕 트러스 */
+    line(c, 10, 22, 250, 22, 2, '#5a6488');
+    for (let x = 10; x < 250; x += 12) { line(c, x, 22, x + 6, 16, 0.8, '#5a6488'); line(c, x + 6, 16, x + 12, 22, 0.8, '#5a6488'); }
+    line(c, 10, 16, 250, 16, 1.2, '#5a6488');
+    /* 조명 — 위에서 아래로 */
+    [46, 98, 162, 214].forEach(function (x, i) {
+      c.beginPath(); c.moveTo(x - 3, 24); c.lineTo(x + 3, 24); c.lineTo(x + 28, 90); c.lineTo(x - 28, 90); c.closePath();
+      c.fillStyle = lg(c, 0, 24, 0, 90, [[0, 'rgba(255,240,205,0.45)'], [1, 'rgba(255,240,205,0)']]); c.fill();
+      box(c, x - 4, 20, 8, 6, 2, '#2a3048'); ell(c, x, 26, 2.6, 1.6, '#fff4d6');
+    });
+    /* 무대 */
+    box(c, 0, 62, 260, 26, 6, lg(c, 0, 62, 0, 88, [[0, '#3f4870'], [1, '#22283f']]));
+    box(c, 0, 58, 260, 7, 3, lg(c, 0, 58, 0, 65, [[0, '#f3ece2'], [1, '#c9bfae']]));
+    /* 무대 뒤 천과 십자가 */
+    box(c, 70, 26, 120, 34, 4, lg(c, 0, 26, 0, 60, [[0, '#f6efe1'], [1, '#d9cdb6']]));
+    box(c, 127, 30, 6, 28, 1, '#8a6340'); box(c, 117, 36, 26, 5, 1, '#8a6340');
+    /* 제대와 촛불 */
+    box(c, 104, 50, 52, 10, 2, '#fbf6ee');
+    [110, 150].forEach(function (x) { box(c, x - 1.5, 44, 3, 6, 1, '#fffaf0'); ell(c, x, 42.5, 1.6, 2.6, '#ffd27a'); ell(c, x, 42.5, 5, 5, 'rgba(255,210,130,0.3)'); });
+    /* 양쪽 스크린 */
+    [[14, 30], [206, 30]].forEach(function (p) {
+      box(c, p[0], p[1], 40, 26, 2, '#1b2238');
+      box(c, p[0] + 2, p[1] + 2, 36, 22, 1, rg(c, p[0] + 20, p[1] + 13, 1, 22, [[0, '#ffe7b8'], [1, '#c98a4a']]));
+    });
+  };
+
   /* ── 하늘 (영상 장면의 배경) ─────────────────── */
   const SKY = {};
   SKY.sky_night = function (c, w, h) {

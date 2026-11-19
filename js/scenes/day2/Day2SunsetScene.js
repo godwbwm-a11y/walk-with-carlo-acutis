@@ -13,6 +13,9 @@ window.Day2SunsetScene = class Day2SunsetScene extends Phaser.Scene {
     const sun = this.add.image(W * 0.74, 330, 'lamp_glow').setDepth(-19)
       .setDisplaySize(360, 240).setTint(0xffc79a).setAlpha(0.65);
     this.tweens.add({ targets: sun, alpha: 0.85, duration: 5200, yoyo: true, repeat: -1 });
+    /* 지붕 너머로 기우는 해와, 비스듬히 퍼지는 빛줄기 */
+    this.add.circle(W * 0.74, 352, 20, 0xffe6b8, 0.9).setDepth(-19);
+    if (window.Cine) Cine.rays(this, W * 0.74, 352, { angle: 0.9, fan: 0.22, count: 5, length: 460, width: 110, depth: -17, alpha: 0.1, tint: 0xffd6a0 });
 
     const g = this.add.graphics().setDepth(-18);
     g.fillStyle(0xc9b79a, 1); g.fillRect(0, 424, W, H - 424);

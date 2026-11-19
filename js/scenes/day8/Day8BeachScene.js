@@ -16,6 +16,12 @@ window.Day8BeachScene = class Day8BeachScene extends Phaser.Scene {
     g.fillStyle(0x4d86a8, 0.7); g.fillRect(0, 410, W, 16);
     g.fillStyle(0xc8b394, 1); g.fillRect(0, 500, W, H - 500);
     g.fillStyle(0xd4c0a2, 0.7); g.fillRect(0, 500, W, 12);
+    /* 수평선으로 지는 해와, 물 위에 길게 비치는 빛 */
+    if (window.Cine) {
+      this.add.image(W * 0.62, 410, 'lamp_glow').setDisplaySize(260, 150).setTint(0xffb27a).setAlpha(0.7).setDepth(-35).setBlendMode(Phaser.BlendModes.ADD);
+      this.add.circle(W * 0.62, 404, 15, 0xffe2b0, 0.95).setDepth(-35);
+      Cine.glitter(this, W * 0.62, 410, 500, { depth: -29, spread: 80, count: 44, tint: 0xffd29a });
+    }
 
     this.foam = [];
     for (let i = 0; i < 5; i++) {

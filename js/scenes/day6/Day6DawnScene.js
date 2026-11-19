@@ -78,6 +78,7 @@ window.Day6DawnScene = class Day6DawnScene extends Phaser.Scene {
         return;
       }
       const art = this.drawCut(i);
+      if (window.Cine) Cine.still(this, art, { tone: i >= 13 ? 'dawn' : 'church', duration: 2400, zoom: 1.03 });
       label.setText(cuts[i]).setAlpha(0);
       art.setAlpha(0);
       this.tweens.add({ targets: [art, label], alpha: 1, duration: 600 });
