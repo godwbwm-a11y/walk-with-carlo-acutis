@@ -846,5 +846,47 @@ window.Figure = (function () {
     target.drawImage(fig, 0, 0);
   }
 
-  return { render: render, draw: draw };
+  /* ── 대화창의 얼굴 ───────────────────────────
+     같은 사람을 크게 다시 그려 머리와 어깨만 동그랗게 오려 냅니다. */
+  const opts = {};
+  function portrait(scene, texKey, size, ring) {
+    const key = 'pt_' + texKey;
+    if (scene.textures.exists(key)) return key;
+    const o = opts[texKey];
+    if (!o) return null;
+    const R = window.HiTex ? HiTex.density(scene, 'figure') : 1;
+    const S = Math.round(size * R);
+    /* 먼저 사람 전체를 크게 그립니다 */
+    const k = (size / 22) * R;                       // 머리와 어깨(가로 약 22칸)가 동그라미에 들어가게
+    const full = document.createElement('canvas');
+    full.width = Math.ceil(32 * k); full.height = Math.ceil(46 * k);
+    render(full.getContext('2d'), o, k);
+    /* 머리 꼭대기를 찾습니다 */
+    const fc = full.getContext('2d');
+    const data = fc.getImageData(0, 0, full.width, Math.ceil(full.height * 0.6)).data;
+    let topY = 0;
+    find: for (let y = 0; y < full.height * 0.6; y++) {
+      for (let x = 0; x < full.width; x++) {
+        if (data[(y * full.width + x) * 4 + 3] > 40) { topY = y; break find; }
+      }
+    }
+    const tex = scene.textures.createCanvas(key, S, S);
+    const ctx = tex.getContext();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(S / 2, S / 2, S / 2 - R, 0, Math.PI * 2); ctx.closePath();
+    const bg = ctx.createRadialGradient(S / 2, S * 0.38, S * 0.05, S / 2, S / 2, S / 2);
+    bg.addColorStop(0, '#fff6e4'); bg.addColorStop(1, ring || '#e8cfa6');
+    ctx.fillStyle = bg; ctx.fill();
+    ctx.clip();
+    ctx.drawImage(full, Math.round(S / 2 - 16 * k), Math.round(-topY + S * 0.1));
+    ctx.restore();
+    ctx.lineWidth = 2.5 * R;
+    ctx.strokeStyle = ring || '#d2822f';
+    ctx.beginPath(); ctx.arc(S / 2, S / 2, S / 2 - 1.5 * R, 0, Math.PI * 2); ctx.stroke();
+    if (window.HiTex) HiTex.mark(tex, R);
+    tex.refresh();
+    return key;
+  }
+
+  return { render: render, draw: draw, opts: opts, portrait: portrait };
 })();

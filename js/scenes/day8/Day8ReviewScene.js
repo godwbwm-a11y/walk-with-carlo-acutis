@@ -50,11 +50,12 @@ window.Day8ReviewScene = class Day8ReviewScene extends Phaser.Scene {
       const value = d.key ? JourneyText.value(d.key, null) : null;
       const done = SaveSystem.get('dayCompleted.day' + d.n, false);
 
+      /* 아직 걷지 않은 날은 어두운 카드에 옅은 밝은 글씨 — 흐리지만 읽힙니다 */
       const title = this.add.text(42, y + 14, d.title,
-        UI.style(FONT.small, done ? PAL.sunDeep : PAL.inkSoft)).setAlpha(done ? 1 : 0.7);
+        UI.style(FONT.small, done ? PAL.sunDeep : PAL.dim));
       const line = this.add.text(42, y + 42, d.line,
-        UI.style(17, done ? PAL.ink : PAL.inkSoft, { wordWrap: { width: W - 100 } }))
-        .setAlpha(done ? 1 : 0.6);
+        UI.style(17, done ? PAL.ink : PAL.dimWarm, { wordWrap: { width: W - 100 } }))
+        .setAlpha(done ? 1 : 0.85);
       const echo = value
         ? this.add.text(42, y + 44 + line.height + 12, '· ' + String(value),
             UI.style(14, PAL.clay, { wordWrap: { width: W - 100 }, lineSpacing: 3 }))
@@ -63,8 +64,15 @@ window.Day8ReviewScene = class Day8ReviewScene extends Phaser.Scene {
       /* 카드는 안에 담긴 글만큼만 자랍니다 */
       const h = (echo ? (echo.y + echo.height) : (line.y + line.height)) - y + 18;
       const card = this.add.graphics();
-      card.fillStyle(HEX(PAL.paper), done ? 0.96 : 0.34);
-      card.fillRoundedRect(24, y, W - 48, h, 16);
+      if (done) {
+        card.fillStyle(HEX(PAL.paper), 0.96);
+        card.fillRoundedRect(24, y, W - 48, h, 16);
+      } else {
+        card.fillStyle(0x2b3b60, 0.85);
+        card.fillRoundedRect(24, y, W - 48, h, 16);
+        card.lineStyle(1.5, HEX(PAL.dim), 0.35);
+        card.strokeRoundedRect(24, y, W - 48, h, 16);
+      }
       this.content.add(card);
       this.content.add(title);
       this.content.add(line);
@@ -72,7 +80,7 @@ window.Day8ReviewScene = class Day8ReviewScene extends Phaser.Scene {
 
       const cards = Collection.countOfDay(d.n);
       this.content.add(this.add.text(W - 42, y + 14, '말씀 ' + cards,
-        UI.style(12, PAL.inkSoft)).setOrigin(1, 0).setAlpha(0.8));
+        UI.style(12, done ? PAL.inkSoft : PAL.dim)).setOrigin(1, 0));
 
       y += h + 14;
     });

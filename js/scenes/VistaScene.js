@@ -26,7 +26,7 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
 
     const barY = H - 92;
     const bar = this.add.graphics().setDepth(199);
-    bar.fillStyle(0x0d1524, 0.45); bar.fillRoundedRect(14, barY - 44, W - 28, 88, 22);
+    bar.fillStyle(0x0d1524, 0.6); bar.fillRoundedRect(14, barY - 44, W - 28, 88, 22);
 
     UI.button(this, W / 2 - 84, barY, 150, 58, '사진 찍기', () => this.photo(), { size: FONT.small, fill: PAL.sun })
       .setDepth(200);
@@ -70,6 +70,8 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
     g.fillStyle(0x2f6b8f, 0.45); g.fillRect(0, SEA_TOP + 18, W, 40);
     g.fillStyle(0xa9b8ca, 1); g.fillRect(0, SAND_TOP, W, H - SAND_TOP);
     g.fillStyle(0x93a4ba, 0.75); g.fillRect(0, SAND_TOP, W, 26);
+    /* 수평선 너머 새벽빛이 물 위에 길게 비칩니다 */
+    if (window.Cine) Cine.glitter(this, W / 2, SEA_TOP, SAND_TOP, { depth: -9.5, spread: 90, count: 40 });
     for (let i = 0; i < 300; i++) {
       g.fillStyle(i % 3 === 0 ? 0xffffff : 0x7d8ea4, 0.16);
       g.fillCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(SAND_TOP + 18, H - 4),
@@ -196,6 +198,8 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
       g.fillStyle(0xf0b98d, 0.10 - i * 0.015);
       g.fillRect(0, seaTop + 10 + i * 9, W, 5);
     }
+
+    if (window.Cine) Cine.glitter(this, W / 2, seaTop, H * 0.82, { depth: -7.5, spread: 150, count: 80 });
 
     /* 어선 두 척 */
     [{ x: 84, y: seaTop + 58, s: 0.8, d: 44000 }, { x: W - 76, y: seaTop + 132, s: 1.15, d: 58000 }]

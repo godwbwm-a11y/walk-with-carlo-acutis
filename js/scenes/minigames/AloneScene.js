@@ -22,6 +22,10 @@ window.AloneScene = class AloneScene extends MiniGameScene {
     g.fillStyle(0x1d2438, 1); g.fillRect(0, 464, W, 10);
 
     this.add.image(W / 2, 250, 'stained_glass').setDepth(-80).setScale(1.1).setAlpha(0.55);
+    if (window.Cine) {
+      Cine.rays(this, W / 2, 230, { fan: 0.2, count: 5, length: 580, depth: -79, alpha: 0.1 });
+      Cine.motes(this, 40, 280, W - 80, 420, { depth: -78, count: 14, alpha: 0.4 });
+    }
     this.add.image(W / 2, 380, 'altar').setDepth(10).setScale(1.0).setAlpha(0.9);
     this.lamp = this.add.image(W / 2 + 96, 330, 'sanctuary_lamp').setDepth(12).setScale(1.0);
     this.glow = this.add.image(W / 2 + 96, 336, 'lamp_glow').setDepth(11).setScale(0.8).setAlpha(0.4);

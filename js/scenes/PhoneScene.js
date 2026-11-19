@@ -42,7 +42,7 @@ window.PhoneScene = class PhoneScene extends Phaser.Scene {
     const baseY = 256 + i * 57;
     const c = this.add.container(W / 2 + Phaser.Math.Between(-6, 6), baseY + 260);
     const img = this.add.image(0, 0, 'card').setDisplaySize(300, 84);
-    const app = this.add.text(-128, -22, n.app, UI.style(14, '#8a99b8')).setOrigin(0, 0.5);
+    const app = this.add.text(-128, -22, n.app, UI.style(14, '#5d6b88')).setOrigin(0, 0.5);
     const txt = this.add.text(-128, 8, n.text, UI.style(FONT.body, PAL.ink, { wordWrap: { width: 250 } })).setOrigin(0, 0.5);
     const dotG = this.add.graphics();
     dotG.fillStyle(HEX(PAL.clay), 1); dotG.fillCircle(128, -22, 5);

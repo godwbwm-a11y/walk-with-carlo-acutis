@@ -17,6 +17,18 @@ window.TextureFactory = (function () {
 
   function make(scene, key, w, h, fn) {
     if (scene.textures.exists(key)) return;
+    /* 손으로 다시 그린 물건이 있으면 그쪽을 씁니다(Props) */
+    if (window.Props && Props.has(key)) {
+      let PR = window.HiTex ? HiTex.density(scene, 'prop') : 1;
+      if (w * h > HUGE) PR = 1;
+      const ptex = scene.textures.createCanvas(key, Math.ceil(w * PR), Math.ceil(h * PR));
+      const pctx = ptex.getContext();
+      pctx.scale(PR, PR);
+      Props.paint(key, pctx, w, h);
+      if (window.HiTex) HiTex.mark(ptex, PR);
+      ptex.refresh();
+      return;
+    }
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
     g.__people = [];
     fn(g, w, h);
@@ -50,6 +62,8 @@ window.TextureFactory = (function () {
         paint(p.at);
         Figure.render(ctx, p.o, R);
       });
+      /* 대화창 얼굴 그림을 그릴 때 같은 모습으로 그리도록 기억해 둡니다 */
+      if (g.__people.length === 1) Figure.opts[key] = g.__people[0].o;
       paint(all.length);
     }
     if (window.HiTex) HiTex.mark(tex, R);

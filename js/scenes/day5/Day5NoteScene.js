@@ -22,7 +22,7 @@ window.Day5NoteScene = class Day5NoteScene extends Phaser.Scene {
     N.met.forEach((m) => {
       const met = friends.indexOf(m.name) !== -1;
       this.add.text(W / 2, y, m.name + '  ·  ' + m.from,
-        UI.style(15, met ? PAL.ink : '#9a8a76')).setOrigin(0.5).setDepth(2).setAlpha(met ? 1 : 0.85);
+        UI.style(15, met ? PAL.ink : PAL.inkSoft)).setOrigin(0.5).setDepth(2).setAlpha(met ? 1 : 0.85);
       y += 24;
     });
 

@@ -37,7 +37,9 @@ window.SaveSystem = (function () {
       collection: [],           // 모은 말씀 카드
       journal: [],
       found: [],                 // 살펴본 오브젝트 기록
-      settings: { bgm: true, sfx: true },
+      practiceLog: [],           // 노트에서 고른 작은 실천 — 다음 날 조용히 다시 물어봅니다
+      lastCheckin: null,         // 실천을 물어본 날 (하루에 한 번만)
+      settings: { bgm: true, sfx: true, textSpeed: 'normal' },
       updatedAt: null
     };
   }
@@ -54,6 +56,7 @@ window.SaveSystem = (function () {
         data.dayCompleted = Object.assign(blank().dayCompleted, parsed.dayCompleted || {});
         data.reflections = Object.assign(blank().reflections, parsed.reflections || {});
         data.settings = Object.assign(blank().settings, parsed.settings || {});
+        data.practiceLog = Array.isArray(parsed.practiceLog) ? parsed.practiceLog : [];
         data.epilogue = Object.assign(blank().epilogue, parsed.epilogue || {});
         data.store = Object.assign(blank().store, parsed.store || {});
       }
@@ -85,6 +88,36 @@ window.SaveSystem = (function () {
       let node = data;
       for (let i = 0; i < keys.length - 1; i++) node = node[keys[i]];
       node[keys[keys.length - 1]] = value;
+      /* 작은 실천을 고르면 날짜와 함께 따로 적어 둡니다 */
+      const m = /^reflections\.day(\d+)Practice$/.exec(path);
+      if (m && typeof value === 'string' && window.Liturgy) {
+        data.practiceLog = (data.practiceLog || []).filter(function (p) { return p.day !== +m[1]; });
+        data.practiceLog.push({ day: +m[1], text: value, date: Liturgy.key(), answer: null });
+      }
+      save();
+    },
+
+    /* 오늘 물어볼 실천 — 오늘보다 앞선 날에 고른 것 가운데 아직 대답하지 않은 가장 최근 것 */
+    pendingPractice: function () {
+      if (!window.Liturgy) return null;
+      const today = Liturgy.key();
+      if (data.lastCheckin === today) return null;
+      const list = (data.practiceLog || []).filter(function (p) {
+        return p.date < today && (p.answer === null || p.answer === 'today');
+      });
+      return list.length ? list[list.length - 1] : null;
+    },
+
+    answerPractice: function (entry, answer) {
+      const today = window.Liturgy ? Liturgy.key() : null;
+      data.lastCheckin = today;
+      (data.practiceLog || []).forEach(function (p) {
+        if (p.day === entry.day) {
+          p.answer = answer;
+          if (answer === 'today') p.date = today;    // 내일 한 번 더 물어봅니다
+          if (answer === 'done') p.doneAt = today;
+        }
+      });
       save();
     },
 

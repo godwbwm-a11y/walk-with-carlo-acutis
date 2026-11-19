@@ -24,7 +24,7 @@ window.Day5VocationScene = class Day5VocationScene extends WorldScene {
     V.booths.forEach((name, i) => {
       const x = 130 + i * 132;
       this.add.image(x, 470, 'fair_booth').setDepth(470).setScale(0.98);
-      this.add.text(x, 437, name, UI.style(13, PAL.cream)).setOrigin(0.5).setDepth(472);
+      this.add.text(x, 437, name, UI.style(13, PAL.cream, { backgroundColor: 'rgba(16,26,46,0.62)', padding: { x: 6, y: 2 } })).setOrigin(0.5).setDepth(472);
       this.addInteractable({
         id: 'd5_booth' + i, x: x, y: 640, label: name, range: 62, markerY: 384,
         onInteract: () => this.booth(name, i)

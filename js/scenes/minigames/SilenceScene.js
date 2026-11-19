@@ -31,6 +31,7 @@ window.SilenceScene = class SilenceScene extends Phaser.Scene {
     this.glow = this.add.image(96, 244, 'lamp_glow').setDepth(3).setScale(1.5).setAlpha(0.4).setTint(0xffd9a8);
     this.add.image(96, 240, 'sanctuary_lamp').setDepth(6).setScale(1.1);
     this.add.image(58, 292, 'stained_glass').setDepth(4).setScale(0.8).setAlpha(0.8);
+    if (window.Cine) Cine.rays(this, 64, 262, { angle: -0.5, fan: 0.12, count: 4, length: 540, depth: 5, alpha: 0.11 });
 
     /* 십자가를 누르면 잠시 그 앞에 머뭅니다 */
     this.crossZone = this.add.zone(W / 2, 190, 150, 210).setOrigin(0.5)

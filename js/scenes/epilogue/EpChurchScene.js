@@ -17,6 +17,7 @@ window.EpChurchScene = class EpChurchScene extends Phaser.Scene {
     g.fillStyle(0x1d2438, 1); g.fillRect(0, 444, W, 10);
 
     this.add.image(W / 2, 240, 'stained_glass').setDepth(-20).setScale(1.1).setAlpha(0.5);
+    if (window.Cine) Cine.rays(this, W / 2, 220, { fan: 0.2, count: 5, length: 560, depth: -19, alpha: 0.12 });
     this.add.image(W / 2, 366, 'altar').setDepth(10).setScale(1.0).setAlpha(0.9);
     const glow = this.add.image(W / 2 + 96, 322, 'lamp_glow').setDepth(11).setScale(0.8).setAlpha(0.4);
     this.add.image(W / 2 + 96, 316, 'sanctuary_lamp').setDepth(12).setScale(1.0);

@@ -37,7 +37,9 @@ window.PilgrimWalkScene = class PilgrimWalkScene extends MiniGameScene {
     this.carlo = this.add.image(238, 672, 'carlo_back').setDepth(672).setScale(1.42);
     this.bob = this.tweens.add({ targets: [this.me, this.carlo], y: '-=4', duration: 780, yoyo: true, repeat: -1 });
 
-    this.counter = this.add.text(W - 24, 128, '', UI.style(FONT.small, PAL.inkSoft))
+    /* 안내 글 바로 아래에 — 두 줄짜리 안내와 겹치지 않게 */
+    this.counter = this.add.text(W - 20, this.contentTop() + 14, '', UI.style(FONT.small, PAL.ink, {
+      backgroundColor: 'rgba(253,243,224,0.9)', padding: { x: 10, y: 4 } }))
       .setOrigin(1, 0.5).setDepth(820);
     this.refresh();
 

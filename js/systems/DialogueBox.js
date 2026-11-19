@@ -61,7 +61,10 @@ window.DialogueBox = class DialogueBox {
       UI.style(FONT.tiny, PAL.sunDeep)).setOrigin(0.5);
     scene.tweens.add({ targets: this.arrow, alpha: 0.25, duration: 800, yoyo: true, repeat: -1 });
 
-    this.container.add([this.scrim, this.bg, this.namePlate, this.nameText, this.textLayer, this.arrow]);
+    /* 말하는 사람의 얼굴 — 대화창 왼쪽 위에 동그랗게 */
+    this.face = scene.add.image(W / 2 - boxW / 2 + 44, boxY - boxH / 2 - 14, '__DEFAULT').setVisible(false);
+
+    this.container.add([this.scrim, this.bg, this.namePlate, this.nameText, this.face, this.textLayer, this.arrow]);
 
     /* 화면 전체 터치로 진행 — 손가락이 크게 밀리면 넘기지 않습니다 */
     this.hit = scene.add.zone(W / 2, H / 2, W, H).setOrigin(0.5)
@@ -116,13 +119,34 @@ window.DialogueBox = class DialogueBox {
       && this.container && this.container.scene);
   }
 
+  /* 이름 → 얼굴 그림. 얼굴이 없는 사람(행인, 학생 A 등)은 이름표만 둡니다 */
+  _faceKey(name) {
+    if (!name || !window.Figure || !Figure.portrait) return null;
+    let tex = DialogueBox.FACES[name];
+    if (name === '나') tex = (this.scene.playerTex || 'player') + '_front';
+    if (!tex) return null;
+    const ring = (name === '가롤로' || name === '소년') ? '#c9553f' : (name === '나' ? '#2f6b8f' : '#7a5f8a');
+    return Figure.portrait(this.scene, tex, 64, ring);
+  }
+
   _drawName(name) {
     if (!this.alive()) return;
     this.namePlate.clear();
+    const fk = this._faceKey(name);
+    if (fk) {
+      const changed = this.face.texture.key !== fk || !this.face.visible;
+      this.face.setTexture(fk).setVisible(true);
+      if (changed) {
+        this.face.setScale(0.86).setAlpha(0.4);
+        this.scene.tweens.add({ targets: this.face, scale: 1, alpha: 1, duration: 220, ease: 'Back.easeOut' });
+      }
+    } else {
+      this.face.setVisible(false);
+    }
     if (!name) { this.nameText.setText(''); return; }
     this.nameText.setText(name);
     const w = this.nameText.width + 26;
-    const x = GAME.WIDTH / 2 - this.boxW / 2 + 10;
+    const x = GAME.WIDTH / 2 - this.boxW / 2 + (fk ? 84 : 10);
     const y = this.boxY - this.boxH / 2 - 30;
     const color = (name === '가롤로' || name === '소년') ? HEX(PAL.clay) : HEX(PAL.sea);
     this.namePlate.fillStyle(color, 0.95);
@@ -183,10 +207,18 @@ window.DialogueBox = class DialogueBox {
     this._fit();
     this.text.setText('');
 
+    DialogueBox.remember(line.s || '', this.full);
+
     let i = 0;
     if (this.timerEvent) this.timerEvent.remove();
+    const delay = DialogueBox.speed();
+    if (delay <= 0 || this.full.length === 0) {
+      this.text.setText(this.full);
+      this.typing = false; this.arrow.setVisible(true);
+      return;
+    }
     this.timerEvent = this.scene.time.addEvent({
-      delay: 32,
+      delay: delay,
       repeat: this.full.length - 1,
       callback: () => {
         i++;
@@ -263,6 +295,7 @@ window.DialogueBox = class DialogueBox {
       const y = startY + i * (bh + gap);
       const b = UI.button(this.scene, W / 2, y + 20, W - 56, bh, opt.label, () => {
         AudioSystem.select();
+        DialogueBox.remember('나의 선택', String(opt.label).replace(/\n/g, ' '));
         this.closeChoices();
         if (cb) cb(opt.key, opt);
       }, { size: FONT.label });
@@ -286,4 +319,37 @@ window.DialogueBox = class DialogueBox {
     this.hit.destroy();
     this.choiceGroup.destroy();
   }
+};
+
+/* 얼굴 그림이 있는 사람들 — 이름표 글자 그대로 */
+DialogueBox.FACES = {
+  '가롤로': 'carlo_front', '소년': 'carlo_front',
+  '엄마': 'mom_front', '할머니': 'grandma_front', '친구': 'friend_front',
+  '지우': 'child_front', '어린이': 'child_front', '아이': 'child_front',
+  '루카': 'pilgrim_e', '마리아': 'pilgrim_a', '레아': 'pilgrim_c', '레오': 'epi_leo_front',
+  '아르바이트생': 'clerk_front', '주교님': 'd6_bishop', '수도자': 'sister_front'
+};
+
+/* 글자가 나오는 빠르기 — 설정에서 고릅니다 */
+DialogueBox.SPEEDS = [
+  { key: 'slow', name: '천천히', ms: 52 },
+  { key: 'normal', name: '보통', ms: 32 },
+  { key: 'fast', name: '빠르게', ms: 14 },
+  { key: 'instant', name: '바로', ms: 0 }
+];
+DialogueBox.speed = function () {
+  const k = SaveSystem.get('settings.textSpeed', 'normal');
+  const s = DialogueBox.SPEEDS.find(function (x) { return x.key === k; });
+  return s ? s.ms : 32;
+};
+
+/* 지난 대화 — 놓친 말을 다시 읽을 수 있게 최근 것만 기억합니다 (저장하지는 않습니다) */
+DialogueBox.history = [];
+DialogueBox.remember = function (who, text) {
+  if (!text) return;
+  const h = DialogueBox.history;
+  const last = h[h.length - 1];
+  if (last && last.s === who && last.t === text) return;
+  h.push({ s: who, t: text });
+  if (h.length > 120) h.splice(0, h.length - 120);
 };

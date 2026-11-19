@@ -28,6 +28,11 @@ window.Day2ChurchScene = class Day2ChurchScene extends Phaser.Scene {
     });
 
     this.glass = this.add.image(64, 250, 'stained_glass').setDepth(4).setScale(0.95);
+    /* 창으로 들어오는 빛과 그 안에 떠도는 먼지 */
+    if (window.Cine) {
+      Cine.rays(this, 70, 220, { angle: -0.5, fan: 0.12, count: 4, length: 560, depth: 5, alpha: 0.13 });
+      Cine.motes(this, 60, 260, 260, 380, { depth: 6, count: 16, alpha: 0.5 });
+    }
     this.candle = this.add.image(304, 402, 'candle_stand').setDepth(8).setScale(1.05);
     this.lamp = this.add.image(96, 210, 'sanctuary_lamp').setDepth(8).setScale(1.05);
 

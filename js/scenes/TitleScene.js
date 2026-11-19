@@ -6,6 +6,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   create(data) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.openPicker = !!(data && data.picker);
+    this.modal = null;
     this.add.image(W / 2, H / 2, 'sky_night').setDisplaySize(W, H);
 
     /* 별 */
@@ -31,6 +32,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     sea.fillStyle(HEX(PAL.sea), 0.75); sea.fillRect(0, seaY, W, 22);
     sea.fillStyle(0xb8a68c, 1); sea.fillRect(0, seaY + H * 0.13, W, H);
     sea.fillStyle(0xc4b299, 0.6); sea.fillRect(0, seaY + H * 0.13, W, 14);
+    if (window.Cine) Cine.glitter(this, W / 2, seaY, seaY + H * 0.13, { spread: 80, count: 34, alpha: 0.6 });
 
     for (let i = 0; i < 5; i++) {
       const f = this.add.image(Phaser.Math.Between(0, W), seaY + H * 0.13 - Phaser.Math.Between(2, 24), 'seafoam')
@@ -125,9 +127,165 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       AudioSystem.startPad();
     });
 
+    /* 오늘이 교회의 시간으로 어떤 날인지 — 게임 밖의 오늘과 이어 줍니다 */
+    if (window.Liturgy) this.todayCard();
+
     UI.fadeIn(this, 900);
     /* 에필로그에서 “다시 걷고 싶은 날 고르기”로 들어오면 바로 목록을 엽니다 */
     if (this.openPicker) this.time.delayedCall(320, () => this.dayPicker());
+    else this.time.delayedCall(1500, () => this.practiceCheckin());
+  }
+
+  /* ── 오늘의 카드 ─────────────────────────────
+     전례 시기와 색, 대축일·주일, 오늘의 말씀 한 줄. 누르면 가롤로가 한마디 건넵니다. */
+  todayCard() {
+    const W = GAME.WIDTH;
+    const info = Liturgy.today();
+    const word = Liturgy.word();
+    const top = 342, cw = W - 52;
+    const c = this.add.container(W / 2, top).setDepth(40).setAlpha(0);
+
+    const head = this.add.text(-cw / 2 + 40, 16, info.title,
+      UI.style(15, PAL.cream, { wordWrap: { width: cw - 56 } })).setOrigin(0, 0);
+    let y = 16 + head.height + 8;
+    let body = null, from = null;
+    if (word) {
+      body = this.add.text(-cw / 2 + 18, y, word.text.replace(/\n/g, ' '),
+        UI.style(15, '#f4ead6', { wordWrap: { width: cw - 36 }, lineSpacing: 5 })).setOrigin(0, 0);
+      y += body.height + 4;
+      from = this.add.text(cw / 2 - 18, y, '— ' + word.from, UI.style(13, PAL.dim)).setOrigin(1, 0);
+      y += from.height;
+    }
+    const h = y + 14;
+
+    const g = this.add.graphics();
+    g.fillStyle(0x0b1222, 0.62);
+    g.fillRoundedRect(-cw / 2, 0, cw, h, 16);
+    g.lineStyle(1.5, HEX(info.color.hex), 0.75);
+    g.strokeRoundedRect(-cw / 2, 0, cw, h, 16);
+    /* 전례 색 — 작은 원 하나 */
+    g.fillStyle(HEX(info.color.hex), 1);
+    g.fillCircle(-cw / 2 + 24, 16 + head.height / 2, 7);
+    g.lineStyle(1.5, 0xffffff, 0.5);
+    g.strokeCircle(-cw / 2 + 24, 16 + head.height / 2, 7);
+    c.add([g, head]);
+    if (body) c.add([body, from]);
+
+    /* 서울 세계청년대회까지 */
+    if (info.wyd) {
+      const pill = this.add.text(0, h + 10, info.wyd.text, UI.style(13, PAL.ink, {
+        backgroundColor: PAL.sun, padding: { x: 12, y: 5 }
+      })).setOrigin(0.5, 0);
+      c.add(pill);
+    }
+
+    const hit = this.add.zone(W / 2, top + h / 2, cw, h).setInteractive().setDepth(41);
+    hit.on('pointerup', () => { if (this.modal) return; AudioSystem.tap(); this.todayDetail(info, word); });
+    this.tweens.add({ targets: c, alpha: 1, duration: 900, delay: 700 });
+    this.todayBox = c;
+  }
+
+  /* 카드를 누르면 — 오늘의 이름, 시기의 뜻, 가롤로의 한마디 */
+  todayDetail(info, word) {
+    if (this.modal) return;
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(300);
+    this.modal = layer;
+    const dim = this.add.rectangle(W / 2, H / 2, W, H, 0x0b1222, 0.7).setInteractive();
+    layer.add(dim);
+    const pw = W - 40;
+    const lines = [];
+    const t1 = this.add.text(W / 2, 0, info.dateText, UI.style(15, PAL.inkSoft)).setOrigin(0.5, 0);
+    const t2 = this.add.text(W / 2, 0, info.title, UI.style(20, PAL.ink, { align: 'center', wordWrap: { width: pw - 48 } })).setOrigin(0.5, 0);
+    const t3 = this.add.text(W / 2, 0, info.seasonName + ' · ' + info.color.name + '\n' + info.seasonLine,
+      UI.style(15, PAL.inkSoft, { align: 'center', wordWrap: { width: pw - 48 }, lineSpacing: 6 })).setOrigin(0.5, 0);
+    lines.push(t1, t2, t3);
+    if (word) {
+      lines.push(this.add.text(W / 2, 0, word.text, UI.style(17, PAL.ink, { align: 'center', wordWrap: { width: pw - 48 }, lineSpacing: 7 })).setOrigin(0.5, 0));
+      lines.push(this.add.text(W / 2, 0, '— ' + word.from, UI.style(14, PAL.inkSoft)).setOrigin(0.5, 0));
+    }
+    const say = this.add.text(W / 2, 0, '가롤로 : “' + info.carlo + '”',
+      UI.style(16, PAL.clay, { align: 'center', wordWrap: { width: pw - 48 }, lineSpacing: 6 })).setOrigin(0.5, 0);
+    lines.push(say);
+    if (info.wyd) lines.push(this.add.text(W / 2, 0, info.wyd.text, UI.style(14, PAL.sunDeep)).setOrigin(0.5, 0));
+
+    const gaps = [6, 10, 18, 8, 18, 14, 10];
+    let total = 28;
+    lines.forEach((t, i) => { total += t.height + (i < lines.length - 1 ? gaps[i] || 10 : 0); });
+    total += 28 + 76;
+    const top = Math.round(H / 2 - total / 2);
+    layer.add(UI.panel(this, W / 2, top + total / 2, pw, total, { radius: 20 }));
+    /* 전례 색 띠 */
+    const band = this.add.graphics();
+    band.fillStyle(HEX(info.color.hex), 1);
+    band.fillRoundedRect(W / 2 - pw / 2 + 18, top + 10, pw - 36, 6, 3);
+    layer.add(band);
+    let y = top + 28;
+    lines.forEach((t, i) => { t.y = y; y += t.height + (gaps[i] || 10); layer.add(t); });
+    layer.add(UI.button(this, W / 2, top + total - 46, 180, 56, '닫기', () => {
+      layer.destroy(); this.modal = null;
+    }, { size: FONT.label }));
+  }
+
+  /* ── 작은 실천 돌아보기 ─────────────────────────
+     노트에서 고른 실천을 다음 날 한 번만 조용히 묻습니다. 못 했어도 실패가 아닙니다. */
+  practiceCheckin() {
+    const entry = SaveSystem.pendingPractice && SaveSystem.pendingPractice();
+    if (!entry || this.modal) return;
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(300).setAlpha(0);
+    this.modal = layer;
+    layer.add(this.add.rectangle(W / 2, H / 2, W, H, 0x0b1222, 0.72).setInteractive());
+    const pw = W - 36;
+    /* 내용의 높이를 먼저 재고 판을 그립니다 */
+    const q = this.add.text(W / 2, 0, '지난번에 정한 작은 실천, 기억나?',
+      UI.style(19, PAL.ink, { align: 'center', wordWrap: { width: pw - 40 } })).setOrigin(0.5, 0);
+    const card = this.add.text(W / 2, 0, entry.text.replace(/\n/g, ' '),
+      UI.style(17, PAL.ink, { align: 'center', wordWrap: { width: pw - 70 }, lineSpacing: 6,
+        backgroundColor: '#f6e6c8', padding: { x: 14, y: 12 } })).setOrigin(0.5, 0);
+    const src = this.add.text(W / 2, 0, 'DAY ' + entry.day + ' 노트에서', UI.style(13, PAL.inkSoft)).setOrigin(0.5, 0);
+    const head = 126;
+    const cardY = head + q.height + 16;
+    const srcY = cardY + card.height + 6;
+    const by0 = srcY + src.height + 40;               // 첫 단추의 가운데
+    const ph = by0 + 2 * 64 + 48;
+    const top = Math.round(H / 2 - ph / 2);
+    layer.add(UI.panel(this, W / 2, top + ph / 2, pw, ph, { radius: 20 }));
+    layer.add(this.add.image(W / 2, top + 52, 'carlo_front').setScale(1.3));
+    layer.add(this.add.text(W / 2, top + 98, '가롤로', UI.style(15, PAL.clay)).setOrigin(0.5, 0));
+    q.y = top + head; card.y = top + cardY; src.y = top + srcY;
+    layer.add([q, card, src]);
+    /* 대답한 뒤의 한마디 — 단추가 있던 자리에 나타납니다 */
+    const reply = this.add.text(W / 2, top + by0 - 30, '',
+      UI.style(18, PAL.clay, { align: 'center', wordWrap: { width: pw - 50 }, lineSpacing: 6 })).setOrigin(0.5, 0);
+    layer.add(reply);
+
+    const replies = {
+      done: '그랬구나. 대단한 일이 아니어도 돼. 그걸로 충분해.',
+      notyet: '괜찮아. 실패한 거 아니야. 다시 생각난 것만으로도 한 걸음이야.',
+      today: '좋아. 오늘 하루 안에서 딱 한 번이면 돼. 내일 또 물어볼게.'
+    };
+    const opts = [
+      { key: 'done', label: '해 봤어요' },
+      { key: 'today', label: '오늘 해 볼게요' },
+      { key: 'notyet', label: '아직이요' }
+    ];
+    const by = top + by0;
+    const btns = [];
+    opts.forEach((o, i) => {
+      const b = UI.button(this, W / 2, by + i * 64, pw - 70, 56, o.label, () => {
+        SaveSystem.answerPractice(entry, o.key);
+        AudioSystem.select();
+        btns.forEach(x => x.destroy());
+        reply.setText(replies[o.key]);
+        layer.add(UI.button(this, W / 2, top + ph - 58, 180, 56, '고마워', () => {
+          this.tweens.add({ targets: layer, alpha: 0, duration: 300, onComplete: () => { layer.destroy(); this.modal = null; } });
+        }, { size: FONT.label, fill: PAL.sun }));
+      }, { size: FONT.label, fill: i === 0 ? PAL.sun : PAL.paper });
+      btns.push(b);
+      layer.add(b);
+    });
+    this.tweens.add({ targets: layer, alpha: 1, duration: 500 });
   }
 
   refreshSound() {

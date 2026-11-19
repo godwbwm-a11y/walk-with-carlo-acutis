@@ -18,7 +18,7 @@ window.Joystick = class Joystick {
     /* 안내 글은 밝은 땅 위에도 놓이므로 어두운 판을 깔아 줍니다 */
     this.hintPlate = scene.add.graphics().setDepth(869).setScrollFactor(0);
     this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - 44, '화면 아래를 눌러 걸어보세요',
-      UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.75);
+      UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.95);
 
     const drawPlate = () => {
       const g = this.hintPlate;

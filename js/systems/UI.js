@@ -18,18 +18,50 @@ window.UI = (function () {
     return Math.max(FONT_MIN, Math.round(size * FONT_SCALE));
   }
 
+  const AUTO_SHADOW = 'rgba(6,10,22,0.78)';
+
+  /* 밝은 글자인지 — 밝은 글자는 대개 하늘·바다·밤 위에 직접 놓이므로 그림자를 깔아 줍니다 */
+  function isLight(color) {
+    if (typeof color !== 'string' || color[0] !== '#' || color.length < 7) return false;
+    const r = parseInt(color.substr(1, 2), 16), g = parseInt(color.substr(3, 2), 16), b = parseInt(color.substr(5, 2), 16);
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.62;
+  }
+
   function style(size, color, extra) {
     const px = fs(size);
-    return Object.assign({
+    const base = {
       fontFamily: FONT.family,
       fontSize: px + 'px',
       color: color || PAL.ink,
       lineSpacing: Math.round(px * 0.52),
       resolution: renderScale()
-    }, extra || {});
+    };
+    /* 배경이 무엇이든 읽히도록 — 밝은 글자 아래에 얇고 부드러운 어두운 그림자.
+       종이 위의 진한 글자에는 그림자를 넣지 않습니다(번져 보입니다). */
+    if (isLight(base.color) && !(extra && (extra.backgroundColor || extra.shadow === false))) {
+      base.shadow = { offsetX: 0, offsetY: Math.max(1, Math.round(px / 14)), color: AUTO_SHADOW,
+        blur: Math.max(3, Math.round(px / 5)), fill: true, stroke: true };
+    }
+    const out = Object.assign(base, extra || {});
+    if (out.shadow === false) delete out.shadow;
+    return out;
   }
 
   /* 읽기 힘든 배경 위에 글을 얹을 때 뒤에 까는 판 */
+  /* 밝은 글자로 만들었다가 나중에 진한 색으로 바꾸는 곳이 있습니다(밝은 머리글 등).
+     그때 자동으로 깔았던 그림자가 남으면 글자가 번져 보이므로 함께 거둡니다. */
+  (function patchSetColor() {
+    const T = Phaser.GameObjects.Text.prototype;
+    const orig = T.setColor;
+    T.setColor = function (color) {
+      const r = orig.call(this, color);
+      if (this.style && this.style.shadowColor === AUTO_SHADOW && !isLight(color)) {
+        this.setShadow(0, 0, '#000', 0, false, false);
+      }
+      return r;
+    };
+  })();
+
   function plate(scene, x, y, w, h, opt) {
     opt = opt || {};
     const g = scene.add.graphics();
@@ -148,7 +180,7 @@ window.UI = (function () {
     const label = opt.label || GAME.TAP_NEXT;
     const t = scene.add.text(0, 0, label, style(FONT.small, PAL.cream)).setOrigin(0.5);
     const bw = Math.min(W - 40, t.width + 44);
-    g.fillStyle(0x101a2e, 0.6);
+    g.fillStyle(0x101a2e, 0.78);
     g.fillRoundedRect(-bw / 2, -22, bw, 44, 22);
     const arrow = scene.add.text(0, 30, '▼', style(FONT.tiny, PAL.sun)).setOrigin(0.5);
     c.add([g, t, arrow]);
@@ -275,7 +307,7 @@ window.UI = (function () {
     const y = opt.y || GAME.HEIGHT * 0.42;
     const c = scene.add.container(0, 0).setDepth(900).setScrollFactor(0);
     const back = scene.add.graphics();
-    back.fillStyle(0x101a2e, 0.55);
+    back.fillStyle(0x101a2e, 0.7);
     /* 아래의 “화면을 누르면 계속됩니다” 까지 덮도록 넉넉히 잡습니다.
        예전에는 그 줄이 띠 밖으로 나가 배경에 묻혔습니다. */
     back.fillRect(0, y - 74, GAME.WIDTH, 172);
@@ -357,7 +389,7 @@ window.UI = (function () {
     const t = scene.add.text(0, 0, text, style(FONT.small, PAL.cream)).setOrigin(0.5);
     const w = Math.min(GAME.WIDTH - 132, t.width + 34);
     const g = scene.add.graphics();
-    g.fillStyle(0x1c2740, 0.62);
+    g.fillStyle(0x1c2740, 0.8);
     g.fillRoundedRect(-w / 2, -17, w, 34, 17);
     c.add([g, t]);
     c.setAlpha(0);
@@ -366,7 +398,7 @@ window.UI = (function () {
     c.setText = function (s) {
       t.setText(s);
       const nw = Math.min(GAME.WIDTH - 132, t.width + 34);
-      g.clear(); g.fillStyle(0x1c2740, 0.62); g.fillRoundedRect(-nw / 2, -17, nw, 34, 17);
+      g.clear(); g.fillStyle(0x1c2740, 0.8); g.fillRoundedRect(-nw / 2, -17, nw, 34, 17);
       c.setAlpha(0);
       scene.tweens.add({ targets: c, alpha: 1, duration: 400 });
     };

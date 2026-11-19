@@ -13,33 +13,98 @@ window.PauseScene = class PauseScene extends Phaser.Scene {
     scrim.fillStyle(0x101a2e, 0.62);
     scrim.fillRect(0, 0, W, H);
 
-    UI.panel(this, W / 2, H / 2, W - 56, 476, { fill: PAL.paper });
+    const top = H / 2 - 282;
+    UI.panel(this, W / 2, top + 282, W - 40, 564, { fill: PAL.paper });
+    this.add.text(W / 2, top + 44, '잠시 쉬어갑니다', UI.style(22, PAL.ink)).setOrigin(0.5);
+    this.add.text(W / 2, top + 80, '기록은 자동으로 저장됩니다.', UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5);
 
-    this.add.text(W / 2, H / 2 - 196, '잠시 쉬어갑니다', UI.style(22, PAL.ink)).setOrigin(0.5);
-    this.add.text(W / 2, H / 2 - 158, '기록은 자동으로 저장됩니다.', UI.style(FONT.small, PAL.inkSoft)).setOrigin(0.5);
-
-    this.bgmBtn = UI.button(this, W / 2, H / 2 - 100, 230, 56, '', () => this.toggle('bgm'), { size: FONT.label });
-    this.sfxBtn = UI.button(this, W / 2, H / 2 - 30, 230, 56, '', () => this.toggle('sfx'), { size: FONT.label });
-    this.refresh();
-
-    UI.button(this, W / 2, H / 2 + 40, 230, 56, '보관함', () => {
+    const bw = W - 92;
+    let y = top + 146;
+    this.bgmBtn = UI.button(this, W / 2 - bw / 4 - 4, y, bw / 2 - 8, 54, '', () => this.toggle('bgm'), { size: FONT.small });
+    this.sfxBtn = UI.button(this, W / 2 + bw / 4 + 4, y, bw / 2 - 8, 54, '', () => this.toggle('sfx'), { size: FONT.small });
+    y += 66;
+    this.speedBtn = UI.button(this, W / 2, y, bw, 54, '', () => this.cycleSpeed(), { size: FONT.label });
+    y += 66;
+    UI.button(this, W / 2, y, bw, 54, '지난 대화 다시 보기', () => this.showLog(), { size: FONT.label, fill: PAL.cream });
+    y += 66;
+    UI.button(this, W / 2, y, bw, 54, '보관함', () => {
       this.scene.launch('GalleryScene', { from: 'PauseScene' });
       this.scene.pause();
     }, { size: FONT.label, fill: PAL.cream });
-
-    UI.button(this, W / 2, H / 2 + 110, 230, 56, '계속 걷기', () => this.resume(), { size: FONT.label, fill: PAL.sun });
-    UI.button(this, W / 2, H / 2 + 180, 230, 52, '처음 화면으로', () => {
+    y += 72;
+    UI.button(this, W / 2, y, bw, 58, '계속 걷기', () => this.resume(), { size: FONT.label, fill: PAL.sun });
+    y += 68;
+    UI.button(this, W / 2, y, 230, 50, '처음 화면으로', () => {
       this.scene.stop(this.from);
       this.scene.stop();
       this.scene.start('TitleScene');
     }, { size: FONT.small, alpha: 0.85 });
+    this.refresh();
+  }
+
+  cycleSpeed() {
+    const list = DialogueBox.SPEEDS;
+    const cur = SaveSystem.get('settings.textSpeed', 'normal');
+    const i = list.findIndex(x => x.key === cur);
+    SaveSystem.set('settings.textSpeed', list[(i + 1) % list.length].key);
+    this.refresh();
+  }
+
+  /* 지난 대화 — 놓친 말을 위아래로 밀어 다시 읽습니다 */
+  showLog() {
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(100);
+    layer.add(this.add.rectangle(W / 2, H / 2, W, H, 0x0b1222, 0.86).setInteractive());
+    layer.add(UI.panel(this, W / 2, H / 2 - 30, W - 24, H - 170, { fill: PAL.paper }));
+    const top = 50 + 22, bottom = H - 115 - 14;
+    layer.add(this.add.text(W / 2, top + 6, '지난 대화', UI.style(20, PAL.ink)).setOrigin(0.5, 0));
+    const viewTop = top + 46;
+    const list = this.add.container(0, viewTop);
+    const hist = DialogueBox.history;
+    let y = 0;
+    if (!hist.length) {
+      list.add(this.add.text(W / 2, 20, '아직 나눈 대화가 없습니다.', UI.style(17, PAL.inkSoft)).setOrigin(0.5, 0));
+      y = 60;
+    }
+    hist.forEach(h => {
+      const carlo = h.s === '가롤로' || h.s === '소년';
+      const mine = h.s === '나' || h.s === '나의 선택';
+      if (h.s) {
+        list.add(this.add.text(30, y, h.s, UI.style(14, carlo ? PAL.clay : (mine ? PAL.sea : PAL.inkSoft))));
+        y += 22;
+      }
+      const t = this.add.text(30, y, h.t, UI.style(17, h.s ? PAL.ink : PAL.inkSoft, { wordWrap: { width: W - 84 }, lineSpacing: 6 }));
+      list.add(t);
+      y += t.height + 16;
+    });
+    layer.add(list);
+    const viewH = bottom - viewTop;
+    const mk = this.make.graphics({ add: false });
+    mk.fillRect(14, viewTop, W - 28, viewH);
+    list.setMask(mk.createGeometryMask());
+    /* 맨 아래(가장 최근)부터 보여 줍니다 */
+    const minY = Math.min(viewTop, viewTop - (y - viewH));
+    list.y = minY;
+    let down = null;
+    const zone = this.add.zone(W / 2, viewTop + viewH / 2, W, viewH).setInteractive();
+    layer.add(zone);
+    zone.on('pointerdown', p => { down = { y: p.y, ly: list.y }; });
+    zone.on('pointermove', p => { if (down) list.y = Phaser.Math.Clamp(down.ly + p.y - down.y, minY, viewTop); });
+    zone.on('pointerup', () => { down = null; });
+    const wheel = (p, o, dx, dy) => { list.y = Phaser.Math.Clamp(list.y - dy * 0.6, minY, viewTop); };
+    this.input.on('wheel', wheel);
+    layer.add(UI.button(this, W / 2, H - 70, 200, 56, '닫기', () => {
+      this.input.off('wheel', wheel); mk.destroy(); layer.destroy();
+    }, { size: FONT.label }));
   }
 
   refresh() {
     const bgm = SaveSystem.get('settings.bgm', true);
     const sfx = SaveSystem.get('settings.sfx', true);
-    this.bgmBtn.setLabel('배경 소리   ' + (bgm ? '켬' : '끔'));
-    this.sfxBtn.setLabel('효과음   ' + (sfx ? '켬' : '끔'));
+    this.bgmBtn.setLabel('배경 소리 ' + (bgm ? '켬' : '끔'));
+    this.sfxBtn.setLabel('효과음 ' + (sfx ? '켬' : '끔'));
+    const sp = DialogueBox.SPEEDS.find(x => x.key === SaveSystem.get('settings.textSpeed', 'normal')) || DialogueBox.SPEEDS[1];
+    this.speedBtn.setLabel('글자 속도   ' + sp.name);
     AudioSystem.setBgm(bgm); AudioSystem.setSfx(sfx);
   }
 
