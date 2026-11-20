@@ -6,7 +6,7 @@ window.MusicSystem = (function () {
 
   /* 걸을 때 — 순서대로 */
   const WALK = [
-    'assets/bgm/01.mp3', 'assets/bgm/02.mp3', 'assets/bgm/03.mp3', 'assets/bgm/04.mp3',
+    'assets/bgm/01.mp3', 'assets/bgm/04.mp3',
     'assets/bgm/05.mp3', 'assets/bgm/06.mp3', 'assets/bgm/07.mp3', 'assets/bgm/08.mp3',
     'assets/bgm/09.mp3', 'assets/bgm/10.mp3', 'assets/bgm/11.mp3'
   ];
