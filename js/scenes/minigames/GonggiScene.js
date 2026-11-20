@@ -19,7 +19,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.HAND_Y = 578;          // 손등 높이
     this.REST_Y = this.HAND_Y - 20;
     this.FLOOR = 606;           // 돌이 굴러 떨어지는 바닥
-    this.G = 950;               // 잡을수록 조금씩 빨라집니다
+    this.G = 1050;              // 잡을수록 조금씩 빨라집니다
 
     /* ── 돗자리와 마당 ─────────────────────────── */
     const g = this.add.graphics().setDepth(-90);
@@ -74,8 +74,9 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.state = 'wait';        // wait · ready · air · caught · scatter
     this.cooling = false;
     this.rising = false;
-    this.G = 950;
+    this.G = 1050;
     this.stopped = false;
+    this.kind = '보통'; this.lastKind = null; this.floatLeft = 0;
     this.helpedOnce = false;
     this.stopBtn = null;
     this._flashText = null;
@@ -113,18 +114,35 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
   /* ── 손등을 튕겨 올린다 ──────────────────────── */
   toss() {
     this.state = 'air';
+    this.rising = true;              // 던진 바로 그 순간에 눌러도 잡히지 않게
     this.actBtn.setLabel(EPI.gonggi.catchBtn);
+
+    /* 던질 때마다 높이와 떨어지는 결이 달라집니다 — 같은 박자로 누르면 잡히지 않습니다.
+       잡은 횟수가 늘수록 더 까다로운 던지기가 섞입니다. */
+    const pool = ['보통', '보통', '높이', '낮게'];
+    if (this.count >= 2) pool.push('깃털', '높이');
+    if (this.count >= 4) pool.push('흔들', '깃털', '낮게');
+    let kind = pool[Math.floor(Math.random() * pool.length)];
+    if (kind === this.lastKind && Math.random() < 0.6) kind = pool[Math.floor(Math.random() * pool.length)];
+    this.lastKind = kind;
+    this.kind = kind;
+    const base = { '보통': 630, '높이': 800, '낮게': 470, '깃털': 650, '흔들': 690 }[kind];
+    const spread = kind === '높이' ? 30 : 25;
+    const v0 = base + Phaser.Math.Between(-spread, spread);
+    this.floated = false;            // 깃털: 꼭대기에서 잠깐 떠 있다가
+    this.wobbleT = 0;                // 흔들: 내려오다 한 번 멈칫
     AudioSystem.swipe();
+    if (kind === '높이') AudioSystem.gPop();
 
     this.stones.forEach((st, i) => {
-      st.vy = -(640 + Phaser.Math.Between(-40, 40));
-      st.vx = (i - 2) * 10 + Phaser.Math.Between(-6, 6);
+      st.vy = -(v0 + Phaser.Math.Between(-12, 12));
+      st.vx = (i - 2) * 10 + Phaser.Math.Between(-6, 6) + (kind === '흔들' ? Phaser.Math.Between(-20, 20) : 0);
       st.spin = Phaser.Math.Between(-170, 170);
     });
 
     this.tweens.killTweensOf(this.hand);
     this.tweens.add({
-      targets: this.hand, y: this.HAND_Y - 24, angle: -12,
+      targets: this.hand, y: this.HAND_Y - (kind === '높이' ? 34 : 24), angle: -12,
       duration: 130, ease: 'Sine.easeOut', yoyo: true
     });
   }
@@ -132,10 +150,23 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
   update(time, delta) {
     if (this.finished || this.state !== 'air') return;
     const dt = Math.min(delta, 40) / 1000;
+    const vy0 = this.stones[0].vy;
+    /* 깃털 — 꼭대기 근처에서 0.35초쯤 거의 떠 있습니다 */
+    let g = this.G;
+    if (this.kind === '깃털' && Math.abs(vy0) < 160 && !this.floated) {
+      this.floatLeft = (this.floatLeft === undefined || this.floatLeft <= 0) ? 0.35 : this.floatLeft;
+      this.floated = true;
+    }
+    if (this.floatLeft > 0) { this.floatLeft -= dt; g = this.G * 0.12; if (this.floatLeft <= 0) this.floatLeft = 0; }
+    /* 흔들 — 내려오다가 한 번 살짝 튀어 오릅니다(손이 미리 움찔하면 놓칩니다) */
+    if (this.kind === '흔들' && vy0 > 260 && this.wobbleT === 0 && this.avgY > this.HAND_Y - 112) {
+      this.wobbleT = 1;
+      this.stones.forEach(st => { st.vy = -Phaser.Math.Between(150, 210); });
+    }
     let sum = 0;
     for (let i = 0; i < this.stones.length; i++) {
       const st = this.stones[i];
-      st.vy += this.G * dt;
+      st.vy += g * dt;
       st.y += st.vy * dt;
       st.x += st.vx * dt;
       st.angle += st.spin * dt;
@@ -144,19 +175,21 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.avgY = sum / this.stones.length;
     this.rising = this.stones[0].vy < 0;
     const z = this.catchZone();
-    this.zoneGlow.setAlpha(z === 'perfect' ? 0.75 : z === 'ok' ? 0.3 : 0);
+    this.zoneGlow.setAlpha(z === 'perfect' ? 0.6 : 0);
     if (this.avgY >= this.FLOOR) { this.zoneGlow.setAlpha(0); this.scatter(); }
   }
 
-  /* 잡을 수 있는 때 — 꼭대기를 지나 내려오기 시작하면 바닥에 닿기 전까지 언제든.
-     손등 가까이에서 잡으면 ‘딱!’ (예전에는 손등 바로 위 0.1초뿐이라 손전화로는 잡기 어려웠습니다)
-     올라가는 중에 누르면 헛손질 — 0.2초 뒤에 다시 잡을 수 있습니다. */
+  /* 잡을 수 있는 때 — 내려오는 중, 손등 가까이 왔을 때만.
+     너무 일찍(높은 곳에서) 누르거나 올라가는 중에 누르면 헛손질입니다.
+     손등에 거의 닿을 때 잡으면 ‘딱!’ — 그때만 손 둘레가 잠깐 환해집니다. */
   catchZone() {
-    if (this.state !== 'air') return null;
-    /* 꼭대기 바로 앞(거의 멈춘 때)도 봐 줍니다 */
-    if (this.rising && this.stones[0].vy < -120) return null;
-    if (this.avgY > this.HAND_Y - 70 && this.avgY < this.FLOOR) return 'perfect';
-    return 'ok';
+    if (this.state !== 'air' || this.rising) return null;
+    const near = this.HAND_Y - this.avgY;          // 손등까지 남은 거리 (아래로 지나가면 음수)
+    const okFrom = Math.max(62, 98 - this.count * 4);
+    const perfectFrom = Math.max(18, 36 - this.count * 2);
+    if (near < perfectFrom) return 'perfect';
+    if (near < okFrom) return 'ok';
+    return null;
   }
 
   /* ── 낚아챈다 ────────────────────────────────── */
@@ -172,7 +205,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     AudioSystem.swipe();
     this.flash(EPI.gonggi.whiff);
     this.cooling = true;
-    this.time.delayedCall(200, () => { this.cooling = false; });
+    this.time.delayedCall(330, () => { this.cooling = false; });
   }
 
   swingHand() {
@@ -189,7 +222,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.state = 'caught';
     this.zoneGlow.setAlpha(0);
     this.count++;
-    this.G = Math.min(1300, 950 + this.count * 40);
+    this.G = Math.min(1450, 1050 + this.count * 45);
     AudioSystem.found();
     this.hand.setTexture('epi_hand_open');
     this.stones.forEach((st, i) => {
