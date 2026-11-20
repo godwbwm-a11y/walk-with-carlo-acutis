@@ -1,5 +1,8 @@
-/* 화면 아래쪽 아무 곳이나 눌러 나타나는 가상 조이스틱.
-   손가락 위치에 맞춰 생기므로 작은 화면에서도 편합니다. (PC에서는 방향키) */
+/* 화면 어디든 눌러 나타나는 가상 조이스틱.
+   손가락 위치에 맞춰 생기므로 작은 화면에서도 편합니다. (PC에서는 방향키·WASD)
+
+   - 밀면 걷고, 고리 밖까지 더 밀면 달립니다 (PC 는 Shift).
+   - 톡 누르기만 하면 장면이 그 자리로 걸어가게 할 수 있습니다 (scene.onWorldTap). */
 
 window.Joystick = class Joystick {
 
@@ -7,8 +10,12 @@ window.Joystick = class Joystick {
     opt = opt || {};
     this.scene = scene;
     this.radius = opt.radius || 52;
-    this.activeZoneTop = opt.zoneTop === undefined ? GAME.HEIGHT * 0.42 : opt.zoneTop;
+    this.activeZoneTop = opt.zoneTop === undefined ? 0 : opt.zoneTop;
+    this.onTap = opt.onTap || (opt.noTap ? null : (typeof scene.onWorldTap === 'function' ? scene.onWorldTap.bind(scene) : null));
     this.pointerId = null;
+    this.moved = false;
+    this.downAt = 0;
+    this.run = false;
     this.origin = new Phaser.Math.Vector2();
     this.vector = new Phaser.Math.Vector2();
     this.force = 0;
@@ -17,7 +24,8 @@ window.Joystick = class Joystick {
 
     /* 안내 글은 밝은 땅 위에도 놓이므로 어두운 판을 깔아 줍니다 */
     this.hintPlate = scene.add.graphics().setDepth(869).setScrollFactor(0);
-    this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - 44, '화면 아래를 눌러 걸어보세요',
+    this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - 44,
+      this.onTap ? '밀어서 걷고 · 더 밀면 달리기 · 톡 누르면 그곳으로' : '화면을 밀어 걸어보세요',
       UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.95);
 
     const drawPlate = () => {
@@ -42,9 +50,9 @@ window.Joystick = class Joystick {
 
     this.cursors = scene.input.keyboard ? scene.input.keyboard.createCursorKeys() : null;
     /* PC — 방향키와 WASD 둘 다 */
-    this.wasd = scene.input.keyboard ? scene.input.keyboard.addKeys('W,A,S,D') : null;
+    this.wasd = scene.input.keyboard ? scene.input.keyboard.addKeys('W,A,S,D,SHIFT') : null;
     if (window.IS_DESKTOP && this.hint) {
-      this.hint.setText('방향키 또는 WASD 로 걸어보세요');
+      this.hint.setText(this.onTap ? '방향키·WASD 로 걷기 · Shift 달리기 · 클릭하면 그곳으로' : '방향키 또는 WASD 로 걸어보세요');
     }
 
     scene.input.on('pointerdown', this._down, this);
@@ -72,16 +80,32 @@ window.Joystick = class Joystick {
     if (this._blocked(pointer)) return;
     this.pointerId = pointer.id;
     this.origin.set(pointer.x, pointer.y);
-    this.gfx.setVisible(true);
-    this._draw(pointer.x, pointer.y);
-    this.hideHint();
+    this.moved = false;
+    this.run = false;
+    this.downAt = this.scene.time.now;
+    /* 조이스틱은 손가락이 움직이기 시작해야 보입니다 — 톡 누르기와 구별합니다 */
+    this.gfx.setVisible(false);
   }
 
   _move(pointer) {
     if (pointer.id !== this.pointerId) return;
     const dx = pointer.x - this.origin.x;
     const dy = pointer.y - this.origin.y;
-    const dist = Math.min(Math.sqrt(dx * dx + dy * dy), this.radius);
+    const raw = Math.sqrt(dx * dx + dy * dy);
+    if (!this.moved) {
+      if (raw < 9) return;
+      this.moved = true;
+      this.gfx.setVisible(true);
+      this.hideHint();
+    }
+    /* 고리 밖으로 한참 더 밀면 달립니다. 손가락이 너무 멀어지면 고리가 따라옵니다 */
+    const far = this.radius * 1.9;
+    if (raw > far) {
+      const k = (raw - far) / raw;
+      this.origin.x += dx * k; this.origin.y += dy * k;
+    }
+    this.run = raw > this.radius * 1.35;
+    const dist = Math.min(raw, this.radius);
     const ang = Math.atan2(dy, dx);
     this.force = dist / this.radius;
     this.vector.set(Math.cos(ang) * this.force, Math.sin(ang) * this.force);
@@ -90,10 +114,13 @@ window.Joystick = class Joystick {
 
   _up(pointer) {
     if (pointer.id !== this.pointerId) return;
+    const tap = !this.moved && this.scene.time.now - this.downAt < 450;
     this.pointerId = null;
     this.force = 0;
+    this.run = false;
     this.vector.set(0, 0);
     this.gfx.setVisible(false);
+    if (tap && this.onTap && !this.scene.inputLocked) { this.hideHint(); this.onTap(pointer); }
   }
 
   _draw(kx, ky) {
@@ -101,13 +128,22 @@ window.Joystick = class Joystick {
     g.clear();
     g.fillStyle(0xffffff, 0.12); g.fillCircle(this.origin.x, this.origin.y, this.radius);
     g.lineStyle(2, 0xffffff, 0.28); g.strokeCircle(this.origin.x, this.origin.y, this.radius);
-    g.fillStyle(0xffffff, 0.42); g.fillCircle(kx, ky, 24);
-    g.lineStyle(2, 0xffffff, 0.6); g.strokeCircle(kx, ky, 24);
+    if (this.run) {
+      /* 달릴 때는 고리가 따뜻한 색으로 빛납니다 */
+      g.lineStyle(3, 0xffc86a, 0.75); g.strokeCircle(this.origin.x, this.origin.y, this.radius + 5);
+      g.fillStyle(0xffd79a, 0.6); g.fillCircle(kx, ky, 24);
+      g.lineStyle(2, 0xfff1cf, 0.9); g.strokeCircle(kx, ky, 24);
+    } else {
+      g.fillStyle(0xffffff, 0.42); g.fillCircle(kx, ky, 24);
+      g.lineStyle(2, 0xffffff, 0.6); g.strokeCircle(kx, ky, 24);
+    }
   }
 
   /* 다른 화면에 다녀온 뒤 손가락 상태를 지웁니다 */
   reset() {
     this.pointerId = null;
+    this.moved = false;
+    this.run = false;
     this.force = 0;
     this.vector.set(0, 0);
     if (this.gfx) this.gfx.setVisible(false);
@@ -115,8 +151,8 @@ window.Joystick = class Joystick {
 
   /* 매 프레임 방향 벡터 (-1 ~ 1) */
   read() {
-    if (this.scene.inputLocked) return { x: 0, y: 0 };
-    if (this.pointerId !== null) return { x: this.vector.x, y: this.vector.y };
+    if (this.scene.inputLocked) return { x: 0, y: 0, run: false };
+    if (this.pointerId !== null) return { x: this.vector.x, y: this.vector.y, run: this.run };
     if (this.cursors || this.wasd) {
       const c = this.cursors, k = this.wasd;
       let x = 0, y = 0;
@@ -127,10 +163,10 @@ window.Joystick = class Joystick {
       if (x || y) {
         this.hideHint();
         const l = Math.sqrt(x * x + y * y);
-        return { x: x / l, y: y / l };
+        return { x: x / l, y: y / l, run: !!(k && k.SHIFT.isDown) };
       }
     }
-    return { x: 0, y: 0 };
+    return { x: 0, y: 0, run: false };
   }
 
   destroy() {

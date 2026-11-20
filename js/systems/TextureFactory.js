@@ -244,6 +244,14 @@ window.TextureFactory = (function () {
           });
         });
       });
+      /* 옆모습 — 오른쪽을 봅니다. 선 자세, 앞발 내딛기, 뒷발 내딛기 */
+      [['', 0], ['_walk', 1], ['_walk2', -1]].forEach(function (f) {
+        make(scene, name + '_side' + f[0], 32, 46, function (g) {
+          const o = Object.assign({}, base, { side: true, step: f[1] });
+          if (backExtra && backExtra.bag) o.bag = backExtra.bag;
+          person(g, o);
+        });
+      });
     }
 
     /* 주인공 */
