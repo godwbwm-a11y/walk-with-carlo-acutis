@@ -19,7 +19,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.HAND_Y = 578;          // 손등 높이
     this.REST_Y = this.HAND_Y - 20;
     this.FLOOR = 606;           // 돌이 굴러 떨어지는 바닥
-    this.G = 1150;              // 잡을수록 더 빨라집니다
+    this.G = 950;               // 잡을수록 조금씩 빨라집니다
 
     /* ── 돗자리와 마당 ─────────────────────────── */
     const g = this.add.graphics().setDepth(-90);
@@ -39,6 +39,9 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
       .setDepth(40).setScale(2).setAlpha(0.32);
     this.hand = this.add.image(this.HAND_X, this.HAND_Y, 'epi_hand_back')
       .setDepth(50).setScale(1.35);
+    /* 잡을 때가 되면 손 둘레가 환해집니다 — 가장 밝을 때 누르면 ‘딱!’ */
+    this.zoneGlow = this.add.image(this.HAND_X, this.HAND_Y - 20, 'lamp_glow').setDisplaySize(220, 150)
+      .setTint(0xffd27a).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0).setDepth(45);
 
     this.stones = [];
     for (let i = 0; i < 5; i++) {
@@ -71,7 +74,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     this.state = 'wait';        // wait · ready · air · caught · scatter
     this.cooling = false;
     this.rising = false;
-    this.G = 1150;
+    this.G = 950;
     this.stopped = false;
     this.helpedOnce = false;
     this.stopBtn = null;
@@ -114,7 +117,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     AudioSystem.swipe();
 
     this.stones.forEach((st, i) => {
-      st.vy = -(660 + Phaser.Math.Between(-70, 70));
+      st.vy = -(640 + Phaser.Math.Between(-40, 40));
       st.vx = (i - 2) * 10 + Phaser.Math.Between(-6, 6);
       st.spin = Phaser.Math.Between(-170, 170);
     });
@@ -140,25 +143,36 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     }
     this.avgY = sum / this.stones.length;
     this.rising = this.stones[0].vy < 0;
-    if (this.avgY >= this.FLOOR) this.scatter();
+    const z = this.catchZone();
+    this.zoneGlow.setAlpha(z === 'perfect' ? 0.75 : z === 'ok' ? 0.3 : 0);
+    if (this.avgY >= this.FLOOR) { this.zoneGlow.setAlpha(0); this.scatter(); }
+  }
+
+  /* 잡을 수 있는 때 — 꼭대기를 지나 내려오기 시작하면 바닥에 닿기 전까지 언제든.
+     손등 가까이에서 잡으면 ‘딱!’ (예전에는 손등 바로 위 0.1초뿐이라 손전화로는 잡기 어려웠습니다)
+     올라가는 중에 누르면 헛손질 — 0.2초 뒤에 다시 잡을 수 있습니다. */
+  catchZone() {
+    if (this.state !== 'air') return null;
+    /* 꼭대기 바로 앞(거의 멈춘 때)도 봐 줍니다 */
+    if (this.rising && this.stones[0].vy < -120) return null;
+    if (this.avgY > this.HAND_Y - 70 && this.avgY < this.FLOOR) return 'perfect';
+    return 'ok';
   }
 
   /* ── 낚아챈다 ────────────────────────────────── */
   grab() {
     if (this.cooling) return;
-    const inWindow = !this.rising
-      && this.avgY > this.HAND_Y - 58
-      && this.avgY < this.HAND_Y + 12;
+    const zone = this.catchZone();
 
     this.swingHand();
 
-    if (inWindow) { this.catchAll(); return; }
+    if (zone) { this.catchAll(zone === 'perfect'); return; }
 
-    /* 때가 맞지 않으면 손이 허공을 스칩니다 — 돌은 계속 내려옵니다 */
+    /* 너무 일찍 누르면 손이 허공을 스칩니다 — 돌은 계속 내려오고, 곧 다시 잡을 수 있습니다 */
     AudioSystem.swipe();
     this.flash(EPI.gonggi.whiff);
     this.cooling = true;
-    this.time.delayedCall(520, () => { this.cooling = false; });
+    this.time.delayedCall(200, () => { this.cooling = false; });
   }
 
   swingHand() {
@@ -171,10 +185,11 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     });
   }
 
-  catchAll() {
+  catchAll(perfect) {
     this.state = 'caught';
+    this.zoneGlow.setAlpha(0);
     this.count++;
-    this.G = Math.min(1550, 1150 + this.count * 70);
+    this.G = Math.min(1300, 950 + this.count * 40);
     AudioSystem.found();
     this.hand.setTexture('epi_hand_open');
     this.stones.forEach((st, i) => {
@@ -186,7 +201,7 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     });
     this.updateCount();
     this.bounceCount();
-    this.ensureHud().hit(20, GAME.WIDTH / 2, this.HAND_Y - 90, '잡았다!');
+    this.ensureHud().hit(perfect ? 30 : 15, GAME.WIDTH / 2, this.HAND_Y - 90, perfect ? '딱!' : '잡았다!');
     this.flash(EPI.gonggi.caught);
     if (!this.stopBtn) this.showStopButton();
     this.time.delayedCall(1150, () => this.ready());
