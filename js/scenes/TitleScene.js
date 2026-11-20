@@ -116,6 +116,13 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.bgmBtn = UI.circleButton(this, 44, 48, 24, '♪', () => this.toggle('bgm'), { size: 18 });
     this.sfxBtn = UI.circleButton(this, 108, 48, 24, '🔔', () => this.toggle('sfx'), { size: 17 });
     this.slash = this.add.graphics().setDepth(50);
+    /* 주인공 — 지금 고른 얼굴. 누르면 다른 모습으로 바꿀 수 있습니다 */
+    if (window.Hero) {
+      const hb = UI.circleButton(this, 172, 48, 24, '', () => this.heroPicker(null), { size: 14 });
+      const fk = Figure.portrait(this, 'player_front', 64, Hero.current().ring);
+      if (fk) hb.add(this.add.image(0, 0, fk).setDisplaySize(44, 44));
+      this.add.text(172, 82, '주인공', UI.style(11, PAL.dimWarm)).setOrigin(0.5).setAlpha(0.9);
+    }
     UI.button(this, W - 66, 48, 104, 48, '보관함', () => {
       this.scene.launch('GalleryScene', { from: 'TitleScene' });
       this.scene.pause();
@@ -319,6 +326,8 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   /* DAY 별 시작 지점 */
   startDay(n) {
     AudioSystem.unlock();
+    /* 처음 걸을 때는 함께 걸을 ‘나’부터 고릅니다 */
+    if (window.Hero && !Hero.chosen() && n !== 10) { this.heroPicker(() => this.startDay(n)); return; }
     if (n === 10) {                       /* 엔딩 크레딧은 저장하지 않고 바로 봅니다 */
       UI.fadeOut(this, 600, () => this.scene.start('EpCreditsScene', { from: 'TitleScene' }));
       return;
@@ -335,6 +344,95 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     SaveSystem.checkpoint(entry.scene, entry.data);
     if (window.Interlude) Interlude.resetDay(n);         // 그날의 후반부 게임도 다시 만납니다
     UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
+  }
+
+  /* ── 주인공 고르기 ─────────────────────────────
+     가운데에서 고른 모습이 천천히 돌며 걸어 보입니다(앞 → 옆 → 뒤 → 옆).
+     after 가 있으면 고른 뒤 바로 걷기 시작합니다. */
+  heroPicker(after) {
+    if (this.picker) return;
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(200);
+    this.picker = layer;
+    this.coverBehind(layer);
+    const scrim = this.add.graphics();
+    scrim.fillStyle(0x101a2e, 1); scrim.fillRect(0, 0, W, H);
+    layer.add(scrim);
+    layer.add(this.add.text(W / 2, 76, '함께 걸을 ‘나’를 골라 주세요', UI.style(22, PAL.cream)).setOrigin(0.5));
+    layer.add(this.add.text(W / 2, 130, '이 모습으로 이야기 속을 걸어요\n제목 화면에서 언제든 바꿀 수 있어요',
+      UI.style(13, PAL.dim, { align: 'center', lineSpacing: 4 })).setOrigin(0.5).setAlpha(0.95));
+
+    let pick = Hero.current().id;
+    HEROES.forEach(h => Hero.preview(this, h.id));
+
+    /* 무대 — 따뜻한 빛과 발밑 그림자 */
+    const glow = this.add.image(W / 2, 340, 'lamp_glow').setDisplaySize(330, 330).setTint(0xffd79a).setAlpha(0.22)
+      .setBlendMode(Phaser.BlendModes.ADD);
+    const shadow = this.add.image(W / 2, 436, 'shadow').setDisplaySize(118, 30).setAlpha(0.55);
+    const fig = this.add.image(W / 2, 440, 'hero_' + pick + '_front').setOrigin(0.5, 0.94).setScale(4.2);
+    layer.add([glow, shadow, fig]);
+    this.tweens.add({ targets: fig, scaleY: 4.28, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    /* 앞 → 옆으로 걷기 → 뒤 → 반대쪽 옆으로 걷기 */
+    const seq = [];
+    for (let i = 0; i < 5; i++) seq.push(['front', '', false]);
+    for (let k = 0; k < 2; k++) [['_walk'], [''], ['_walk2'], ['']].forEach(f => seq.push(['side', f[0], false]));
+    for (let i = 0; i < 4; i++) seq.push(['back', '', false]);
+    for (let k = 0; k < 2; k++) [['_walk'], [''], ['_walk2'], ['']].forEach(f => seq.push(['side', f[0], true]));
+    let step = 0;
+    const show = () => {
+      const f = seq[step % seq.length];
+      const key = 'hero_' + pick + '_' + f[0] + f[1];
+      if (this.textures.exists(key)) fig.setTexture(key);
+      fig.setFlipX(f[2]);
+    };
+    const timer = this.time.addEvent({ delay: 180, loop: true, callback: () => { step++; show(); } });
+    layer.once('destroy', () => timer.remove());
+
+    const name = this.add.text(W / 2, 486, '', UI.style(26, PAL.cream)).setOrigin(0.5);
+    const tag = this.add.text(W / 2, 518, '', UI.style(14, '#cbd8ea')).setOrigin(0.5);
+    layer.add([name, tag]);
+
+    /* 얼굴 셋 */
+    const chips = HEROES.map((h, i) => {
+      const x = W / 2 + (i - 1) * 112, y = 604;
+      const c = this.add.container(x, y);
+      const ring = this.add.graphics();
+      const face = this.add.image(0, 0, 'pt_hero_' + h.id + '_front').setDisplaySize(76, 76);
+      const label = this.add.text(0, 56, h.name, UI.style(14, PAL.cream)).setOrigin(0.5);
+      c.add([ring, face, label]);
+      c.ring = ring; c.hero = h;
+      c.setSize(100, 120).setInteractive();
+      c.on('pointerup', () => { if (pick !== h.id) { pick = h.id; AudioSystem.tap(); refresh(true); } });
+      layer.add(c);
+      return c;
+    });
+    const refresh = (pop) => {
+      const h = Hero.byId(pick);
+      name.setText(h.name); tag.setText(h.tag);
+      chips.forEach((c) => {
+        const on = c.hero.id === pick;
+        c.ring.clear();
+        if (on) {
+          c.ring.fillStyle(HEX(c.hero.ring), 0.35); c.ring.fillCircle(0, 0, 50);
+          c.ring.lineStyle(3, 0xffe2a8, 1); c.ring.strokeCircle(0, 0, 44);
+        }
+        this.tweens.add({ targets: c, scale: on ? 1.08 : 0.92, alpha: on ? 1 : 0.7, duration: 180, ease: 'Back.easeOut' });
+      });
+      step = 0; show();
+      if (pop) { fig.setScale(3.6); this.tweens.add({ targets: fig, scaleX: 4.2, duration: 260, ease: 'Back.easeOut' }); }
+    };
+    refresh(false);
+
+    layer.add(UI.button(this, W / 2, H - 116, 268, 62, after ? '이 모습으로 걷기' : '이 모습으로 할게요', () => {
+      Hero.choose(this, pick);
+      AudioSystem.select();
+      layer.destroy(); this.picker = null;
+      if (after) after();
+    }, { size: FONT.body }));
+    layer.add(UI.button(this, W / 2, H - 46, 140, 46, '닫기', () => {
+      layer.destroy(); this.picker = null;
+    }, { size: FONT.small, fill: PAL.cream, alpha: 0.9 }));
   }
 
   /* 목록 화면이 덮고 있는 동안 뒤의 제목 화면은 그리지 않습니다 — 손전화에서 스크롤이 매끄럽도록 */

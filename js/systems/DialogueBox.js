@@ -123,7 +123,7 @@ window.DialogueBox = class DialogueBox {
     let tex = DialogueBox.FACES[name];
     if (name === '나') tex = (this.scene.playerTex || 'player') + '_front';
     if (!tex) return null;
-    const ring = (name === '가롤로' || name === '소년') ? '#c9553f' : (name === '나' ? '#2f6b8f' : '#7a5f8a');
+    const ring = (name === '가롤로' || name === '소년') ? '#c9553f' : (name === '나' ? (window.Hero && tex === 'player_front' ? Hero.current().ring : '#2f6b8f') : '#7a5f8a');
     return Figure.portrait(this.scene, tex, 64, ring);
   }
 

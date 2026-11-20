@@ -224,6 +224,29 @@ window.TextureFactory = (function () {
     }
   }
 
+  /* 걷는 사람 — 앞·뒤 두 방향(선 자세·걷는 자세)과 옆모습(선 자세·두 걸음)을 만듭니다.
+     `<이름>_front`, `_front_walk`, `_back`, `_back_walk`, `_side`, `_side_walk`, `_side_walk2` */
+  function walkerFor(scene, name, base, backExtra) {
+    ['front', 'back'].forEach(function (dir) {
+      [false, true].forEach(function (step) {
+        const key = name + '_' + dir + (step ? '_walk' : '');
+        make(scene, key, 32, 46, function (g) {
+          const o = Object.assign({}, base, dir === 'back' ? (backExtra || { back: true }) : null);
+          o.step = step;
+          person(g, o);
+        });
+      });
+    });
+    /* 옆모습 — 오른쪽을 봅니다. 선 자세, 앞발 내딛기, 뒷발 내딛기 */
+    [['', 0], ['_walk', 1], ['_walk2', -1]].forEach(function (f) {
+      make(scene, name + '_side' + f[0], 32, 46, function (g) {
+        const o = Object.assign({}, base, { side: true, step: f[1] });
+        if (backExtra && backExtra.bag) o.bag = backExtra.bag;
+        person(g, o);
+      });
+    });
+  }
+
   function createAll(scene) {
     const P = {
       skin: 0xf6d3b0, hair: 0x33261f,
@@ -231,32 +254,11 @@ window.TextureFactory = (function () {
       cshirt: 0xc9553f, cpants: 0x4a6fa0, cshoes: 0xf3ece2
     };
 
-    /* 걷는 사람 — 앞·뒤 두 방향, 각각 선 자세와 걷는 자세를 만듭니다.
-       `<이름>_front`, `<이름>_front_walk`, `<이름>_back`, `<이름>_back_walk` 가 나옵니다. */
-    function walker(name, base, backExtra) {
-      ['front', 'back'].forEach(function (dir) {
-        [false, true].forEach(function (step) {
-          const key = name + '_' + dir + (step ? '_walk' : '');
-          make(scene, key, 32, 46, function (g) {
-            const o = Object.assign({}, base, dir === 'back' ? (backExtra || { back: true }) : null);
-            o.step = step;
-            person(g, o);
-          });
-        });
-      });
-      /* 옆모습 — 오른쪽을 봅니다. 선 자세, 앞발 내딛기, 뒷발 내딛기 */
-      [['', 0], ['_walk', 1], ['_walk2', -1]].forEach(function (f) {
-        make(scene, name + '_side' + f[0], 32, 46, function (g) {
-          const o = Object.assign({}, base, { side: true, step: f[1] });
-          if (backExtra && backExtra.bag) o.bag = backExtra.bag;
-          person(g, o);
-        });
-      });
-    }
+    function walker(name, base, backExtra) { walkerFor(scene, name, base, backExtra); }
 
-    /* 주인공 */
-    walker('player',
-      { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff },
+    /* 주인공 — 고른 모습으로 (js/data/heroes.js, 고르지 않았으면 ‘하늘’) */
+    walker('player', window.Hero ? Hero.look()
+      : { skin: P.skin, hair: P.hair, shirt: P.pshirt, pants: P.ppants, shoes: P.pshoes, stripe: 0xffffff },
       { back: true });
     /* 가롤로 — 붉은 폴로와 순례 배낭 */
     walker('carlo',
@@ -819,5 +821,5 @@ window.TextureFactory = (function () {
     });
   }
 
-  return { createAll: createAll, make: make, canvasTex: canvasTex, person: person };
+  return { createAll: createAll, make: make, canvasTex: canvasTex, person: person, walker: walkerFor };
 })();

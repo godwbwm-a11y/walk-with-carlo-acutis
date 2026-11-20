@@ -24,9 +24,10 @@ window.Joystick = class Joystick {
 
     /* 안내 글은 밝은 땅 위에도 놓이므로 어두운 판을 깔아 줍니다 */
     this.hintPlate = scene.add.graphics().setDepth(869).setScrollFactor(0);
-    this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - 44,
-      this.onTap ? '밀어서 걷고 · 더 밀면 달리기 · 톡 누르면 그곳으로' : '화면을 밀어 걸어보세요',
-      UI.style(FONT.small, PAL.cream)).setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.95);
+    this.hint = scene.add.text(GAME.WIDTH / 2, GAME.HEIGHT - (this.onTap ? 58 : 44),
+      this.onTap ? '밀어서 걷기 · 톡 누르면 그곳으로\n더 멀리 밀면 달려요' : '화면을 밀어 걸어보세요',
+      UI.style(FONT.small, PAL.cream, { align: 'center', lineSpacing: 4, wordWrap: { width: GAME.WIDTH - 56 } }))
+      .setOrigin(0.5).setDepth(870).setScrollFactor(0).setAlpha(0.95);
 
     const drawPlate = () => {
       const g = this.hintPlate;
@@ -52,7 +53,7 @@ window.Joystick = class Joystick {
     /* PC — 방향키와 WASD 둘 다 */
     this.wasd = scene.input.keyboard ? scene.input.keyboard.addKeys('W,A,S,D,SHIFT') : null;
     if (window.IS_DESKTOP && this.hint) {
-      this.hint.setText(this.onTap ? '방향키·WASD 로 걷기 · Shift 달리기 · 클릭하면 그곳으로' : '방향키 또는 WASD 로 걸어보세요');
+      this.hint.setText(this.onTap ? '방향키로 걷기 · Shift 로 달리기\n클릭하면 그곳으로 걸어가요' : '방향키 또는 WASD 로 걸어보세요');
     }
 
     scene.input.on('pointerdown', this._down, this);

@@ -15,7 +15,7 @@ window.LinkHeartScene = class LinkHeartScene extends MiniGameScene {
     this.info = this.add.text(W / 2, 168, '', UI.style(16, '#e6eefa')).setOrigin(0.5).setDepth(20);
     this.faces = ['friend_front', 'pilgrim_a', 'child_front', 'pilgrim_e'];
     if (window.Figure && Figure.portrait) {
-      Figure.portrait(this, 'player_front', 48, '#2f6b8f');
+      Figure.portrait(this, 'player_front', 48, window.Hero ? Hero.current().ring : '#2f6b8f');
       this.faces.forEach(k => Figure.portrait(this, k, 48, '#c9553f'));
     }
     GameFX.intro(this, {
