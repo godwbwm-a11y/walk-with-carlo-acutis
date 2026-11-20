@@ -64,7 +64,7 @@ window.PhotoSystem = (function () {
       const when = stamp(new Date());
       const pad = Math.round(cv.width * 0.035) + 4;
 
-      let title = '오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니다';
+      let title = I18N.tr('오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니다');
       let titleSize = Math.max(10, Math.min(26, Math.round(cv.width * 0.042)));
       let timeSize = Math.round(titleSize * 0.82);
       let showTime = true;
@@ -85,7 +85,7 @@ window.PhotoSystem = (function () {
       }
       if (mw.t + mw.d + pad * 3 > cv.width) {        // 그래도 좁으면 시각을 뺍니다
         showTime = false;
-        if (mw.t + pad * 2 > cv.width) title = '가롤로와 함께 걷습니다';
+        if (mw.t + pad * 2 > cv.width) title = I18N.tr('가롤로와 함께 걷습니다');
       }
 
       const barH = Math.round(titleSize * 2.2);

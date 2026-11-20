@@ -123,6 +123,12 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       if (fk) hb.add(this.add.image(0, 0, fk).setDisplaySize(44, 44));
       this.add.text(172, 82, '주인공', UI.style(11, PAL.dimWarm)).setOrigin(0.5).setAlpha(0.9);
     }
+    /* 언어 — 한국어 / English */
+    if (window.I18N) {
+      UI.button(this, 238, 48, 62, 48, I18N.lang === 'en' ? 'EN' : 'KO', () => this.languagePicker(),
+        { size: 14, alpha: 0.92 });
+      this.add.text(238, 82, '언어', UI.style(11, PAL.dimWarm)).setOrigin(0.5).setAlpha(0.9);
+    }
     UI.button(this, W - 66, 48, 104, 48, '보관함', () => {
       this.scene.launch('GalleryScene', { from: 'TitleScene' });
       this.scene.pause();
@@ -344,6 +350,22 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     SaveSystem.checkpoint(entry.scene, entry.data);
     if (window.Interlude) Interlude.resetDay(n);         // 그날의 후반부 게임도 다시 만납니다
     UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
+  }
+
+  /* ── 언어 고르기 — 바꾸면 제목 화면을 새로 열어 모든 글을 그 언어로 다시 씁니다 ── */
+  languagePicker() {
+    if (this.picker) return;
+    const dlg = new DialogueBox(this);
+    this.picker = dlg;
+    const opts = I18N.LANGS.map(l => ({ key: l.id, label: (l.id === I18N.lang ? '✓ ' : '') + l.label }));
+    dlg.choose('언어 / Language', opts, (k) => {
+      dlg.destroy();
+      this.picker = null;
+      if (k === I18N.lang) return;
+      I18N.set(k);
+      AudioSystem.select();
+      UI.fadeOut(this, 300, () => this.scene.restart());
+    });
   }
 
   /* ── 주인공 고르기 ─────────────────────────────

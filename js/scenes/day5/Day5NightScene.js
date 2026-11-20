@@ -115,6 +115,7 @@ window.Day5NightScene = class Day5NightScene extends Phaser.Scene {
 
   /* 받침에 따라 “을 / 를” 을 골라 붙입니다 */
   particle(word) {
+    if (window.I18N && I18N.is('en')) return '';          // 영어에는 조사가 없습니다
     const code = word.charCodeAt(word.length - 1) - 0xAC00;
     if (code < 0 || code > 11171) return '를';
     return (code % 28 === 0) ? '를' : '을';

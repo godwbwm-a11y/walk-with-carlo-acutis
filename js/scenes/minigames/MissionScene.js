@@ -145,6 +145,13 @@ window.MissionScene = class MissionScene extends MiniGameScene {
 
   sentence() {
     const a = this.answer;
+    /* 영어 — 한국어 어미를 바꿔 잇는 대신, 영어 문장으로 따로 짓습니다 */
+    if (window.I18N && I18N.is('en')) {
+      const lc = (s) => { s = I18N.tr(String(s)); return s.charAt(0).toLowerCase() + s.slice(1); };
+      const place = I18N.tr(a.place.label);
+      if (a.gift.indexOf('모르겠') >= 0) return place + ' · I\'ll try to live today well there.';
+      return place + ' · I\'ll ' + lc(a.step) + ', bringing what I have: ' + lc(a.gift) + '.';
+    }
     if (a.gift.indexOf('모르겠') >= 0) {
       return a.place.label + '에서 오늘 하루를 잘 살아보겠습니다.';
     }

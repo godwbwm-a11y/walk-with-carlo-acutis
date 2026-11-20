@@ -199,7 +199,7 @@ window.DialogueBox = class DialogueBox {
     if (!this.alive()) { this.isOpen = false; const cb0 = this.onDone; this.onDone = null; if (cb0) cb0(); return; }
     const line = this.lines[this.index];
     this._drawName(line.s || '');
-    this.full = (line && line.t != null) ? String(line.t) : '';
+    this.full = (line && line.t != null) ? I18N.tr(String(line.t)) : '';    // 한 자씩 쓰기 전에 통째로 옮겨 둡니다
     this.text.setText('');
     this.arrow.setVisible(false);
     this.typing = true;

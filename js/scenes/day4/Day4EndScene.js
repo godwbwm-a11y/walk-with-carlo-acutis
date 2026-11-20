@@ -43,7 +43,7 @@ window.Day4EndScene = class Day4EndScene extends Phaser.Scene {
 
     const list = SaveSystem.get('reflections.day4Strengths', []) || [];
     const lines = DAY04.end.self.slice();
-    list.slice(0, 2).forEach(s => lines.push({ s: '나', t: s.replace('한다', '하고') + '.' }));
+    list.slice(0, 2).forEach(s => lines.push({ s: '나', t: (I18N.is('en') ? I18N.tr(s) : s.replace('한다', '하고')) + '.' }));
 
     this.dialogue.say(DAY04.end.mirror, () => {
       this.dialogue.play(lines, () => {

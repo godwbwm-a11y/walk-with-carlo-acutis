@@ -191,6 +191,15 @@ window.UI = (function () {
       align: 'center', wordWrap: { width: w - 34 }
     })).setOrigin(0.5);
     if (opt.alpha !== undefined && opt.alpha < 0.5) t.setAlpha(Math.max(0.45, opt.alpha + 0.2));
+    /* 글이 단추보다 크면(영어는 대개 더 깁니다) 글자를 조금씩 줄여 단추 안에 담습니다 */
+    const fit = function () {
+      let size = parseInt(t.style.fontSize, 10) || FONT.label;
+      while (size > 11 && (t.height > h - 6 || t.width > w - 14)) {
+        size -= 1;
+        t.setFontSize(size);
+      }
+    };
+    fit();
 
     c.add([bg, t]);
     c.setSize(w, h + 12);          // 손가락이 조금 빗나가도 눌리도록 여유를 둡니다
@@ -213,7 +222,7 @@ window.UI = (function () {
     });
     c.on('pointerout', function () { if (downAt) pressFx(scene, c, bg, false); downAt = null; });
     c.on('pointerupoutside', function () { pressFx(scene, c, bg, false); downAt = null; });
-    c.setLabel = function (s) { t.setText(s); };
+    c.setLabel = function (s) { t.setFontSize(opt.size || FONT.label); t.setText(s); fit(); };
     return c;
   }
 

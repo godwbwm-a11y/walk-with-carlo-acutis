@@ -37,7 +37,7 @@ window.Day2EndScene = class Day2EndScene extends Phaser.Scene {
     this.tweens.add({ targets: box, alpha: 1, duration: 600 });
     this.tweens.add({ targets: cursor, alpha: 0.2, duration: 500, yoyo: true, repeat: -1 });
 
-    const word = DAY02.end.search;
+    const word = I18N.tr(DAY02.end.search);
     let i = 0;
     this.time.addEvent({
       delay: 170, repeat: word.length - 1,

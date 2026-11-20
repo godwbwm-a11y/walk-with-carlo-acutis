@@ -135,7 +135,8 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
     const e = C.entries[this.idx];
     this.askBtn.setVisible(false);
 
-    if (!TextInput.supported(this)) { this.pickFromList(); return; }
+    /* 영어로 할 때는 한글을 적기 어려우니 보기 중에서 고릅니다 (칸에는 한글이 그대로 채워집니다) */
+    if (!TextInput.supported(this) || I18N.is('en')) { this.pickFromList(); return; }
 
     TextInput.ask(this, {
       question: e.n + ' ' + e.dir + ' — ' + e.clue,

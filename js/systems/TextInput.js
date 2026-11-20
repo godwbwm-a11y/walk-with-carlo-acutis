@@ -129,13 +129,13 @@ window.TextInput = (function () {
     if (opt.question) {
       const q = document.createElement('p');
       q.className = 'ask-q';
-      q.textContent = opt.question;
+      q.textContent = I18N.tr(opt.question);
       inner.appendChild(q);
     }
     if (opt.note) {
       const n = document.createElement('p');
       n.className = 'ask-note';
-      n.textContent = opt.note;
+      n.textContent = I18N.tr(opt.note);
       inner.appendChild(n);
     }
 
@@ -147,25 +147,25 @@ window.TextInput = (function () {
     field.autocomplete = 'off';
     field.setAttribute('autocapitalize', 'off');
     field.maxLength = opt.maxLength || 120;
-    field.placeholder = opt.placeholder || '천천히 적어보세요';
+    field.placeholder = I18N.tr(opt.placeholder || '천천히 적어보세요');
     field.value = opt.value || '';
     inner.appendChild(field);
 
     const tip = document.createElement('p');
     tip.className = 'ask-tip';
-    tip.textContent = '엔터를 누르면 그대로 넘어갑니다';
+    tip.textContent = I18N.tr('엔터를 누르면 그대로 넘어갑니다');
     inner.appendChild(tip);
 
     const ok = document.createElement('button');
     ok.className = 'ask-btn';
     ok.type = 'button';
-    ok.textContent = opt.okLabel || '다 적었어요';
+    ok.textContent = I18N.tr(opt.okLabel || '다 적었어요');
     inner.appendChild(ok);
 
     const skip = document.createElement('button');
     skip.className = 'ask-btn ask-skip';
     skip.type = 'button';
-    skip.textContent = opt.skipLabel || '적지 않고 넘어가기';
+    skip.textContent = I18N.tr(opt.skipLabel || '적지 않고 넘어가기');
     inner.appendChild(skip);
 
     document.body.appendChild(layer);

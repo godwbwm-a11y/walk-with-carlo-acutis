@@ -96,6 +96,7 @@
     Render.patchSceneStart();
     Render.patchFollow();
     Render.patchPointer();
+    if (window.I18N) { I18N.patchPhaser(); if (window.I18N_HTML) I18N_HTML(); }
     game = new Phaser.Game(config);
     keepAlive(game);
     window.__game = game;
