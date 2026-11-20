@@ -104,7 +104,7 @@ window.PrayerView = (function () {
 
     /* 손으로 밀면 따라오고, 놓으면 부드럽게 미끄러집니다. 가볍게 누르면 남은 줄이 한꺼번에. */
     const scroller = Scroller.create(scene, {
-      target: text, top: top, height: viewH, min: lowest, max: top, depth: depth, tapZone: zone,
+      target: text, top: top, height: viewH, min: lowest, max: top, depth: depth, tapZone: zone, strict: true,
       onTap: function () { revealAll(); },
       onDragStart: function () {
         scene.tweens.killTweensOf(text);

@@ -77,7 +77,7 @@ window.DialogueBox = class DialogueBox {
     /* 글이 길면 상자 안에서 부드럽게 밀어 봅니다 */
     this.textScroll = Scroller.create(scene, {
       target: this.text, top: boxY - boxH / 2, height: boxH, x: W / 2 - boxW / 2, width: boxW,
-      min: () => this.minTextY, max: () => this.baseTextY, indicator: false, owner: this.hit,
+      min: () => this.minTextY, max: () => this.baseTextY, indicator: false, owner: this.hit, strict: true,
       enabled: () => this.isOpen && !this.choiceOpen && this.scrollable
     });
 

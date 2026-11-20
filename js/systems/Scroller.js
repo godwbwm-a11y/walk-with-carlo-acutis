@@ -55,9 +55,16 @@ window.Scroller = (function () {
     const inside = function (p) {
       return p.x >= area.x && p.x <= area.x + area.w && p.y >= area.top && p.y <= area.top + area.h;
     };
+    /* 끌기는 화면 어디서 시작해도 됩니다 — 목록 밖(제목, 아래쪽 여백)을 밀어도 목록이 움직입니다.
+       글상자처럼 그 칸 안에서만 밀어야 하는 곳은 strict 로 둡니다. */
+    const canStart = function (p) {
+      if (opt.strict) return inside(p);
+      return p.x >= 0 && p.x <= GAME.WIDTH && p.y >= 0 && p.y <= GAME.HEIGHT;
+    };
     const blocked = function (over) {
       if (opt.enabled && !opt.enabled()) return true;
-      if (!target.visible) return true;
+      /* 목록이나 그 목록을 담은 판이 숨겨져 있으면 움직이지 않습니다 */
+      for (let o = target; o; o = o.parentContainer) { if (!o.visible || o.alpha === 0) return true; }
       for (let i = 0; i < (over || []).length; i++) {
         if (over[i] && over[i].__blocksScroll && over[i] !== opt.owner) return true;
       }
@@ -115,7 +122,7 @@ window.Scroller = (function () {
     function onDown(p, over) {
       /* 한 번의 누름마다 처음 듣는 목록이 ‘붙잡음’ 표시를 지웁니다 */
       if (api._downId !== p.downTime) { api._downId = p.downTime; api.caught = false; }
-      if (!alive || !inside(p) || blocked(over)) return;
+      if (!alive || !canStart(p) || blocked(over)) return;
       const catching = Math.abs(v) > 0.25 || glide !== null;
       if (catching) api.caught = true;
       else y = target.y;                       // 다른 곳(트윈 등)에서 옮겼을 수 있습니다
@@ -151,7 +158,7 @@ window.Scroller = (function () {
       else v = 0;
     }
     function onWheel(p, over, dx, dy) {
-      if (!alive || !inside(p) || blocked(over)) return;
+      if (!alive || !canStart(p) || blocked(over)) return;
       v = 0;
       const base = glide === null ? y : glide;
       glide = Phaser.Math.Clamp(base - dy * 0.7, lo(), hi());
