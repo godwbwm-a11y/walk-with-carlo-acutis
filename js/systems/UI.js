@@ -517,7 +517,15 @@ window.UI = (function () {
   function objective(scene, text) {
     const y = 44;
     const c = scene.add.container(GAME.WIDTH / 2 - 34, y).setDepth(880).setScrollFactor(0);
-    const t = scene.add.text(0, 0, text, style(FONT.small, PAL.cream)).setOrigin(0.5);
+    const t = scene.add.text(0, 0, '', style(FONT.small, PAL.cream)).setOrigin(0.5);
+    t.__noFit = true;
+    /* 알약 안에 들어가도록 — 긴 글(영어 등)은 글자를 조금 줄입니다 */
+    const put = function (s) {
+      t.setFontSize(FONT.small); t.setText(s);
+      let size = FONT.small;
+      while (size > 11 && t.width > GAME.WIDTH - 132 - 22) { size -= 1; t.setFontSize(size); }
+    };
+    put(text);
     const w = Math.min(GAME.WIDTH - 132, t.width + 34);
     const g = scene.add.graphics();
     g.fillStyle(0x1c2740, 0.8);
@@ -527,7 +535,7 @@ window.UI = (function () {
     scene.tweens.add({ targets: c, alpha: 1, duration: 500 });
 
     c.setText = function (s) {
-      t.setText(s);
+      put(s);
       const nw = Math.min(GAME.WIDTH - 132, t.width + 34);
       g.clear(); g.fillStyle(0x1c2740, 0.8); g.fillRoundedRect(-nw / 2, -17, nw, 34, 17);
       c.setAlpha(0);

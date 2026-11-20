@@ -31,12 +31,19 @@ window.I18N = (function () {
 
   function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-  let flat = null;     // 줄바꿈을 빈칸으로 바꾼 문장(“한 줄로 이어 보여 주는 곳”)을 위한 사전
+  let flat = null;
+  const lines = {};      // 여러 줄짜리 글에서 뽑은 줄 하나하나     // 줄바꿈을 빈칸으로 바꾼 문장(“한 줄로 이어 보여 주는 곳”)을 위한 사전
   const squash = function (k) { return k.replace(/\s+/g, ' ').trim(); };
   function build() {
     dict = window.I18N_EN || {};
     flat = {};
-    Object.keys(dict).forEach(function (k) { if (/\n/.test(k)) flat[squash(k)] = squash(dict[k]); });
+    Object.keys(dict).forEach(function (k) {
+      if (!/\n/.test(k)) return;
+      flat[squash(k)] = squash(dict[k]);
+      /* 기도문처럼 여러 줄인 글을 장면이 몇 줄씩 나눠 보여 줄 때 — 줄 수가 같으면 줄끼리 짝을 짓습니다 */
+      const kl = k.split('\n'), vl = dict[k].split('\n');
+      if (kl.length === vl.length) kl.forEach(function (l, i) { if (l.trim() && lines[l] === undefined) lines[l] = vl[i]; });
+    });
     const keys = Object.keys(dict).filter(function (k) { return k.length >= 2 && HANGUL.test(k); })
       .sort(function (a, b) { return b.length - a.length; });
     frag = keys.length ? new RegExp(keys.map(esc).join('|'), 'g') : null;
@@ -80,6 +87,16 @@ window.I18N = (function () {
     if (r !== undefined) return r;
     r = flat[squash(s)];
     if (r !== undefined) return r;
+    /* 앞뒤를 감싼 따옴표 */
+    const q = /^([“‘"'(\[])([\s\S]+)([”’"')\]])$/.exec(s);
+    if (q) { const inner = one(q[2]); if (inner !== undefined) return q[1] + inner + q[3]; }
+    /* 그림 글자·숫자 같은 앞뒤 장식을 떼고 찾아봅니다 ( 🥐  빵 ) */
+    const m = /^([^\uac00-\ud7a3]*)([\s\S]*?[\uac00-\ud7a3][^\n]*?)([^\uac00-\ud7a3]*)$/.exec(s);
+    if (m && (m[1] || m[3])) {
+      const mid = dict[m[2]] !== undefined ? dict[m[2]] : flat[squash(m[2])];
+      if (mid !== undefined) return m[1] + mid + m[3];
+    }
+    if (lines[s] !== undefined) return lines[s];
     const t = s.trim();
     if (t !== s) {
       r = dict[t];
@@ -144,7 +161,7 @@ window.I18N = (function () {
      영어가 그 자리보다 많이 길면 글자 크기를 조금 줄여 원래 자리 안에 담습니다. */
   function fitLike(t, ko) {
     try {
-      if (t.style.wordWrapWidth || t.style.wordWrapCallback) return;
+      if (t.__noFit || t.style.wordWrapWidth || t.style.wordWrapCallback) return;
       if (t.__baseSize === undefined) t.__baseSize = parseInt(t.style.fontSize, 10) || 16;
       const base = t.__baseSize;
       const ctx = t.context;
@@ -157,7 +174,9 @@ window.I18N = (function () {
         return w;
       };
       const koW = widest(ko, base), enW = widest(t.text, base);
-      const room = Math.max(koW * 1.2, 60);
+      /* 판 안에 들어 있지 않은 글(화면 위 안내 글 등)은 화면 폭까지 써도 됩니다 */
+      const free = !t.parentContainer && t.scrollFactorX === 0 ? (GAME.WIDTH - 70) : 0;
+      const room = Math.max(koW * 1.2, 60, free);
       let size = base;
       if (enW > room) size = Math.max(11, Math.floor(base * 0.66), Math.floor(base * room / enW));
       if ((parseInt(t.style.fontSize, 10) || base) !== size) t.setFontSize(size);
