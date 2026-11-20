@@ -17,7 +17,7 @@ window.HelloMatchScene = class HelloMatchScene extends MiniGameScene {
     this.cols = 4; this.rows = 4;
     this.cw = 82; this.ch = 104; this.gap = 10;
     this.top = 190;
-    this.flips = 0; this.found = 0; this.open = []; this.lock = false;
+    this.flips = 0; this.found = 0; this.open = []; this.pendingHide = null; this.over = false;
 
     GameFX.intro(this, {
       key: this.scene.key, badge: 'DAY 5 · 서울의 밤', title: '인사 짝 맞추기',
@@ -56,6 +56,7 @@ window.HelloMatchScene = class HelloMatchScene extends MiniGameScene {
   }
 
   show(c, faceUp, cb) {
+    this.tweens.killTweensOf(c);           // 덮이는 중에 다시 눌러도 그림이 엇갈리지 않게
     this.tweens.add({ targets: c, scaleX: 0, duration: 110, ease: 'Quad.easeIn', onComplete: () => {
       const p = c.parts;
       p.back.setVisible(!faceUp); p.mark.setVisible(!faceUp);
@@ -64,31 +65,54 @@ window.HelloMatchScene = class HelloMatchScene extends MiniGameScene {
     } });
   }
 
+  /* 틀린 두 장이 아직 펼쳐져 있을 때 다른 카드를 누르면 기다리지 않고 바로 덮습니다 */
+  hideNow() {
+    const p = this.pendingHide;
+    if (!p) return;
+    this.pendingHide = null;
+    if (p.timer) p.timer.remove();
+    p.cards.forEach((o) => {
+      this.tweens.killTweensOf(o);
+      o.scaleX = 1;
+      const q = o.parts; q.back.setVisible(true); q.mark.setVisible(true); q.front.setVisible(false); q.t1.setVisible(false); q.t2.setVisible(false);
+    });
+  }
+
+  /* 누르는 즉시 판정합니다 — 뒤집히는 그림을 기다리느라 손가락이 막히지 않게 */
   flip(c) {
-    if (this.lock || c.done || this.open.indexOf(c) !== -1 || !this.hud) return;
+    if (!this.hud || this.over) return;
+    if (this.pendingHide) {
+      if (this.pendingHide.cards.indexOf(c) !== -1) return;
+      this.hideNow();
+    }
+    if (c.done || this.open.indexOf(c) !== -1 || this.open.length >= 2) return;
     AudioSystem.gPop();
     this.flips++;
     this.open.push(c);
-    this.show(c, true, () => {
-      if (this.open.length < 2) return;
-      const [a, b] = this.open;
-      this.lock = true;
-      if (a.cd.id === b.cd.id) {
-        a.done = b.done = true;
-        this.found++;
-        this.time.delayedCall(140, () => {
-          this.hud.hit(40, (a.x + b.x) / 2, Math.min(a.y, b.y) - 50, '짝!');
-          [a, b].forEach(o => { this.tweens.add({ targets: o, scale: 1.12, duration: 120, yoyo: true }); o.parts.front.setTint(0xfff1cf); });
-          this.open = []; this.lock = false;
-          if (this.found === this.pairs.length) this.end();
-        });
-      } else {
-        this.time.delayedCall(520, () => {
-          this.hud.combo = 0;
-          this.show(a, false); this.show(b, false, () => { this.open = []; this.lock = false; });
-        });
-      }
-    });
+    this.show(c, true);
+    if (this.open.length < 2) return;
+    const [a, b] = this.open;
+    this.open = [];
+    if (a.cd.id === b.cd.id) {
+      a.done = b.done = true;
+      this.found++;
+      const last = this.found === this.pairs.length;
+      if (last) this.over = true;
+      this.time.delayedCall(260, () => {
+        this.hud.hit(40, (a.x + b.x) / 2, Math.min(a.y, b.y) - 50, '짝!');
+        [a, b].forEach(o => { this.tweens.add({ targets: o, scaleY: 1.1, duration: 120, yoyo: true }); o.parts.front.setTint(0xfff1cf); });
+        if (last) this.end();
+      });
+    } else {
+      this.hud.combo = 0;
+      const pend = { cards: [a, b] };
+      this.pendingHide = pend;
+      pend.timer = this.time.delayedCall(900, () => {
+        if (this.pendingHide !== pend) return;
+        this.pendingHide = null;
+        this.show(a, false); this.show(b, false);
+      });
+    }
   }
 
   end() {

@@ -95,6 +95,7 @@
     /* 장면이 하나라도 시작되기 전에 걸어 두어야 빠짐없이 적용됩니다 */
     Render.patchSceneStart();
     Render.patchFollow();
+    Render.patchPointer();
     game = new Phaser.Game(config);
     keepAlive(game);
     window.__game = game;

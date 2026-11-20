@@ -106,5 +106,41 @@ window.Render = (function () {
     return img;
   }
 
-  return { RES, OX, OY, applyCamera, setBounds, patchFollow, patchSceneStart, grade, lightPool, ensureVignette };
+  /* ── 손가락 좌표 ───────────────────────────────
+     캔버스를 RES 배로 키웠기 때문에 Phaser 가 주는 손가락 좌표(pointer.x/y)도 RES 배로 커집니다.
+     장면 코드는 모두 390×844 좌표로 짜여 있어서, 그대로 두면 손전화(RES 2)에서
+     ‘화면 아래쪽을 밀면 목록이 안 움직이고’, ‘조이스틱·패들·등불이 손가락의 두 배 자리로’ 갑니다.
+     그래서 장면 코드가 읽는 pointer.x/y 는 390×844 좌표로 돌려주고,
+     Phaser 가 안에서 누른 물건을 찾을 때(카메라 변환)만 실제 화소 좌표를 쓰게 합니다. */
+  function patchPointer() {
+    if (RES === 1) return;
+    const P = Phaser.Input.Pointer.prototype;
+    Object.defineProperty(P, 'x', {
+      configurable: true,
+      get: function () { return this.__raw ? this.position.x : this.position.x / RES; },
+      set: function (v) { this.position.x = this.__raw ? v : v * RES; }
+    });
+    Object.defineProperty(P, 'y', {
+      configurable: true,
+      get: function () { return this.__raw ? this.position.y : this.position.y / RES; },
+      set: function (v) { this.position.y = this.__raw ? v : v * RES; }
+    });
+    /* 이 세 곳은 화소 좌표를 기대합니다 */
+    const asRaw = function (fn, pick) {
+      return function () {
+        const ptr = pick(this, arguments);
+        if (!ptr) return fn.apply(this, arguments);
+        const was = ptr.__raw; ptr.__raw = true;
+        try { return fn.apply(this, arguments); } finally { ptr.__raw = was; }
+      };
+    };
+    P.updateWorldPoint = asRaw(P.updateWorldPoint, function (self) { return self; });
+    if (P.positionToCamera) P.positionToCamera = asRaw(P.positionToCamera, function (self) { return self; });
+    const IM = Phaser.Input.InputManager.prototype;
+    IM.hitTest = asRaw(IM.hitTest, function (self, a) { return a[0]; });
+    const CM = Phaser.Cameras.Scene2D.CameraManager.prototype;
+    CM.getCamerasBelowPointer = asRaw(CM.getCamerasBelowPointer, function (self, a) { return a[0]; });
+  }
+
+  return { RES, OX, OY, applyCamera, setBounds, patchFollow, patchSceneStart, patchPointer, grade, lightPool, ensureVignette };
 })();

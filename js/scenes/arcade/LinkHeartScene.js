@@ -74,7 +74,7 @@ window.LinkHeartScene = class LinkHeartScene extends MiniGameScene {
       c.setAngle(this.rot[i] * 90);
       if (i === this.src || this.targets.indexOf(i) !== -1) {
         const key = i === this.src ? 'pt_player_front' : 'pt_' + this.faces[this.targets.indexOf(i) % this.faces.length];
-        const face = this.textures.exists(key) ? this.add.image(c.x, c.y, key).setScale(cell / 60) : this.add.text(c.x, c.y, i === this.src ? '나' : '♥', UI.style(18, PAL.cream)).setOrigin(0.5);
+        const face = this.textures.exists(key) ? this.add.image(c.x, c.y, key).setScale(cell / 92) : this.add.text(c.x, c.y, i === this.src ? '나' : '♥', UI.style(18, PAL.cream)).setOrigin(0.5);
         face.setDepth(12);
         this.layer.add(face);
         c.face = face;

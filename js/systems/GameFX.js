@@ -159,7 +159,8 @@ window.GameFX = (function () {
     /* 글 높이를 먼저 재고 판을 그립니다 — 제목·소개·하는 법이 겹치지 않게 */
     const subT = opt.sub ? scene.add.text(W / 2, 0, opt.sub, UI.style(14, PAL.clay, { align: 'center', wordWrap: { width: pw - 50 }, lineSpacing: 4 })).setOrigin(0.5, 0) : null;
     const subH = subT ? subT.height + 14 : 0;
-    const ph = 96 + subH + howT.height + 150;
+    const canSkip = typeof scene.giveUp === 'function';
+    const ph = 96 + subH + howT.height + 150 + (canSkip ? 52 : 0);
     const top = Math.round(H / 2 - ph / 2);
     layer.add(UI.panel(scene, W / 2, top + ph / 2, pw, ph, { radius: 26 }));
     if (opt.badge) layer.add(scene.add.text(W / 2, top + 28, opt.badge, UI.style(13, PAL.sunDeep, { shadow: false })).setOrigin(0.5));
@@ -167,9 +168,16 @@ window.GameFX = (function () {
     if (subT) { subT.y = top + 88; layer.add(subT); }
     howT.y = top + 92 + subH; layer.add(howT);
     const b = best(opt.key);
-    layer.add(scene.add.text(W / 2, top + ph - 108, b > 0 ? ('최고 기록  ' + b + '  ·  ' + '★'.repeat(stars(opt.key)) + '☆'.repeat(3 - stars(opt.key))) : '처음 해 보는 게임',
+    const foot = canSkip ? 52 : 0;
+    layer.add(scene.add.text(W / 2, top + ph - 108 - foot, b > 0 ? ('최고 기록  ' + b + '  ·  ' + '★'.repeat(stars(opt.key)) + '☆'.repeat(3 - stars(opt.key))) : '처음 해 보는 게임',
       UI.style(14, PAL.inkSoft)).setOrigin(0.5));
-    const go = UI.button(scene, W / 2, top + ph - 56, 220, 60, '시작!', () => {
+    /* 이야기 속에서는 건너뛸 수 있고, 미니게임 모음에서는 목록으로 돌아갈 수 있습니다 */
+    if (canSkip) {
+      layer.add(UI.button(scene, W / 2, top + ph - 46, 200, 50, scene.arcade ? '목록으로' : '이번엔 건너뛰기', () => {
+        layer.destroy(); scene.giveUp();
+      }, { size: FONT.small }));
+    }
+    const go = UI.button(scene, W / 2, top + ph - 56 - foot, 220, 60, '시작!', () => {
       go.disableInteractive();
       scene.tweens.add({ targets: layer, alpha: 0, duration: 220, onComplete: () => { layer.destroy(); countdown(scene, opt.onStart, opt.noCount); } });
     }, { size: 22, fill: PAL.sun });

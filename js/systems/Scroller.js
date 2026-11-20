@@ -67,9 +67,22 @@ window.Scroller = (function () {
       y = ny;
       /* 반 화소 단위로 — 글자가 번지지 않습니다 (화면은 2 배로 그립니다) */
       target.y = Math.round(y * 2) / 2;
+      if (opt.cull) cull();
       if (opt.onMove) opt.onMove(target.y);
       showBar();
     };
+
+    /* 화면 밖의 줄은 그리지 않습니다 — 긴 목록(미니게임 44개, 말씀 63장)도 가볍게 넘어가도록 */
+    function cull() {
+      if (!target.list) return;
+      const lo2 = area.top - 220, hi2 = area.top + area.h + 220;
+      for (let i = 0; i < target.list.length; i++) {
+        const o = target.list[i];
+        const sy = target.y + o.y;
+        o.setVisible(sy > lo2 && sy < hi2);
+      }
+    }
+    if (opt.cull) target.scene.time.delayedCall(0, cull);
 
     /* ── 스크롤 막대 — 움직일 때만 살짝 보입니다 ── */
     let bar = null;
@@ -214,6 +227,7 @@ window.Scroller = (function () {
       toMin: function (ms) { return sc.scrollTo(lo(), ms); },
       toMax: function (ms) { return sc.scrollTo(hi(), ms); },
       sync: function () { y = target.y; return sc; },
+      cull: function () { if (opt.cull) cull(); return sc; },
       destroy: destroy
     };
     return sc;

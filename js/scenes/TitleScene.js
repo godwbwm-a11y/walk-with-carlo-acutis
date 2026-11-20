@@ -8,6 +8,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     this.openPicker = !!(data && data.picker);
     this.openArcade = !!(data && data.arcade);
     this.modal = null;
+    this.picker = null;            // 다시 열린 화면에 지난번 목록의 흔적이 남지 않게
     this.add.image(W / 2, H / 2, 'sky_night').setDisplaySize(W, H);
 
     /* 별 */
@@ -336,6 +337,15 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
   }
 
+  /* 목록 화면이 덮고 있는 동안 뒤의 제목 화면은 그리지 않습니다 — 손전화에서 스크롤이 매끄럽도록 */
+  coverBehind(layer) {
+    const hidden = [];
+    this.children.list.forEach((o) => {
+      if (o !== layer && o.visible && (o.depth || 0) < layer.depth) { o.setVisible(false); hidden.push(o); }
+    });
+    layer.once('destroy', () => hidden.forEach(o => { if (o.scene) o.setVisible(true); }));
+  }
+
   /* ── 미니게임 모음 ─────────────────────────────
      이야기 속 미니게임을 언제든 골라 다시 즐깁니다. 이야기의 기록은 바뀌지 않습니다(연습 모드). */
   arcadePicker() {
@@ -343,8 +353,9 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const layer = this.add.container(0, 0).setDepth(200);
     this.picker = layer;
+    this.coverBehind(layer);
     const scrim = this.add.graphics();
-    scrim.fillStyle(0x0d1528, 0.98); scrim.fillRect(0, 0, W, H);
+    scrim.fillStyle(0x0d1528, 1); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
     const games = ARCADE.games;
@@ -412,7 +423,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       y += 8;
     });
 
-    Scroller.create(this, { target: list, top: top, height: viewH, min: top - Math.max(0, y - viewH + 10), max: top });
+    Scroller.create(this, { target: list, top: top, height: viewH, min: top - Math.max(0, y - viewH + 10), max: top, cull: true });
 
     layer.add(UI.button(this, W / 2, H - 52, 220, 56, '닫기', () => {
       layer.destroy(); this.picker = null;
@@ -425,9 +436,10 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const layer = this.add.container(0, 0).setDepth(200);
     this.picker = layer;
+    this.coverBehind(layer);
 
     const scrim = this.add.graphics();
-    scrim.fillStyle(0x101a2e, 0.97); scrim.fillRect(0, 0, W, H);
+    scrim.fillStyle(0x101a2e, 1); scrim.fillRect(0, 0, W, H);
     layer.add(scrim);
 
     layer.add(this.add.text(W / 2, 74, '어느 날을 걸을까요?',
@@ -518,7 +530,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     });
 
     const max = Math.max(0, y - viewH + 20);
-    Scroller.create(this, { target: list, top: top, height: viewH, min: top - max, max: top });
+    Scroller.create(this, { target: list, top: top, height: viewH, min: top - max, max: top, cull: true });
 
     layer.add(UI.button(this, W / 2, H - 56, 220, 58, '닫기', () => {
       layer.destroy(); this.picker = null;

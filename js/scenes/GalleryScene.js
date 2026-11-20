@@ -34,7 +34,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
     this.maxScroll = 0;
     this.scroller = Scroller.create(this, {
       target: this.content, top: this.viewTop, height: this.viewH,
-      min: () => this.viewTop - this.maxScroll, max: this.viewTop
+      min: () => this.viewTop - this.maxScroll, max: this.viewTop, cull: true
     });
 
     this.hintScroll = this.add.text(W / 2, H - 12, '', UI.style(13, '#8fa5c8')).setOrigin(0.5, 1);
@@ -169,6 +169,7 @@ window.GalleryScene = class GalleryScene extends Phaser.Scene {
 
   finishLayout(contentH) {
     this.maxScroll = Math.max(0, contentH - this.viewH + 20);
+    if (this.scroller) this.scroller.cull();
     this.hintScroll.setText(this.maxScroll > 0 ? '위아래로 끌어서 더 볼 수 있어요' : '');
   }
 
