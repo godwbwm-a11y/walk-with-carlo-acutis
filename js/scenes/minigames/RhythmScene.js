@@ -93,6 +93,9 @@ window.RhythmScene = class RhythmScene extends MiniGameScene {
       if (d < best) { best = d; near = n; }
     });
     if (near && best < 90) {
+      /* 판정은 없고, 손맛만 — 박자에 가까울수록 반짝임이 큽니다 */
+      const word = best < 22 ? '딱!' : best < 50 ? '좋아' : '';
+      this.ensureHud().hit(best < 22 ? 20 : best < 50 ? 12 : 6, near.x, this.lineY - 40, word);
       this.notes = this.notes.filter(n => n !== near);
       this.tweens.add({
         targets: near, alpha: 0, scale: 1.4, duration: 260,

@@ -6,6 +6,8 @@ window.Day8HomeScene = class Day8HomeScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day8HomeScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'MemoryWalkScene');
     AudioSystem.setAmbience('room');
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#e8d6b8');

@@ -153,7 +153,7 @@ window.NoiseScene = class NoiseScene extends MiniGameScene {
           const b = UI.button(this, GAME.WIDTH / 2, GAME.HEIGHT - 150, 220, 58, DAY02.noise.goBtn,
             () => {
               UI.fadeOut(this, 600, () => {
-                this.scene.start('AngelScene', { from: this.from });
+                this.scene.start('AngelScene', { from: this.from, arcade: this.arcade });
               });
             }, { size: FONT.label, fill: PAL.sun });
           b.setDepth(60);

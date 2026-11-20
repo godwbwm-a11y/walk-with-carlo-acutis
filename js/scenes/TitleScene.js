@@ -6,6 +6,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
   create(data) {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     this.openPicker = !!(data && data.picker);
+    this.openArcade = !!(data && data.arcade);
     this.modal = null;
     this.add.image(W / 2, H / 2, 'sky_night').setDisplaySize(W, H);
 
@@ -105,8 +106,10 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     }
 
     y += 80;
-    UI.button(this, W / 2, y, 268, 60, 'DAY 선택', () => this.dayPicker(),
+    UI.button(this, W / 2 - 70, y, 128, 60, 'DAY 선택', () => this.dayPicker(),
       { size: FONT.label, fill: PAL.cream, alpha: 0.94 });
+    UI.button(this, W / 2 + 70, y, 128, 60, '🎮 미니게임', () => this.arcadePicker(),
+      { size: FONT.small, fill: PAL.cream, alpha: 0.94 });
 
     /* 소리 설정 */
     this.bgmBtn = UI.circleButton(this, 44, 48, 24, '♪', () => this.toggle('bgm'), { size: 18 });
@@ -133,6 +136,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
     UI.fadeIn(this, 900);
     /* 에필로그에서 “다시 걷고 싶은 날 고르기”로 들어오면 바로 목록을 엽니다 */
     if (this.openPicker) this.time.delayedCall(320, () => this.dayPicker());
+    else if (this.openArcade) this.time.delayedCall(200, () => this.arcadePicker());
     else this.time.delayedCall(1500, () => this.practiceCheckin());
   }
 
@@ -328,7 +332,91 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
       : n === 2 ? { scene: 'Day2RoomScene', data: {} }
       : { scene: 'HomeScene', data: { intro: true } };
     SaveSystem.checkpoint(entry.scene, entry.data);
+    if (window.Interlude) Interlude.resetDay(n);         // 그날의 후반부 게임도 다시 만납니다
     UI.fadeOut(this, 700, () => this.scene.start(entry.scene, entry.data));
+  }
+
+  /* ── 미니게임 모음 ─────────────────────────────
+     이야기 속 미니게임을 언제든 골라 다시 즐깁니다. 이야기의 기록은 바뀌지 않습니다(연습 모드). */
+  arcadePicker() {
+    if (this.picker) return;
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(200);
+    this.picker = layer;
+    const scrim = this.add.graphics();
+    scrim.fillStyle(0x0d1528, 0.98); scrim.fillRect(0, 0, W, H);
+    layer.add(scrim);
+
+    const games = ARCADE.games;
+    const played = games.filter(g => GameFX.plays(g.key) > 0).length;
+    const starSum = games.reduce((a, g) => a + GameFX.stars(g.key), 0);
+    layer.add(this.add.text(W / 2, 58, '미니게임 모음', UI.style(24, PAL.cream)).setOrigin(0.5));
+    layer.add(this.add.text(W / 2, 92, '해 본 게임 ' + played + ' / ' + games.length + '   ·   모은 별 ★ ' + starSum,
+      UI.style(14, '#cbd8ea')).setOrigin(0.5));
+
+    const top = 120, viewH = H - top - 100;
+    const list = this.add.container(0, top);
+    const shape = this.make.graphics({ add: false });
+    shape.fillRect(0, top, W, viewH);
+    list.setMask(shape.createGeometryMask());
+    layer.add(list);
+
+    const rowW = W - 40, rowH = 108;
+    const kindColor = { '액션': '#e8705a', '퍼즐': '#3f6f8f', '리듬': '#7a5f8a', '손놀이': '#4f7d6a' };
+    let y = 16;
+    ARCADE.groups.forEach((grp) => {
+      const items = games.filter(g => g.day === grp.day);
+      if (!items.length) return;
+      list.add(this.add.text(26, y + 8, grp.label, UI.style(14, '#f2c68a')).setOrigin(0, 0));
+      y += 40;
+      items.forEach((g) => {
+        const row = this.add.container(W / 2, y + rowH / 2);
+        const bg = this.add.image(0, 0, UI.skin(this, 'btn', rowW, rowH, 20, PAL.paper));
+        row.add(bg);
+        const tag = this.add.text(-rowW / 2 + 18, -rowH / 2 + 13, g.kind, UI.style(11, '#ffffff', {
+          backgroundColor: kindColor[g.kind] || '#8a6340', padding: { x: 7, y: 2 }, shadow: false })).setOrigin(0, 0);
+        row.add(tag);
+        let tx = -rowW / 2 + 18 + tag.width + 8;
+        if (g.late) {
+          const nw = this.add.text(tx, -rowH / 2 + 13, 'NEW', UI.style(11, '#ffffff', {
+            backgroundColor: '#e8984a', padding: { x: 6, y: 2 }, shadow: false })).setOrigin(0, 0);
+          row.add(nw);
+        }
+        row.add(this.add.text(-rowW / 2 + 18, -rowH / 2 + 38, g.title, UI.style(17, PAL.ink)).setOrigin(0, 0));
+        row.add(this.add.text(-rowW / 2 + 18, -rowH / 2 + 68, g.desc, UI.style(12, PAL.inkSoft, {
+          wordWrap: { width: rowW - 112 }, lineSpacing: 2 })).setOrigin(0, 0));
+        const st = GameFX.stars(g.key), b = GameFX.best(g.key);
+        row.add(this.add.text(rowW / 2 - 18, -10, '★'.repeat(st) + '☆'.repeat(3 - st),
+          UI.style(16, st ? '#e8a03a' : '#d9cdb8', { shadow: false })).setOrigin(1, 0.5));
+        row.add(this.add.text(rowW / 2 - 18, 14, b ? '최고 ' + b : (GameFX.plays(g.key) ? '해 봄' : '▶ 시작'),
+          UI.style(12, b ? PAL.sunDeep : PAL.inkSoft)).setOrigin(1, 0.5));
+
+        row.setSize(rowW, rowH);
+        row.setInteractive();
+        let downAt = null;
+        row.on('pointerdown', (p) => { downAt = { x: p.x, y: p.y }; UI.pressFx(this, row, bg, true); AudioSystem.tap(); });
+        row.on('pointerout', () => { if (downAt) UI.pressFx(this, row, bg, false); downAt = null; });
+        row.on('pointerupoutside', () => { UI.pressFx(this, row, bg, false); downAt = null; });
+        row.on('pointerup', (p) => {
+          UI.pressFx(this, row, bg, false);
+          const was = downAt; downAt = null;
+          if (!was || Phaser.Math.Distance.Between(was.x, was.y, p.x, p.y) > TOUCH.slop) return;
+          if (Scroller.caught) return;
+          AudioSystem.unlock();
+          this.picker = null;
+          UI.fadeOut(this, 360, () => this.scene.start(g.key, { arcade: true }));
+        });
+        list.add(row);
+        y += rowH + 10;
+      });
+      y += 8;
+    });
+
+    Scroller.create(this, { target: list, top: top, height: viewH, min: top - Math.max(0, y - viewH + 10), max: top });
+
+    layer.add(UI.button(this, W / 2, H - 52, 220, 56, '닫기', () => {
+      layer.destroy(); this.picker = null;
+    }, { size: FONT.label }));
   }
 
   /* 걸었던 날 다시 고르기 */

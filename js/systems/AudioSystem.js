@@ -171,7 +171,23 @@ window.AudioSystem = (function () {
     src.start(t); src.stop(t + dur + 0.05);
   }
 
+  /* ── 미니게임 소리 — 점수, 연속, 빗나감, 카운트다운, 끝맺음 ── */
+  const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5];
+  function gScore(level) {
+    const f = SCALE[Math.min(SCALE.length - 1, Math.max(0, level | 0))];
+    tone(f, 0.12, 'triangle', 0.11);
+    tone(f * 2, 0.08, 'sine', 0.04);
+  }
+  function gMiss() { tone(220, 0.18, 'sine', 0.1, 140); noiseHit(0.08, 400, 1, 0.04); }
+  function gCount(n) { tone(n > 0 ? 660 : 990, n > 0 ? 0.12 : 0.28, 'triangle', 0.12); }
+  function gWin() {
+    [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) { setTimeout(function () { tone(f, 0.32, 'triangle', 0.1); }, i * 110); });
+  }
+  function gStar(i) { tone(880 + i * 220, 0.22, 'sine', 0.1); tone(1760 + i * 440, 0.12, 'sine', 0.03); }
+  function gPop() { tone(740, 0.06, 'square', 0.05, 980); }
+
   return {
+    gScore: gScore, gMiss: gMiss, gCount: gCount, gWin: gWin, gStar: gStar, gPop: gPop,
     unlock: unlock,
     isStarted: function () { return started; },
     setAmbience: setAmbience,

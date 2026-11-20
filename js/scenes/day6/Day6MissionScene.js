@@ -6,6 +6,8 @@ window.Day6MissionScene = class Day6MissionScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day6MissionScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'WaterShareScene');
     AudioSystem.setAmbience('city');
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#c8bda6');

@@ -157,6 +157,8 @@ window.JegiScene = class JegiScene extends MiniGameScene {
     }
   }
 
+  gameStars() { const b = Math.max(this.best || 0, this.count || 0); return b >= 15 ? 3 : b >= 6 ? 2 : 1; }
+
   /* ── 찬다 ────────────────────────────────────── */
   kick() {
     if (!this.playing || this.finished || this.swinging) return;
@@ -177,6 +179,9 @@ window.JegiScene = class JegiScene extends MiniGameScene {
       this.count++;
       this.updateCount();
       this.bounceCount();
+      /* 발 한가운데로 받으면 ‘딱!’ */
+      const sweet = Math.abs(this.jegi.x - (this.me.x + 8)) < 14;
+      this.ensureHud().hit(sweet ? 15 : 10, this.jegi.x, this.jegi.y - 24, sweet ? '딱!' : (this.count >= 5 ? this.count + '번' : ''));
       this.launch(this.count);
     } else {
       AudioSystem.swipe();                    // 헛발질 — 제기는 그대로 떨어집니다
@@ -213,6 +218,7 @@ window.JegiScene = class JegiScene extends MiniGameScene {
     this.jv = 0; this.jvx = 0;
     this.jegi.y = this.GROUND - 8;
     AudioSystem.back();
+    if (this.hud) this.hud.miss(this.jegi.x, this.GROUND - 70);
     if (this.count > this.best) this.best = this.count;
     this.updateCount();
     this.flash(EPI.jegi.dropped);

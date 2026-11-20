@@ -6,6 +6,8 @@ window.Day2ReturnScene = class Day2ReturnScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day2ReturnScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'WayHomeScene');
     AudioSystem.setAmbience('room');
 
     this.add.image(W / 2, 0, 'sky_evening').setOrigin(0.5, 0).setDisplaySize(W, 380).setDepth(-20);

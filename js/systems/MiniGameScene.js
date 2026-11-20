@@ -10,6 +10,10 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
     this.from = opt.from || null;
     this.cardId = opt.card || null;
     this.finished = false;
+    /* 미니게임 모음에서 불렀는지 — 그렇다면 연습 모드로 놀고 목록으로 돌아갑니다 */
+    this.startData = this.sys.settings.data || {};
+    this.arcade = !!this.startData.arcade;
+    if (this.arcade) { this.from = null; this.cardId = null; SaveSystem.beginSandbox(); }
 
     const W = GAME.WIDTH, H = GAME.HEIGHT;
 
@@ -77,17 +81,87 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
     const arr = Array.isArray(lines) ? lines : [lines];
     this.time.delayedCall(500, () => {
       this.dialogue.play(arr.map(l => (typeof l === 'string' ? { t: l } : l)), () => {
-        const go = () => { if (onAfter) onAfter(); this.leave(); };
+        const go = () => {
+          if (onAfter) onAfter();
+          /* 놀이로 즐길 수 있는 미니게임은 끝난 뒤 한 번 더 할 수 있습니다.
+             점수가 난 게임이면 별과 점수가 있는 결과 카드로 */
+          if (this.canReplay() && this.hud) {
+            GameFX.result(this, {
+              key: this.scene.key, title: '다 했어요!', score: this.hud.score, stars: this.starsNow(),
+              detail: '최대 ' + this.hud.maxCombo + ' 연속',
+              exitLabel: this.arcade ? '목록으로' : '계속 걷기',
+              onRetry: () => this.replay(), onExit: () => this.leave()
+            });
+          } else if (this.canReplay()) this.replayPanel();
+          else this.leave();
+        };
         if (this.cardId) Collection.award(this, this.cardId, go);
         else go();
       });
     });
   }
 
+  canReplay() { return !!(window.ARCADE && ARCADE.has(this.scene.key)); }
+
+  /* 점수판 — 처음 점수가 날 때 왼쪽 위에 나타납니다(제목 위 줄) */
+  ensureHud() {
+    if (!this.hud) this.hud = GameFX.hud(this, { y: 24 });
+    return this.hud;
+  }
+
+  /* 점수판이 있던 게임의 별 — 게임마다 gameStars() 로 정할 수 있습니다 */
+  starsNow() {
+    if (this.gameStars) return this.gameStars();
+    const h = this.hud;
+    return h.maxCombo >= 15 || h.hits >= 25 ? 3 : h.hits >= 8 ? 2 : 1;
+  }
+
+  /* 한 번 더 / 계속(또는 목록으로) */
+  replayPanel() {
+    const W = GAME.WIDTH, H = GAME.HEIGHT;
+    const layer = this.add.container(0, 0).setDepth(1500);
+    layer.add(this.add.rectangle(W / 2, H / 2, W, H, 0x070c18, 0.55).setInteractive());
+    layer.add(UI.panel(this, W / 2, H / 2, W - 70, 220, { radius: 26 }));
+    layer.add(this.add.text(W / 2, H / 2 - 66, '다 했어요!', UI.style(22, PAL.ink)).setOrigin(0.5));
+    layer.add(UI.button(this, W / 2, H / 2 - 4, 230, 56, '한 번 더', () => this.replay(), { size: FONT.label, fill: PAL.sun }));
+    layer.add(UI.button(this, W / 2, H / 2 + 62, 230, 52, this.arcade ? '목록으로' : '계속 걷기', () => { layer.destroy(); this.leave(); }, { size: FONT.small }));
+    layer.setAlpha(0);
+    this.tweens.add({ targets: layer, alpha: 1, duration: 260 });
+  }
+
+  /* 같은 조건으로 처음부터 다시 */
+  replay() {
+    const d = this.startData;
+    UI.fadeOut(this, 260, () => this.scene.restart(d));
+  }
+
+  /* ── 점수가 있는 게임의 끝맺음 ─────────────────
+     opt: { score, stars, detail, line, after } — after 는 이야기 속에서 이어질 일 */
+  finishGame(opt) {
+    if (this.finished) return;
+    this.finished = true;
+    if (this.closeBtn) this.closeBtn.setVisible(false);
+    GameFX.result(this, {
+      key: this.scene.key, title: opt.title, score: opt.score, stars: opt.stars, detail: opt.detail, line: opt.line,
+      exitLabel: this.arcade ? '목록으로' : '계속 걷기',
+      onRetry: () => this.replay(),
+      onExit: () => {
+        const go = () => { if (opt.after) opt.after(); this.leave(); };
+        if (this.cardId) Collection.award(this, this.cardId, go); else go();
+      }
+    });
+  }
+
   leave() {
     const from = this.from;
     const myKey = this.scene.key;
+    const arcade = this.arcade;
     UI.fadeOut(this, 450, () => {
+      if (arcade) {                                     // 미니게임 모음 → 연습 기록을 지우고 목록으로
+        SaveSystem.endSandbox();
+        this.scene.start('TitleScene', { arcade: true });
+        return;
+      }
       if (!from) { this.scene.start('TitleScene'); return; }   // 돌아갈 곳이 없으면 처음 화면으로
 
       /* 먼저 돌아갈 화면을 깨우고, 그 다음에 물러납니다.

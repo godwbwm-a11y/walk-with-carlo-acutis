@@ -204,6 +204,8 @@ window.BrickScene = class BrickScene extends MiniGameScene {
     this.left--;
     this.updateLeft();
     AudioSystem.kick();
+    this.ensureHud().hit(10, b.box.x, b.box.y - 10);
+    GameFX.shake(this, 0.0035);
 
     b.img.setTexture('d4_stone_crack');
     this.tweens.add({
@@ -250,12 +252,15 @@ window.BrickScene = class BrickScene extends MiniGameScene {
     if (this.helped) this.tweens.add({ targets: this.carlo, y: this.PAD_Y - 6, duration: 90, yoyo: true });
   }
 
+  gameStars() { return this.misses === 0 ? 3 : this.misses <= 2 ? 2 : 1; }
+
   /* ── 놓쳤습니다 — 지는 것이 아닙니다 ─────────── */
   dropped() {
     if (!this.playing) return;
     this.playing = false;
     this.misses++;
     AudioSystem.back();
+    if (this.hud) this.hud.miss(this.ball.x, this.PAD_Y - 60);
     this.ball.setVisible(false);
     this.flash(DAY04.bricks.miss);
 

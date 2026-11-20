@@ -186,15 +186,19 @@ window.GonggiScene = class GonggiScene extends MiniGameScene {
     });
     this.updateCount();
     this.bounceCount();
+    this.ensureHud().hit(20, GAME.WIDTH / 2, this.HAND_Y - 90, '잡았다!');
     this.flash(EPI.gonggi.caught);
     if (!this.stopBtn) this.showStopButton();
     this.time.delayedCall(1150, () => this.ready());
   }
 
+  gameStars() { return this.count >= 8 ? 3 : this.count >= 4 ? 2 : 1; }
+
   /* ── 또르르 ──────────────────────────────────── */
   scatter() {
     this.state = 'scatter';
     AudioSystem.back();
+    if (this.hud) this.hud.miss(GAME.WIDTH / 2, this.HAND_Y - 80);
     this.flash(EPI.gonggi.missed);
     this.stones.forEach((st) => {
       st.vy = 0; st.vx = 0; st.spin = 0;

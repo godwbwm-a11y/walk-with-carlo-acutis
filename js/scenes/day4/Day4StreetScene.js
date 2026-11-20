@@ -6,6 +6,8 @@ window.Day4StreetScene = class Day4StreetScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day4StreetScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'OriginalScene');
     AudioSystem.setAmbience('room');
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#e6c8a0');

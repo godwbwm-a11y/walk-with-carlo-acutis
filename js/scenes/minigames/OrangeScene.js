@@ -70,6 +70,7 @@ window.OrangeScene = class OrangeScene extends MiniGameScene {
     if (!o.active || this.finished) return;
     AudioSystem.found();
     this.caught++;
+    this.ensureHud().hit(10, o.x, o.y - 20);
     this.tweens.killTweensOf(o);
     this.tweens.add({
       targets: o, x: 262, y: 372, scale: 0.6, alpha: 0, duration: 420, ease: 'Sine.easeIn',
@@ -79,6 +80,8 @@ window.OrangeScene = class OrangeScene extends MiniGameScene {
     this.refresh();
     if (this.caught >= this.total) this.time.delayedCall(400, () => this.done());
   }
+
+  gameStars() { const f = this.caught / this.total; return f >= 1 ? 3 : f >= 0.6 ? 2 : 1; }
 
   refresh() {
     this.progress.setText('주운 귤  ' + this.caught + ' / ' + this.total);

@@ -68,7 +68,8 @@
       EpIntroScene, EpYardScene, EpDinnerScene, EpCarloScene,
       EpChurchScene, EpPrayerScene, EpPhotoScene, EpWalkScene,
       EpPhotoBookScene, EpCreditsScene, EpFinalScene,
-      PassScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene
+      PassScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene,
+      StarCatchScene, WayHomeScene, GlassPuzzleScene, OriginalScene, HelloMatchScene, WaterShareScene, LinkHeartScene, MemoryWalkScene
     ]
   };
 

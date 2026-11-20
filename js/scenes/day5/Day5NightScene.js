@@ -6,6 +6,8 @@ window.Day5NightScene = class Day5NightScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day5NightScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'HelloMatchScene');
     AudioSystem.setAmbience('city');
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#0e1830');

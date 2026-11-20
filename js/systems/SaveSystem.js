@@ -37,6 +37,7 @@ window.SaveSystem = (function () {
       collection: [],           // 모은 말씀 카드
       journal: [],
       found: [],                 // 살펴본 오브젝트 기록
+      interlude: {},             // 그날 후반부에 끼어드는 게임을 했는지
       practiceLog: [],           // 노트에서 고른 작은 실천 — 다음 날 조용히 다시 물어봅니다
       lastCheckin: null,         // 실천을 물어본 날 (하루에 한 번만)
       settings: { bgm: true, sfx: true, textSpeed: 'normal' },
@@ -68,6 +69,7 @@ window.SaveSystem = (function () {
   }
 
   function save() {
+    if (window.SaveSystem && SaveSystem._sandbox) return;       // 연습 모드에서는 저장하지 않습니다
     data.updatedAt = new Date().toISOString();
     if (!available) return;
     try {
@@ -153,6 +155,21 @@ window.SaveSystem = (function () {
       data.checkpoint = null;
       save();
     },
+
+    /* 연습 모드 — 미니게임 모음에서 놀 때는 이야기의 기록을 건드리지 않습니다.
+       놀이 중에는 평소처럼 읽고 쓰되, 끝나면 시작 전 상태로 되돌리고 저장하지 않습니다. */
+    beginSandbox: function () {
+      if (this._snap) return;
+      this._snap = JSON.stringify(data);
+      this._sandbox = true;
+    },
+    endSandbox: function () {
+      if (!this._snap) return;
+      try { data = JSON.parse(this._snap); } catch (e) { }
+      this._snap = null;
+      this._sandbox = false;
+    },
+    inSandbox: function () { return !!this._sandbox; },
 
     hasSave: function () {
       return !!(data.checkpoint || data.dayCompleted.day1 || data.reflections.mainConcern);

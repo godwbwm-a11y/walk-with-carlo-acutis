@@ -6,6 +6,8 @@ window.PrayerScene = class PrayerScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     const D = DAY01.prayer;
+    /* 가롤로의 하루가 끝난 밤 — 기도 전에 별빛 한 판 */
+    if (window.Interlude) Interlude.run(this, 'StarCatchScene');
     AudioSystem.setAmbience('beach');
     AudioSystem.startPad();
 

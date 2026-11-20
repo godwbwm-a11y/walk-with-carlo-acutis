@@ -257,6 +257,7 @@ window.PassScene = class PassScene extends MiniGameScene {
       const d = Phaser.Math.Distance.Between(this.me.x, this.me.y, o.x, o.y);
       if (d < 58) {
         this.give('me');
+        this.ensureHud().hit(10, this.me.x, this.me.y - 50, '뺏었다!');
         this.flash(EPI.pass.stole);
         AudioSystem.found();
         this.tweens.add({ targets: o, angle: -8, duration: 120, yoyo: true });
@@ -305,11 +306,15 @@ window.PassScene = class PassScene extends MiniGameScene {
     if (side === 'me') {
       this.myGoals++;
       AudioSystem.chime();
+      this.ensureHud().hit(50, GAME.WIDTH / 2, this.T + 40, '골!');
+      GameFX.flash(this, 0xfff1cf);
+      GameFX.burst(this, GAME.WIDTH / 2, this.T + 20, { count: 26, speed: 160 });
       this.flash(EPI.pass.myGoal);
       this.tweens.add({ targets: this.me, y: this.me.y - 16, duration: 200, yoyo: true, repeat: 1 });
     } else {
       this.theirGoals++;
       AudioSystem.bell();
+      if (this.hud) this.hud.combo = 0;
       this.flash(EPI.pass.theirGoal);
       this.opps.forEach((o, i) => {
         this.tweens.add({ targets: o, y: o.y - 16, duration: 200, delay: i * 90, yoyo: true, repeat: 1 });
@@ -325,6 +330,8 @@ window.PassScene = class PassScene extends MiniGameScene {
       this.kickOff(side === 'me' ? 'them' : 'me');
     });
   }
+
+  gameStars() { return this.myGoals >= 5 && this.myGoals > this.theirGoals ? 3 : this.myGoals >= 3 ? 2 : 1; }
 
   updateScore() {
     const P = EPI.pass;

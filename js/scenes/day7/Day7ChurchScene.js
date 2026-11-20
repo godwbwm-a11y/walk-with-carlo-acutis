@@ -6,6 +6,8 @@ window.Day7ChurchScene = class Day7ChurchScene extends Phaser.Scene {
   create() {
     const W = GAME.WIDTH, H = GAME.HEIGHT;
     SaveSystem.checkpoint('Day7ChurchScene', {});
+    /* 그날 후반부의 놀이 한 판 — 한 번만 끼어듭니다 */
+    if (window.Interlude) Interlude.run(this, 'LinkHeartScene');
     AudioSystem.setAmbience('city');
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#e6c8a0');

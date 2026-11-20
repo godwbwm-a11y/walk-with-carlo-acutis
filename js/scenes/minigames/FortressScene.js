@@ -434,6 +434,7 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.shell.destroy(); this.shell = null;
     this.flying = false;
     this.roundShots++;
+    if (this.hud) { this.hud.combo = 0; AudioSystem.gMiss(); }
     this.boomAt(x, y, false);
 
     if (reason) this.say(reason);
@@ -454,6 +455,8 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.flying = false;
     this.locked = true;
     this.hits++;
+    /* 적게 쏘고 맞힐수록 큰 점수 */
+    this.ensureHud().hit(50 + Math.max(0, 40 - this.roundShots * 10), this.targetX, this.targetY - 60, this.roundShots === 0 ? '한 방에!' : '명중!');
     this.boomAt(this.targetX, this.targetY - 18, true);
     AudioSystem.found();
 
