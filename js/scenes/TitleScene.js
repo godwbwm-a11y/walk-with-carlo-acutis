@@ -508,7 +508,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
           backgroundColor: kindColor[g.kind] || '#8a6340', padding: { x: 7, y: 2 }, shadow: false })).setOrigin(0, 0);
         row.add(tag);
         let tx = -rowW / 2 + 18 + tag.width + 8;
-        if (g.late) {
+        if (g.late || g.fresh) {
           const nw = this.add.text(tx, -rowH / 2 + 13, 'NEW', UI.style(11, '#ffffff', {
             backgroundColor: '#e8984a', padding: { x: 6, y: 2 }, shadow: false })).setOrigin(0, 0);
           row.add(nw);

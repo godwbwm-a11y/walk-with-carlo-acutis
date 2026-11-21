@@ -50,7 +50,27 @@ TextureFactory.createEpi = function (scene) {
     });
   });
 
+  /* 꼬리잡기에서 옆으로 달릴 때 쓰는 옆모습 — 앞·뒷모습은 위에서 이미 만들었습니다 */
+  if (TextureFactory.walker) crew.forEach(function (c) {
+    TextureFactory.walker(scene, 'epi_' + c.id, { skin: c.skin, hair: c.hair, shirt: c.shirt, pants: c.pants, shoes: c.shoes, hairStyle: c.hairStyle },
+      { back: true, bag: c.bag });
+  });
+  /* 본당 주일학교 친구 둘 — 성별을 가리지 않는 평범한 옷차림 */
+  if (TextureFactory.walker) {
+    TextureFactory.walker(scene, 'epi_kid1', { skin: 0xf1cfae, hair: 0x2a1f19, shirt: 0xe9eef2, pants: 0x2f3d5c, shoes: 0xf4efe6, hairStyle: 'bob', stripe: 0x3f74b8 }, { back: true });
+    TextureFactory.walker(scene, 'epi_kid2', { skin: 0xeac2a0, hair: 0x3a2a20, shirt: 0xf09a6a, pants: 0x5a5148, shoes: 0x30343a, hairStyle: 'shag', hoodie: true, longSleeve: true }, { back: true });
+  }
+
   /* ── 본당 마당 ─────────────────────────────── */
+  /* 꼬리잡기 손수건 두 장 — 마당 바닥에 놓여 있습니다 */
+  make(scene, 'epi_tag_scarf', 44, 22, function (g) {
+    g.fillStyle(0x000000, 0.14); g.fillEllipse(22, 18, 40, 7);
+    g.fillStyle(0xe8505a, 1); g.fillTriangle(2, 14, 20, 4, 24, 16);
+    g.fillStyle(0xf47a82, 1); g.fillTriangle(6, 13, 18, 6, 20, 13);
+    g.fillStyle(0x3fa0e0, 1); g.fillTriangle(22, 16, 42, 8, 38, 19);
+    g.fillStyle(0x7cc2ee, 1); g.fillTriangle(26, 15, 39, 10, 36, 17);
+  });
+
   /* 루르드 성모당 — 작은 바위 굴과 흰 상 */
   make(scene, 'epi_grotto', 96, 110, function (g) {
     g.fillStyle(0x000000, 0.14); g.fillEllipse(48, 104, 74, 12);

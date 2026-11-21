@@ -65,6 +65,7 @@ window.ARCADE = {
     { key: 'MyPathScene', day: 8, title: '나의 길', kind: '손놀이', desc: '어느 쪽으로 걸어도 하나의 길' },
 
     { key: 'PassScene', day: 'E', title: '축구 한 판', kind: '액션', desc: '공을 뺏고 차고, 골대는 없어요' },
+    { key: 'TailTagScene', day: 'E', title: '꼬리잡기', kind: '액션', fresh: true, desc: '세계 친구들과 두 줄로! 저쪽 꼬리를 잡고 우리 꼬리는 지켜요' },
     { key: 'JegiScene', day: 'E', title: '제기차기', kind: '액션', desc: '떨어지는 제기를 발로 톡' },
     { key: 'GonggiScene', day: 'E', title: '공기놀이', kind: '액션', desc: '튀어 오른 돌을 때맞춰 잡기' },
     { key: 'PoseScene', day: 'E', title: '사진 찍기', kind: '손놀이', desc: '다 같이 포즈!' },

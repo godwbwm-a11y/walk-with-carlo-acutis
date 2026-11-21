@@ -129,12 +129,41 @@ window.EPI = {
       { id: 'gonggi', icon: '🎲', label: '공기놀이', scene: 'GonggiScene', done: '돌이 구를 때마다 여럿이 함께 주웠다.' },
       { id: 'photo', icon: '📷', label: '사진', scene: 'PoseScene', done: '한 명이 완전히 다른 포즈를 했다.' },
       { id: 'dance', icon: '🎵', label: '음악', scene: 'FollowScene', done: '여러 나라가 같은 동작을 하고 있었다.' },
-      { id: 'snack', icon: '🍪', label: '간식', scene: 'TasteScene', done: '“SPICY! VERY GOOD!”' }
+      { id: 'snack', icon: '🍪', label: '간식', scene: 'TasteScene', done: '“SPICY! VERY GOOD!”' },
+      { id: 'tag', icon: '🎀', label: '꼬리잡기', scene: 'TailTagScene', done: '줄은 하나가 되었고, 누가 머리였는지는 아무도 기억하지 않았다.' }
     ],
     enough: '이제 그만 놀고 쉬기',
     enoughHint: '충분히 놀았다면 언제든 자리에 앉아도 됩니다.',
     favoriteQ: '오늘 제일 재밌었던 건?',
     played: '오늘 함께한 놀이'
+  },
+
+  /* ── 미니게임 · 꼬리잡기 ───────────────────── */
+  tag: {
+    title: '꼬리잡기',
+    hint: '화면을 밀어 우리 줄 머리를 움직여요. 저쪽 줄 끝의 손수건을 잡고, 우리 꼬리는 지켜요!',
+    open: [
+      { t: '마당 한가운데에 주일학교 선생님이 손수건 두 장을 들고 선다.' },
+      { s: '주일학교 선생님', t: '꼬리잡기 할 사람!' },
+      { s: '레오', t: 'Tail…? What is 꼬리?' },
+      { s: '나', t: '음… 이거! 이렇게 허리에 꽂고 도망가는 거야.' },
+      { t: '앞사람 어깨를 잡고 한 줄로 선다. 나라도 본당도 섞어서, 두 줄.' },
+      { s: '주일학교 선생님', t: '머리는 저쪽 꼬리를 잡고, 꼬리는 도망가요! 손 놓으면 안 돼요!' },
+      { s: '레오', t: 'OK! Catch the tail!' }
+    ],
+    stickHint: '화면을 밀어 머리를 움직여요',
+    me: '우리 줄',
+    them: '저쪽 줄',
+    caught: '꼬리!',
+    caughtLine: '잡힌 친구가 우리 줄 끝에 붙었다.',
+    lostLine: '앗, 우리 꼬리가 저쪽 줄 끝으로 갔다.',
+    winMine: '저쪽 줄이 모두 우리 줄로 왔다!\n이제 머리 하나만 남았다.',
+    winTheirs: '우리 줄이 모두 저쪽으로 갔다!\n…그래도 다들 웃고 있다.',
+    timeUp: '숨이 턱까지 찼다.\n누가 이겼는지는 아무도 세지 않았다.',
+    againBtn: '한 판 더',
+    stopBtn: '이제 그만',
+    doneLine: '마지막에는 두 줄이 하나로 이어져\n마당을 한 바퀴 돌았다.',
+    done: '줄은 하나가 되었고, 누가 머리였는지는 아무도 기억하지 않았다.'
   },
 
   /* ── 미니게임 A · 패스! ────────────────────── */

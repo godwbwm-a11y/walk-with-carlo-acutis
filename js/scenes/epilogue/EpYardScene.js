@@ -83,6 +83,16 @@ window.EpYardScene = class EpYardScene extends WorldScene {
       id: 'ep_jegi', x: 840, y: 636, texture: 'epi_jegi', label: '제기차기', scale: 1.4,
       markerY: 574, onInteract: () => this.play('jegi')
     });
+    /* 꼬리잡기 — 마당에 놓인 손수건 두 장, 주일학교 친구들이 기다립니다 */
+    this.addInteractable({
+      id: 'ep_tag', x: 420, y: 636, texture: 'epi_tag_scarf', label: '꼬리잡기', scale: 1.3,
+      markerY: 560, priority: 1, onInteract: () => this.play('tag')
+    });
+    [[384, 600, 'epi_kid1_front'], [452, 596, 'epi_kid2_front']].forEach((p) => {
+      if (!this.textures.exists(p[2])) return;
+      const kid = this.add.image(p[0], p[1], p[2]).setDepth(p[1]).setScale(1.24);
+      this.tweens.add({ targets: kid, y: p[1] - 5, duration: 700 + Math.random() * 300, yoyo: true, repeat: -1 });
+    });
     this.addInteractable({
       id: 'ep_dance', x: 980, y: 634, texture: 'epi_speaker', label: '음악', scale: 1.2,
       markerY: 572, onInteract: () => this.play('dance')
