@@ -11,10 +11,7 @@ window.EpChurchScene = class EpChurchScene extends Phaser.Scene {
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#1a2033');
 
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0x232a40, 1); g.fillRect(0, 0, W, 450);
-    g.fillStyle(0x2b3350, 1); g.fillRect(0, 450, W, H - 450);
-    g.fillStyle(0x1d2438, 1); g.fillRect(0, 444, W, 10);
+    Townscape.nave(this, { floorY: 450, mood: 'night', depth: -30 });
 
     this.add.image(W / 2, 240, 'stained_glass').setDepth(-20).setScale(1.1).setAlpha(0.5);
     if (window.Cine) Cine.rays(this, W / 2, 220, { fan: 0.2, count: 5, length: 560, depth: -19, alpha: 0.12 });

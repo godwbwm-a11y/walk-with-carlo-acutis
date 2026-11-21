@@ -13,13 +13,11 @@ window.Day2ChurchScene = class Day2ChurchScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#2b2634');
 
     /* 성당 안 */
-    const g = this.add.graphics().setDepth(0);
-    g.fillStyle(0x3a3040, 1); g.fillRect(0, 0, W, H);
-    g.fillStyle(0x4a3f4e, 1); g.fillRect(0, 470, W, H - 470);
-    g.fillStyle(0x2f2836, 1);
-    g.fillTriangle(0, 0, W, 0, W / 2, 120);
-    g.fillStyle(0x554857, 1);
-    g.fillRect(28, 150, 40, 330); g.fillRect(W - 68, 150, 40, 330);
+    /* 기둥과 스테인드글라스, 늑골 천장, 대리석 바닥 — 안쪽 제단으로 빛이 모입니다 */
+    Townscape.nave(this, { floorY: 470, mood: 'warm', depth: 0 });
+    this.add.rectangle(W / 2, H / 2, W, H, 0x2a1e30, 0.4).setDepth(0.5);       // 조용히 가라앉은 빛
+    const top = this.add.graphics().setDepth(0.6);                              // 위쪽 글이 잘 읽히도록
+    top.fillGradientStyle(0x150f1c, 0x150f1c, 0x150f1c, 0x150f1c, 0.55, 0.55, 0, 0); top.fillRect(0, 0, W, 200);
 
     this.add.image(W / 2, 300, 'altar').setDepth(6).setScale(1.15);
     this.add.image(W / 2, 236, 'lamp_glow').setDepth(5).setScale(1.6).setAlpha(0.35);
@@ -48,7 +46,7 @@ window.Day2ChurchScene = class Day2ChurchScene extends Phaser.Scene {
     this.hint = this.add.text(W / 2, 92, '', UI.style(FONT.body, PAL.cream, {
       align: 'center', wordWrap: { width: W - 60 }
     })).setOrigin(0.5).setDepth(60);
-    this.count = this.add.text(W / 2, 126, '', UI.style(FONT.small, '#cbbfae')).setOrigin(0.5).setDepth(60);
+    this.count = this.add.text(W / 2, 146, '', UI.style(FONT.small, '#cbbfae')).setOrigin(0.5).setDepth(60);
 
     UI.fadeIn(this, 1200, [230, 215, 195]);
     AudioSystem.bell();

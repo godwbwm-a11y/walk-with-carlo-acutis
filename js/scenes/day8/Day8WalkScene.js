@@ -14,11 +14,8 @@ window.Day8WalkScene = class Day8WalkScene extends WorldScene {
     this.flags = { bag: false, stone: false, helped: false, door: false };
 
     this.add.image(0, 0, 'sky_evening').setOrigin(0, 0).setDisplaySize(1900, 400).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0xc0b49c, 1); g.fillRect(0, 380, 1900, H - 380);
-    g.fillStyle(0xccc0a8, 1); g.fillRect(0, 380, 1900, 12);
-    g.fillStyle(0xb0a48e, 1); g.fillRect(0, 700, 1900, H - 700);
-    for (let x = 0; x < 1900; x += 110) { g.fillStyle(0xc7bba4, 0.7); g.fillRect(x + 12, 748, 60, 6); }
+    /* 해 질 녘의 동네 — 배경에도 노을빛이 듭니다 */
+    Townscape.street(this, { world: 1900, ground: 380, road: 700, horizon: 378, tint: 0xffcfa6 });
 
     this.add.image(200, 420, 'store_front').setDepth(420).setScale(0.95);
     this.add.image(520, 400, 'tree_big').setDepth(400).setScale(0.95);

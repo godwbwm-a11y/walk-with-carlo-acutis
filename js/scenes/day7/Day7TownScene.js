@@ -13,11 +13,9 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
     this.flags = { notice: false, helped: false, bench: false };
 
     this.add.image(0, 0, 'sky_ordinary').setOrigin(0, 0).setDisplaySize(1700, 380).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0x9fae86, 1); g.fillRect(0, 360, 1700, 120);
-    g.fillStyle(0xc7bda6, 1); g.fillRect(0, 470, 1700, H - 470);
-    g.fillStyle(0xd3c9b2, 1); g.fillRect(0, 470, 1700, 10);
-    for (let x = 0; x < 1700; x += 110) { g.fillStyle(0xd8cfb8, 0.7); g.fillRect(x + 12, 748, 60, 6); }
+    /* 먼 산과 단지, 동네 지붕, 공원 잔디, 보도블록, 찻길 */
+    Townscape.street(this, { world: 1700, ground: 470, road: 700, horizon: 364 });
+    Townscape.strip(this, 'scn_grass', 0, 362, 1700, 108, { depth: -27.2 });
 
     /* 편의점 · 공원 · 성당 가는 길 */
     this.add.image(200, 420, 'store_front').setDepth(420).setScale(1.0);

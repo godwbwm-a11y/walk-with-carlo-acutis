@@ -10,10 +10,7 @@ window.Day8ChurchScene = class Day8ChurchScene extends Phaser.Scene {
     AudioSystem.startPad();
     this.cameras.main.setBackgroundColor('#1a2033');
 
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0x232a40, 1); g.fillRect(0, 0, W, 470);
-    g.fillStyle(0x2b3350, 1); g.fillRect(0, 470, W, H - 470);
-    g.fillStyle(0x1d2438, 1); g.fillRect(0, 464, W, 10);
+    Townscape.nave(this, { floorY: 470, mood: 'night', depth: -30 });
 
     this.add.image(W / 2, 250, 'stained_glass').setDepth(-20).setScale(1.1).setAlpha(0.5);
     if (window.Cine) {

@@ -1181,6 +1181,8 @@ window.Props = (function () {
     c.fillRect(0, 0, w, h);
   };
 
+  /* 다른 파일(Townscape 등)이 그림을 더하거나 더 정밀한 그림으로 바꿀 때 */
+  function add(key, fn) { P[key] = fn; }
   function has(key) { return !!P[key]; }
   function paint(key, ctx, w, h) {
     const rnd = seed(key);
@@ -1190,5 +1192,7 @@ window.Props = (function () {
     ctx.restore();
   }
 
-  return { has: has, paint: paint, SKY: SKY };
+  return { has: has, paint: paint, add: add, SKY: SKY,
+    brush: { seed: seed, rr: rr, lg: lg, rg: rg, box: box, ell: ell, line: line, clipRR: clipRR,
+      grain: grain, plank: plank, glass: glass, litWindow: litWindow, foliage: foliage, contact: contact } };
 })();

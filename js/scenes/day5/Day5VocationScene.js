@@ -14,10 +14,7 @@ window.Day5VocationScene = class Day5VocationScene extends WorldScene {
     this.seen = {};
 
     this.add.image(0, 0, 'sky_seoul_day').setOrigin(0, 0).setDisplaySize(1800, 380).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0xd9cdb6, 1); g.fillRect(0, 360, 1800, H - 360);
-    g.fillStyle(0xe3d9c4, 1); g.fillRect(0, 360, 1800, 12);
-    g.fillStyle(0xc8bda8, 1); g.fillRect(0, 700, 1800, H - 700);
+    Townscape.street(this, { world: 1800, ground: 360, road: 700, horizon: 358, far: 'scn_seoul_far', farScale: 1.1, mid: false, walk: 'scn_plaza' });
 
     /* 부스 열두 개 */
     this.boothItems = [];

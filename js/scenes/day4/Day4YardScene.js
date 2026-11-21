@@ -14,16 +14,14 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
     this.flags = {};
 
     this.add.image(W / 2, 0, 'sky_morning').setOrigin(0.5, 0)
-      .setDisplaySize(W, 340).setScrollFactor(0).setDepth(-30);
-    const g = this.add.graphics().setDepth(-28);
-    g.fillStyle(0xc4cdbe, 1); g.fillRect(0, 320, WORLD, 120);
-    g.fillStyle(0xd8c9a6, 1); g.fillRect(0, 430, WORLD, H - 430);
-    g.fillStyle(0xcbbb96, 1); g.fillRect(0, 430, WORLD, 12);
-    for (let i = 0; i < 160; i++) {
-      g.fillStyle(0xffffff, 0.08);
-      g.fillEllipse(Phaser.Math.Between(0, WORLD), Phaser.Math.Between(450, H - 20), Phaser.Math.Between(12, 30), 5);
-    }
-    g.lineStyle(4, 0xf3ece2, 0.45);
+      .setDisplaySize(W, 440).setScrollFactor(0).setDepth(-30);
+    /* 먼 산과 동네, 운동장 너머의 교사동, 모래 운동장 */
+    Townscape.street(this, { world: WORLD, ground: 430, horizon: 426, mid: true, depth: -29 }).walk.setVisible(false);
+    Townscape.strip(this, 'scn_school_bay', 240, 430 - 300 * 0.62, 900, 300 * 0.62, { depth: -28.2, scale: 0.62, scroll: 0.85 });
+    Townscape.strip(this, 'scn_sand', 0, 430, WORLD, H - 430, { depth: -28 });
+    const g = this.add.graphics().setDepth(-27.5);
+    g.fillStyle(0x000000, 0.12); g.fillRect(0, 430, WORLD, 8);
+    g.lineStyle(4, 0xf3ece2, 0.55);
     g.strokeRect(120, 480, WORLD - 240, 240);
 
     this.addProp(200, 430, 'goal_post', { originY: 1, depth: 3, alpha: 0.9, scale: 1.0 });

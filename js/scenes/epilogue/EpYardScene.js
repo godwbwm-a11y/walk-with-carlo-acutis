@@ -17,6 +17,8 @@ window.EpYardScene = class EpYardScene extends WorldScene {
 
     /* ── 마당 ── */
     this.add.image(0, 0, 'epi_sky_day').setOrigin(0, 0).setDisplaySize(1440, 420).setDepth(-40);
+    /* 본당 마당 너머의 먼 산과 동네 */
+    Townscape.street(this, { world: 1440, ground: 404, horizon: 402, depth: -36 });
     this.add.tileSprite(720, 622, 1440, 444, 'epi_yard_tile').setDepth(-30);
     const g = this.add.graphics().setDepth(-29);
     g.fillStyle(0xe0d7c2, 1); g.fillRect(0, 396, 1440, 12);

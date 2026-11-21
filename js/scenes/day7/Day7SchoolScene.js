@@ -12,21 +12,9 @@ window.Day7SchoolScene = class Day7SchoolScene extends WorldScene {
     const H = GAME.HEIGHT;
     this.flags = { route: false, gate: false, friend: false, explained: false, board: false, breakTime: false };
 
-    this.add.image(0, 0, 'sky_ordinary').setOrigin(0, 0).setDisplaySize(2000, 380).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0xd2c8b2, 1); g.fillRect(0, 360, 2000, H - 360);
-    g.fillStyle(0xdcd3bf, 1); g.fillRect(0, 360, 2000, 12);
-    g.fillStyle(0xc2b8a2, 1); g.fillRect(0, 700, 2000, H - 700);
-
-    /* 등굣길 — 편의점, 공원, 학교 */
-    for (let x = -20; x < 1000; x += 120) {
-      const h = 100 + ((x * 11) % 70);
-      g.fillStyle(((x / 120) | 0) % 2 === 0 ? 0xb7c0c8 : 0xaab4bd, 1);
-      g.fillRect(x, 360 - h, 98, h);
-      g.fillStyle(0xe4ecf1, 0.6);
-      for (let r = 0; r < Math.floor(h / 30); r++)
-        for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 28, 360 - h + 14 + r * 30, 18, 12);
-    }
+    this.add.image(0, 0, 'sky_ordinary').setOrigin(0, 0).setDisplaySize(2000, 380).setScrollFactor(0.3, 1).setDepth(-40);
+    /* 먼 산과 단지, 동네 지붕, 보도블록, 연석, 찻길 */
+    Townscape.street(this, { world: 2000, ground: 360, road: 700, horizon: 358 });
     this.add.image(220, 400, 'store_front').setDepth(400).setScale(0.95);
     this.add.image(560, 380, 'tree_big').setDepth(380).setScale(0.95);
     this.add.image(640, 400, 'bench').setDepth(400).setScale(1.0);

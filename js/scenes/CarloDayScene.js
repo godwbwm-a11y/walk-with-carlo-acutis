@@ -93,21 +93,18 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     const WORLD_W = this.WORLD_W, H = GAME.HEIGHT;
     const ROAD_TOP = 466, CURB = 522, WALK = 540;
 
+    /* 반암 돌을 깐 찻길, 화강석 연석과 넓은 판석 인도 */
+    Townscape.strip(this, 'scn_setts', 0, ROAD_TOP, WORLD_W, CURB - ROAD_TOP, { depth: -20.5 });
+    Townscape.strip(this, 'scn_curb', 0, CURB - 4, WORLD_W, WALK - CURB + 6, { depth: -20.4 });
+    Townscape.strip(this, 'scn_milan_walk', 0, WALK, WORLD_W, H - WALK, { depth: -20.5 });
     const g = this.add.graphics().setDepth(-20);
-    g.fillStyle(0x6b6f78, 1); g.fillRect(0, ROAD_TOP, WORLD_W, CURB - ROAD_TOP);
-    g.fillStyle(0x777b84, 1); g.fillRect(0, ROAD_TOP, WORLD_W, 8);
+    g.fillStyle(0x000000, 0.18); g.fillRect(0, ROAD_TOP, WORLD_W, 6);
 
     /* 전차 레일 */
     g.fillStyle(0x8f949c, 1);
     g.fillRect(0, ROAD_TOP + 24, WORLD_W, 3);
     g.fillRect(0, ROAD_TOP + 40, WORLD_W, 3);
 
-    /* 연석과 인도 */
-    g.fillStyle(0xbdb4a4, 1); g.fillRect(0, CURB, WORLD_W, WALK - CURB);
-    g.fillStyle(0xd6ccb8, 1); g.fillRect(0, WALK, WORLD_W, H - WALK);
-    g.lineStyle(1, 0xc4b9a4, 1);
-    for (let x = 0; x < WORLD_W; x += 44) g.lineBetween(x, WALK, x, H);
-    for (let y = WALK + 48; y < H; y += 48) g.lineBetween(0, y, WORLD_W, y);
 
     /* 건물이 인도에 드리우는 그늘 */
     g.fillStyle(0x8f8571, 0.16);
@@ -146,20 +143,12 @@ window.CarloDayScene = class CarloDayScene extends WorldScene {
     this.addProp(2680, BASE, 'apart_milan', { scale: 1.02, depth: 300 });
 
     /* 사이를 메우는 낮은 건물들 */
-    [[340, 0xe0c9a8], [760, 0xd6bfa0], [900, 0xe6d2b0], [1330, 0xdcc3a2],
-     [1480, 0xe4cda9], [1880, 0xd9c09f], [2050, 0xe6d4b4], [2420, 0xdcc4a4],
-     [2540, 0xe2cba8], [2860, 0xd8bf9e]].forEach((cfg) => {
+    /* 밀라노의 벽색 — 황토, 살구, 연노랑, 붉은 흙빛 */
+    [[340, 0xdca56e], [760, 0xe6c48e], [900, 0xcf8f66], [1330, 0xe8d3a6],
+     [1480, 0xd99a6c], [1880, 0xe3b77e], [2050, 0xc98a62], [2420, 0xe6cf9c],
+     [2540, 0xd6a274], [2860, 0xe0bb86]].forEach((cfg) => {
       const x = cfg[0], color = cfg[1];
-      const g = this.add.graphics().setDepth(280);
-      const h = 120 + ((x * 7) % 60);
-      g.fillStyle(color, 1); g.fillRoundedRect(x - 56, BASE - h, 112, h, 4);
-      g.fillStyle(0x000000, 0.07); g.fillRect(x - 56, BASE - h, 112, 7);
-      for (let r = 0; r < 2; r++) {
-        for (let i = 0; i < 3; i++) {
-          g.fillStyle(0x7d5c40, 1); g.fillRoundedRect(x - 42 + i * 30, BASE - h + 22 + r * 44, 20, 26, 3);
-          g.fillStyle(0xf6d79a, 0.85); g.fillRoundedRect(x - 39 + i * 30, BASE - h + 25 + r * 44, 14, 20, 2);
-        }
-      }
+      Townscape.milanFiller(this, x, BASE, color, 120 + ((x * 7) % 60), 280);
     });
 
     /* 밤이 되면 켜지는 가로등 */

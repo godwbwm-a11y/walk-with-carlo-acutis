@@ -14,11 +14,13 @@ window.Day6PilgrimageScene = class Day6PilgrimageScene extends WorldScene {
     this.rested = {};
 
     this.add.image(0, 0, 'sky_afternoon').setOrigin(0, 0).setDisplaySize(2000, 380).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0x9aa984, 1); g.fillRect(0, 360, 2000, 130);
-    g.fillStyle(0x6f9b6a, 0.5);
-    for (let x = -10; x < 2000; x += 88) g.fillCircle(x, 372, 30);
-    this.add.tileSprite(1000, 660, 2000, 380, 'road_pilgrim').setDepth(-20);
+    /* 먼 산 앞의 숲, 풀밭 */
+    const ts = Townscape.street(this, { world: 2000, ground: 490, horizon: 400, far: 'scn_treeline', farScale: 1.4, mid: false, walk: 'scn_grass' });
+    ts.walk.y = 380; ts.walk.height = 110; ts.curbTop.setVisible(false);
+    /* 마사토 순례길 — 풀밭과 만나는 가장자리는 부드럽게 */
+    Townscape.strip(this, 'scn_gravel', 0, 470, 2000, 374, { depth: -20 });
+    const edge = this.add.graphics().setDepth(-19.9);
+    edge.fillGradientStyle(0x6f9152, 0x6f9152, 0x6f9152, 0x6f9152, 0.55, 0.55, 0, 0); edge.fillRect(0, 470, 2000, 14);
 
     /* 그늘 쉼터 */
     this.add.image(1070, 470, 'shade_tent').setDepth(470).setScale(1.05);

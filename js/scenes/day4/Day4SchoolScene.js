@@ -35,29 +35,23 @@ window.Day4SchoolScene = class Day4SchoolScene extends WorldScene {
     const SKY = 330, GROUND = 560, ROAD = 762;
 
     this.add.image(W / 2, 0, 'sky_morning').setOrigin(0.5, 0)
-      .setDisplaySize(W, SKY + 6).setScrollFactor(0).setDepth(-30).setTint(0xdfe6ee);
+      .setDisplaySize(W, GROUND + 6).setScrollFactor(0).setDepth(-30).setTint(0xdfe6ee);
 
-    const g = this.add.graphics().setDepth(-28);
-    g.fillStyle(0xc9d1c6, 1); g.fillRect(0, SKY, WORLD, GROUND - SKY);
-    for (let x = 40; x < WORLD; x += 118) {
-      const h = 70 + ((x * 7) % 60);
-      g.fillStyle(((x / 118) | 0) % 2 === 0 ? 0xb2bcb6 : 0xa9b4ae, 1);
-      g.fillRect(x, GROUND - h, 96, h);
-      g.fillStyle(0xc7d2cb, 0.7);
-      for (let r = 0; r < Math.floor(h / 30); r++)
-        for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 26, GROUND - h + 18 + r * 30, 16, 14);
-    }
-    g.fillStyle(0xd7cec1, 1); g.fillRect(0, GROUND, WORLD, ROAD - GROUND);
-    g.fillStyle(0xc7bdae, 1); g.fillRect(0, GROUND, WORLD, 8);
-    g.fillStyle(0x9a9a96, 1); g.fillRect(0, ROAD, WORLD, H - ROAD);
+    /* 먼 산과 아파트 단지, 동네 지붕, 보도블록과 연석, 아스팔트 찻길 */
+    Townscape.street(this, { world: WORLD, ground: GROUND, road: ROAD, horizon: GROUND - 4 });
+    /* 교실 — 미색 벽과 나무 징두리, 마룻바닥 / 복도 — 사물함 벽과 테라초 바닥 */
+    const T = (key, x, y, w, h) => Townscape.strip(this, key, x, y, w, h, { depth: -26 });
+    T('scn_class_wall', 760, 300, 520, 130); T('scn_wood_floor', 760, 430, 520, ROAD - 430);
+    T('scn_hall_wall', 1340, 300, 620, 130); T('scn_terrazzo', 1340, 430, 620, ROAD - 430);
+    const g = this.add.graphics().setDepth(-25.5);
+    [[760, 520], [1340, 620]].forEach((r) => {
+      g.fillStyle(0xd9cdb4, 1); g.fillRect(r[0], 300, r[1], 14);                // 천장 몰딩
+      g.fillStyle(0x000000, 0.12); g.fillRect(r[0], 314, r[1], 4);
+      g.fillStyle(0x000000, 0.18); g.fillRect(r[0], 430, r[1], 8);              // 벽과 바닥이 만나는 그늘
+      g.fillStyle(0x000000, 0.14); g.fillRect(r[0], 300, 8, ROAD - 300); g.fillRect(r[0] + r[1] - 8, 300, 8, ROAD - 300);
+    });
 
-    g.fillStyle(0xf0e7d6, 1); g.fillRect(760, 300, 520, ROAD - 300);
-    g.fillStyle(0xe2d7c2, 1); g.fillRect(760, 300, 520, 16);
-    g.fillStyle(0xe6ecf0, 1); g.fillRect(1340, 300, 620, ROAD - 300);
-    g.fillStyle(0xd4dde4, 1); g.fillRect(1340, 300, 620, 16);
 
-    this.add.tileSprite(WORLD / 2, (GROUND + ROAD) / 2, WORLD, ROAD - GROUND, 'walk_tile')
-      .setDepth(-27).setAlpha(0.4);
     this.roadY = ROAD;
   }
 

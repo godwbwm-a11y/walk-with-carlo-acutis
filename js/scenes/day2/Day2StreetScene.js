@@ -39,7 +39,7 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
     const SKY = 330, GROUND = 560, ROAD = 762;
 
     this.add.image(W / 2, 0, 'sky_morning').setOrigin(0.5, 0)
-      .setDisplaySize(W, SKY + 6).setScrollFactor(0).setDepth(-30);
+      .setDisplaySize(W, GROUND + 6).setScrollFactor(0).setDepth(-30);
 
     for (let i = 0; i < 7; i++) {
       const c = this.add.image(Phaser.Math.Between(0, WORLD), Phaser.Math.Between(40, 210), 'cloud_soft')
@@ -48,33 +48,8 @@ window.Day2StreetScene = class Day2StreetScene extends WorldScene {
       this.tweens.add({ targets: c, x: c.x + 40, duration: 26000, yoyo: true, repeat: -1 });
     }
 
-    const g = this.add.graphics().setDepth(-28);
-    g.fillStyle(0xc9d6c3, 1); g.fillRect(0, SKY, WORLD, GROUND - SKY);      // 먼 언덕
-    g.fillStyle(0xbccbb6, 1);
-    for (let x = 0; x < WORLD; x += 260) g.fillEllipse(x, SKY + 30, 420, 120);
-
-    /* 멀리 보이는 동네 */
-    for (let x = 40; x < WORLD; x += 118) {
-      const h = Phaser.Math.Between(70, 130);
-      g.fillStyle(x % 236 === 40 ? 0xaebbb4 : 0xa5b3ad, 1);
-      g.fillRect(x, GROUND - h, 96, h);
-      g.fillStyle(0x94a39d, 1);
-      g.fillRect(x, GROUND - h, 96, 8);
-      g.fillStyle(0xc7d2cb, 0.7);
-      for (let r = 0; r < Math.floor(h / 30); r++)
-        for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 26, GROUND - h + 18 + r * 30, 16, 14);
-    }
-    g.fillStyle(0xbcc9c2, 0.45);
-    g.fillRect(0, GROUND - 12, WORLD, 12);
-    g.fillStyle(0xd7cec1, 1); g.fillRect(0, GROUND, WORLD, ROAD - GROUND);  // 인도
-    g.fillStyle(0xc7bdae, 1); g.fillRect(0, GROUND, WORLD, 8);
-    g.fillStyle(0x9a9a96, 1); g.fillRect(0, ROAD, WORLD, H - ROAD);         // 찻길
-    g.fillStyle(0xf3ece2, 0.85);
-    for (let x = 10; x < WORLD; x += 90) g.fillRect(x, ROAD + 40, 46, 6);
-
-    /* 인도 블록 무늬 */
-    this.add.tileSprite(WORLD / 2, (GROUND + ROAD) / 2, WORLD, ROAD - GROUND, 'walk_tile')
-      .setDepth(-27).setAlpha(0.5);
+    /* 먼 산과 아파트 단지, 동네 지붕, 보도블록과 연석, 아스팔트 찻길 */
+    Townscape.street(this, { world: WORLD, ground: GROUND, road: ROAD, horizon: GROUND - 4 });
 
     /* 구역마다 다른 바닥빛 */
     const zone = this.add.graphics().setDepth(-26);

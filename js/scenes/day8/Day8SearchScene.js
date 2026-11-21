@@ -14,20 +14,9 @@ window.Day8SearchScene = class Day8SearchScene extends WorldScene {
     this.looked = {};
     this.flags = { friend: false, hallway: false, said: false };
 
-    this.add.image(0, 0, 'sky_ordinary').setOrigin(0, 0).setDisplaySize(2200, 380).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0xd2c8b2, 1); g.fillRect(0, 360, 2200, H - 360);
-    g.fillStyle(0xdcd3bf, 1); g.fillRect(0, 360, 2200, 12);
-    g.fillStyle(0xc2b8a2, 1); g.fillRect(0, 700, 2200, H - 700);
-
-    for (let x = -20; x < 1300; x += 120) {
-      const h = 100 + ((x * 11) % 70);
-      g.fillStyle(((x / 120) | 0) % 2 === 0 ? 0xb7c0c8 : 0xaab4bd, 1);
-      g.fillRect(x, 360 - h, 98, h);
-      g.fillStyle(0xe4ecf1, 0.6);
-      for (let r = 0; r < Math.floor(h / 30); r++)
-        for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 28, 360 - h + 14 + r * 30, 18, 12);
-    }
+    this.add.image(0, 0, 'sky_ordinary').setOrigin(0, 0).setDisplaySize(2200, 380).setScrollFactor(0.3, 1).setDepth(-40);
+    /* 먼 산과 단지, 동네 지붕, 보도블록, 연석, 찻길 */
+    Townscape.street(this, { world: 2200, ground: 360, road: 700, horizon: 358 });
 
     /* 가롤로가 서 있던 자리들 */
     this.add.image(200, 420, 'store_front').setDepth(420).setScale(0.95);

@@ -15,23 +15,8 @@ window.Day5FestivalScene = class Day5FestivalScene extends WorldScene {
     this.talked = {};
 
     this.add.image(0, 0, 'sky_seoul_day').setOrigin(0, 0).setDisplaySize(2200, 400).setDepth(-40);
-    const g = this.add.graphics().setDepth(-30);
-    g.fillStyle(0xd7cbb4, 1); g.fillRect(0, 380, 2200, H - 380);
-    g.fillStyle(0xe1d7c2, 1); g.fillRect(0, 380, 2200, 14);
-    g.fillStyle(0xc6bba6, 1); g.fillRect(0, 690, 2200, H - 690);
-    for (let x = 0; x < 2200; x += 120) {
-      g.fillStyle(0xece3d2, 0.6); g.fillRect(x + 12, 726, 60, 6);
-    }
-
-    /* 먼 건물들 */
-    for (let x = -30; x < 2200; x += 116) {
-      const h = 110 + ((x * 13) % 90);
-      g.fillStyle(((x / 116) | 0) % 2 === 0 ? 0xb6c3cd : 0xa9b7c3, 1);
-      g.fillRect(x, 380 - h, 96, h);
-      g.fillStyle(0xdfeaf0, 0.6);
-      for (let r = 0; r < Math.floor(h / 32); r++)
-        for (let c = 0; c < 3; c++) g.fillRect(x + 12 + c * 28, 380 - h + 16 + r * 32, 18, 13);
-    }
+    /* 서울 도심 — 산 위의 탑과 유리 고층 건물, 화강석 광장, 찻길 */
+    Townscape.street(this, { world: 2200, ground: 380, road: 690, horizon: 378, far: 'scn_seoul_far', farScale: 1.15, mid: false, walk: 'scn_plaza' });
 
     /* WYD 안내구역 */
     this.add.image(300, 300, 'wyd_arch').setDepth(300).setScale(1.06);

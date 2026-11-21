@@ -16,10 +16,8 @@ window.SilenceScene = class SilenceScene extends Phaser.Scene {
     this.standing = false;
 
     /* 성당과 성체등만 남습니다 */
-    const g = this.add.graphics().setDepth(0);
-    g.fillStyle(0x322b3c, 1); g.fillRect(0, 0, W, H);
-    g.fillStyle(0x3d3547, 1); g.fillRect(0, 470, W, H - 470);
-    g.fillStyle(0x483f52, 1); g.fillRect(26, 150, 40, 330); g.fillRect(W - 66, 150, 40, 330);
+    Townscape.nave(this, { floorY: 470, mood: 'warm', depth: 0 });
+    this.add.rectangle(W / 2, H / 2, W, H, 0x241a2c, 0.36).setDepth(0.5);
 
     /* 제대 위의 십자가 — 머무는 동안 바라볼 수 있습니다 */
     this.crossGlow = this.add.image(W / 2, 190, 'lamp_glow').setDepth(2)

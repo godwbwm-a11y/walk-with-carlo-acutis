@@ -16,10 +16,7 @@ window.AloneScene = class AloneScene extends MiniGameScene {
     bg.fillStyle(0x1a2033, 1); bg.fillRect(0, 0, W, H);
 
     /* 빈 성당 */
-    const g = this.add.graphics().setDepth(-90);
-    g.fillStyle(0x232a40, 1); g.fillRect(0, 0, W, 470);
-    g.fillStyle(0x2b3350, 1); g.fillRect(0, 470, W, H - 470);
-    g.fillStyle(0x1d2438, 1); g.fillRect(0, 464, W, 10);
+    Townscape.nave(this, { floorY: 470, mood: 'night', depth: -90 });
 
     this.add.image(W / 2, 250, 'stained_glass').setDepth(-80).setScale(1.1).setAlpha(0.55);
     if (window.Cine) {
