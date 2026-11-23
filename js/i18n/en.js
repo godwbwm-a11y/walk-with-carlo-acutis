@@ -5558,4 +5558,5 @@ window.I18N_EN = {"오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니
 "점심시간 운동장. 모래 위 골대 하나, 그물이 반쯤 찢어져 있다.":"The yard at lunch break. One goal on the sand, its net half torn.",
 "종 치기 전에 들어가자. 땀 좀 닦고.":"Let's go in before the bell. Wipe off the sweat first.",
 "목요일 오후, 동네 상가 지하의 작은 볼링장. 핀 쓰러지는 소리가 천장에 울린다.":"Thursday afternoon, a little bowling alley under the neighborhood shops. The crash of pins echoes off the ceiling.",
-"새총처럼 당겼다 놓아 굴려요. 동네 볼링장에서 가롤로와 번갈아 다섯 프레임":"Pull back and release like a slingshot. Five frames with Carlo at the neighborhood alley."};
+"새총처럼 당겼다 놓아 굴려요. 동네 볼링장에서 가롤로와 번갈아 다섯 프레임":"Pull back and release like a slingshot. Five frames with Carlo at the neighborhood alley.",
+"물어볼 말을 골라 보내요":"Pick something to ask"};
