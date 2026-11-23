@@ -10,6 +10,8 @@
 window.BikeScene = class BikeScene extends MiniGameScene {
   constructor() { super('BikeScene'); }
 
+  get WAIST() { return 29.5 / 46; }        // 그림에서 허리 높이(위에서부터)
+
   create(data) {
     this.buildFrame({
       from: (data && data.from) || null, card: null, bg: '#2a3046', warm: false,
@@ -26,12 +28,16 @@ window.BikeScene = class BikeScene extends MiniGameScene {
     this.makeCourse();
     this.drawGround();
 
-    this.bikeG = this.add.graphics().setDepth(40);
+    /* 자전거 한 대마다: 뒤쪽 다리 → 자전거 → 윗몸(게임 인물 그림) → 앞쪽 다리와 팔 */
+    this.rigs = {};
     this.me = { x: 60, y: this.ground(60), vx: 0, vy: 0, on: true, wheel: 0, crash: 0, key: 'player' };
     this.carlo = { x: 20, y: this.ground(20), vx: 0, vy: 0, on: true, wheel: 0, crash: 0, key: 'carlo' };
-    this.meImg = this.add.image(0, 0, 'player_side').setOrigin(0.5, 1).setScale(1.15).setDepth(41);
-    this.carloImg = this.add.image(0, 0, 'carlo_side').setOrigin(0.5, 1).setScale(1.15).setDepth(39);
-    this.world.add([this.bikeG, this.carloImg, this.meImg]);
+    const look = window.Hero ? Hero.look() : null;
+    const meCol = look ? { skin: look.skin, shirt: look.shirt, pants: look.pants, shoes: look.shoes, sleeve: !!look.longSleeve }
+      : { skin: 0xf6d3b0, shirt: 0xa8d4e6, pants: 0x3f5a80, shoes: 0xffffff };
+    const carloCol = { skin: 0xf6d3b0, shirt: 0xc9553f, pants: 0x4a6fa0, shoes: 0xf3ece2 };
+    this.carloImg = this.makeRig('carlo', carloCol, 0x3f8f6a);
+    this.meImg = this.makeRig('me', meCol, 0x4f7fd8);
 
     this.talk = this.add.text(W / 2, this.top + 16, '', UI.style(FONT.small, PAL.cream, { align: 'center', stroke: '#1a1420', strokeThickness: 4, wordWrap: { width: W - 60 } }))
       .setOrigin(0.5, 0).setDepth(300);
@@ -358,10 +364,44 @@ window.BikeScene = class BikeScene extends MiniGameScene {
     }
   }
 
-  /* 자전거 그리기 — 바퀴살이 굴러갑니다 */
+  /* 탄 사람 한 명 — 그림의 허리 위만 보여 안장에 앉힙니다(다리는 페달 위에 따로 그립니다) */
+  makeRig(who, col, frame) {
+    const key = (who === 'me' ? 'player' : 'carlo') + '_side';
+    const back = this.add.graphics(), bike = this.add.graphics(), front = this.add.graphics();
+    const img = this.add.image(0, 0, key).setScale(1.15);
+    const fh = img.frame.height;
+    img.setCrop(0, 0, img.frame.width, Math.round(fh * this.WAIST));      // 허리까지
+    img.setOrigin(0.5, this.WAIST);                                         // 허리가 기준점
+    this.world.add([back, bike, img, front]);
+    this.rigs[who] = { back: back, bike: bike, front: front, img: img, col: col, frame: frame };
+    return img;
+  }
+
+  /* 넓적다리·정강이 — 엉덩이에서 페달까지 무릎을 앞으로 굽혀 잇습니다 */
+  leg(g, hip, foot, col, shade, fwd) {
+    const L1 = 12.5, L2 = 12.5;
+    let dx = foot.x - hip.x, dy = foot.y - hip.y, d = Math.hypot(dx, dy) || 1;
+    if (d > L1 + L2 - 0.5) { const k = (L1 + L2 - 0.5) / d; foot = { x: hip.x + dx * k, y: hip.y + dy * k }; dx *= k; dy *= k; d = L1 + L2 - 0.5; }
+    const a = (L1 * L1 - L2 * L2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, L1 * L1 - a * a));
+    const ux = dx / d, uy = dy / d;
+    let px = -uy, py = ux;
+    if (px * fwd.x + py * fwd.y < 0) { px = -px; py = -py; }               // 무릎은 앞쪽으로
+    const knee = { x: hip.x + ux * a + px * h, y: hip.y + uy * a + py * h };
+    const pants = shade ? Phaser.Display.Color.ValueToColor(col.pants).darken(22).color : col.pants;
+    g.lineStyle(6.5, pants, 1);
+    g.lineBetween(hip.x, hip.y, knee.x, knee.y); g.lineBetween(knee.x, knee.y, foot.x, foot.y);
+    g.fillStyle(pants, 1); g.fillCircle(knee.x, knee.y, 3.2); g.fillCircle(hip.x, hip.y, 3.4);
+    const shoe = shade ? Phaser.Display.Color.ValueToColor(col.shoes).darken(18).color : col.shoes;
+    g.fillStyle(0x2a2a2a, 0.7); g.fillRoundedRect(foot.x - 5.5, foot.y + 1.5, 11, 3, 1.5);
+    g.fillStyle(shoe, 1); g.fillRoundedRect(foot.x - 3.5 + fwd.x * 1.5, foot.y - 2.5, 9, 5, 2);
+    g.lineStyle(1, 0x3a3a3a, 0.6); g.strokeRoundedRect(foot.x - 3.5 + fwd.x * 1.5, foot.y - 2.5, 9, 5, 2);
+  }
+
+  /* 자전거 그리기 — 바퀴살이 굴러가고, 탄 사람은 안장에 앉아 페달을 밟습니다 */
   drawBikes(time) {
-    const g = this.bikeG; g.clear();
-    [[this.carlo, this.carloImg, 0x3f8f6a], [this.me, this.meImg, 0x4f7fd8]].forEach(([b, img, col]) => {
+    [[this.carlo, this.rigs.carlo], [this.me, this.rigs.me]].forEach(([b, rig]) => {
+      const img = rig.img, col = rig.frame, c = rig.col;
+      const g = rig.bike; g.clear(); rig.back.clear(); rig.front.clear();
       const tilt = b.on ? Math.atan2(this.ground(b.x + 14) - this.ground(b.x - 14), 28) : Phaser.Math.Clamp(b.vy / 900, -0.4, 0.4);
       const cos = Math.cos(tilt), sin = Math.sin(tilt);
       const R = (dx, dy) => ({ x: b.x + dx * cos - dy * sin, y: b.y + dx * sin + dy * cos });
@@ -379,14 +419,31 @@ window.BikeScene = class BikeScene extends MiniGameScene {
       g.lineBetween(seat.x, seat.y, back.x, back.y); g.lineBetween(seat.x, seat.y + 4, bar.x, bar.y + 6);
       g.lineBetween(crank.x, crank.y, bar.x, bar.y + 6); g.lineBetween(bar.x, bar.y, front.x, front.y);
       g.lineStyle(3, 0x2a2a2a, 1); g.lineBetween(seat.x - 6, seat.y - 2, seat.x + 5, seat.y - 2); g.lineBetween(bar.x - 4, bar.y - 2, bar.x + 4, bar.y);
-      /* 타는 사람 — 페달을 밟으면 걸음 그림이 번갈아 */
-      const pedaling = b.vx > 20 && b.on;
-      const frame = pedaling ? (Math.floor(b.wheel * 1.2) % 2 ? '_side_walk' : '_side') : '_side';
-      const key = b.key + frame;
-      if (this.textures.exists(key)) img.setTexture(key);
-      const hip = R(-2, -26);
-      img.setPosition(hip.x, hip.y + 26).setRotation(tilt);
-      if (b.crash <= 0) img.setAngle(Phaser.Math.RadToDeg(tilt));
+      /* 페달 — 바퀴가 굴러가는 만큼 돕니다 */
+      const fwd = { x: cos, y: sin };
+      const ca = b.wheel * 0.75, cr = 6.5;
+      const pedal = (k) => R(-2 + Math.cos(ca + k) * cr, -wr + Math.sin(ca + k) * cr);
+      const pA = pedal(0), pB = pedal(Math.PI);
+      g.lineStyle(2.5, 0x55595f, 1); g.lineBetween(pA.x, pA.y, pB.x, pB.y);
+      g.fillStyle(0x3a3d42, 1); g.fillCircle(crank.x, crank.y, 3.2);
+      const hip = R(-5, -36);
+      /* 뒤쪽 다리(자전거 뒤) · 앞쪽 다리(자전거 앞) */
+      this.leg(rig.back, hip, pB, c, true, fwd);
+      this.leg(rig.front, hip, pA, c, false, fwd);
+      /* 윗몸 — 허리를 안장 위에 두고 살짝 앞으로 숙입니다 */
+      const lean = 0.2;
+      img.setTexture(img.texture.key);
+      img.setPosition(hip.x, hip.y + 1);
+      if (b.crash <= 0) img.setRotation(tilt + lean);
+      /* 팔 — 어깨에서 핸들까지 */
+      const ang = img.rotation, sh = 14.5;
+      const shoulder = { x: hip.x + Math.sin(ang) * sh + Math.cos(ang) * 1, y: hip.y - Math.cos(ang) * sh + Math.sin(ang) * 1 };
+      const grip = R(18, -40);
+      const f = rig.front;
+      const mid = { x: shoulder.x + (grip.x - shoulder.x) * 0.38, y: shoulder.y + (grip.y - shoulder.y) * 0.38 + 2 };
+      f.lineStyle(5, c.shirt, 1); f.lineBetween(shoulder.x, shoulder.y, mid.x, mid.y);
+      f.lineStyle(4, c.sleeve ? c.shirt : c.skin, 1); f.lineBetween(mid.x, mid.y, grip.x - 1, grip.y);
+      f.fillStyle(c.skin, 1); f.fillCircle(grip.x, grip.y, 2.6);
     });
   }
 
