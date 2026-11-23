@@ -44,8 +44,11 @@ window.PhotoSystem = (function () {
     const y = Math.max(0, Math.round(rect.y));
     const w = Math.min(GAME.WIDTH - x, Math.round(rect.width));
     const h = Math.min(GAME.HEIGHT - y, Math.round(rect.height));
+    /* 캔버스는 화소 밀도(RES)만큼 커져 있으므로 실제 화소 좌표로 잘라야
+       고른 자리가 그대로 담깁니다 */
+    const R = (window.Render && Render.RES) || 1;
 
-    g.renderer.snapshotArea(x, y, w, h, function (img) {
+    g.renderer.snapshotArea(x * R, y * R, w * R, h * R, function (img) {
       const cv = document.createElement('canvas');
       cv.width = w * SCALE;
       cv.height = h * SCALE;
@@ -58,57 +61,8 @@ window.PhotoSystem = (function () {
         if (done) done(null);
         return;
       }
-
-      /* 아래쪽에 작은 서명 — 사진 크기에 맞춰 글자를 줄입니다 */
-      const FONT_STACK = "px 'Gowun Dodum','Apple SD Gothic Neo',sans-serif";
+      /* 사진에는 글자를 넣지 않습니다 — 찍은 때와 장소는 사진첩에 따로 적어 둡니다 */
       const when = stamp(new Date());
-      const pad = Math.round(cv.width * 0.035) + 4;
-
-      let title = I18N.tr('오늘, 가롤로(카를로) 아쿠티스와 함께 걷습니다');
-      let titleSize = Math.max(10, Math.min(26, Math.round(cv.width * 0.042)));
-      let timeSize = Math.round(titleSize * 0.82);
-      let showTime = true;
-
-      function widths() {
-        ctx.font = titleSize + FONT_STACK;
-        const t = ctx.measureText(title).width;
-        ctx.font = timeSize + FONT_STACK;
-        const d = ctx.measureText(when).width;
-        return { t: t, d: d };
-      }
-
-      let mw = widths();
-      while (mw.t + mw.d + pad * 3 > cv.width && titleSize > 10) {
-        titleSize -= 1;
-        timeSize = Math.round(titleSize * 0.82);
-        mw = widths();
-      }
-      if (mw.t + mw.d + pad * 3 > cv.width) {        // 그래도 좁으면 시각을 뺍니다
-        showTime = false;
-        if (mw.t + pad * 2 > cv.width) title = I18N.tr('가롤로와 함께 걷습니다');
-      }
-
-      const barH = Math.round(titleSize * 2.2);
-      const grd = ctx.createLinearGradient(0, cv.height - barH * 1.7, 0, cv.height);
-      grd.addColorStop(0, 'rgba(16,26,46,0)');
-      grd.addColorStop(1, 'rgba(16,26,46,0.6)');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, cv.height - barH * 1.7, cv.width, barH * 1.7);
-
-      const baseY = cv.height - Math.round(barH * 0.5);
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(255,248,236,0.92)';
-      ctx.font = titleSize + FONT_STACK;
-      ctx.fillText(title, pad, baseY);
-
-      if (showTime) {
-        ctx.textAlign = 'right';
-        ctx.fillStyle = 'rgba(255,248,236,0.72)';
-        ctx.font = timeSize + FONT_STACK;
-        ctx.fillText(when, cv.width - pad, baseY);
-      }
-      ctx.textAlign = 'left';
 
       const data = cv.toDataURL('image/jpeg', 0.82);
       if (done) done({ data: data, place: place || '', when: when, w: cv.width, h: cv.height });

@@ -26,6 +26,7 @@ window.VistaScene = class VistaScene extends Phaser.Scene {
 
     const barY = H - 92;
     const bar = this.add.graphics().setDepth(199);
+    bar.photoUi = true;                 // 사진에는 담지 않습니다
     bar.fillStyle(0x0d1524, 0.6); bar.fillRoundedRect(14, barY - 44, W - 28, 88, 22);
 
     UI.button(this, W / 2 - 84, barY, 150, 58, '사진 찍기', () => this.photo(), { size: FONT.small, fill: PAL.sun })
