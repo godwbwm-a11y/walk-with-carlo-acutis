@@ -535,7 +535,7 @@ window.TitleScene = class TitleScene extends Phaser.Scene {
           if (Scroller.caught) return;
           AudioSystem.unlock();
           this.picker = null;
-          UI.fadeOut(this, 360, () => this.scene.start(g.key, { arcade: true }));
+          UI.fadeOut(this, 360, () => this.scene.start(g.key, Object.assign({ arcade: true }, g.data || {})));
         });
         list.add(row);
         y += rowH + 10;

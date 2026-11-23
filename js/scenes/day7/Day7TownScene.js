@@ -23,6 +23,16 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
     this.add.image(700, 424, 'bench').setDepth(424).setScale(1.05);
     this.add.image(860, 404, 'tree_big').setDepth(404).setScale(0.9);
     this.add.image(1240, 400, 'house_a').setDepth(400).setScale(1.0);
+    /* 상가 — 지하에 작은 볼링장 */
+    const sg = this.add.graphics().setDepth(399);
+    sg.fillStyle(0xcfc3b0, 1); sg.fillRect(990, 330, 140, 140);
+    sg.fillStyle(0xb9ab95, 1); sg.fillRect(990, 330, 140, 10);
+    sg.fillStyle(0x8fb0c8, 1); for (let c = 0; c < 3; c++) sg.fillRect(1004 + c * 42, 352, 30, 26);
+    sg.fillStyle(0x2a2238, 1); sg.fillRoundedRect(1000, 392, 120, 30, 6);
+    sg.fillStyle(0x3a3440, 1); sg.fillRect(1040, 430, 40, 40);
+    sg.fillStyle(0xf3efe6, 1); sg.fillEllipse(1112, 407, 7, 18); sg.fillCircle(1112, 398, 3.5);
+    sg.fillStyle(0xd23a3a, 1); sg.fillRect(1109, 401, 6, 2);
+    this.add.text(1052, 407, 'BOWLING', UI.style(13, '#ff9ad0', { stroke: '#5a1a40', strokeThickness: 2 })).setOrigin(0.5).setDepth(400);
     this.add.image(1480, 396, 'church_front').setDepth(396).setScale(0.9);
 
     /* 어제와 똑같은 사람들 */
@@ -53,6 +63,10 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
       id: 'd7_bench', x: 700, y: 690, label: '벤치 옆', range: 70, priority: 0, markerY: 380,
       onInteract: () => this.bench()
     });
+    this.bowlItem = this.addInteractable({
+      id: 'd7_bowl', x: 1060, y: 690, label: DAY07.town.bowlLabel, range: 84, priority: 0, markerY: 380,
+      onInteract: () => this.askBowl()
+    });
     this.outItem = this.addInteractable({
       id: 'd7_out', x: 1650, y: 700, label: '성당 쪽으로', range: 92, priority: 1, markerY: 560,
       onInteract: () => this.goOut()
@@ -80,6 +94,7 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
     this.disableInteractable('d7_help');
     this.disableInteractable('d7_bench');
     this.disableInteractable('d7_out');
+    this.disableInteractable('d7_bowl');
 
     UI.fadeIn(this, 900, [200, 196, 180]);
     this.setInputLocked(true);
@@ -206,8 +221,26 @@ window.Day7TownScene = class Day7TownScene extends WorldScene {
     this.dialogue.say(DAY07.town.bench, () => Collection.award(this, 's14'));
   }
 
+  /* 볼링 한 판 — 하지 않아도 이야기는 이어집니다 */
+  askBowl() {
+    const T = DAY07.town;
+    this.setInputLocked(true);
+    this.dialogue.play(T.bowlAsk, () => {
+      this.dialogue.choose(T.bowlAsk[T.bowlAsk.length - 1].t, [{ key: 'yes', label: T.bowlYes }, { key: 'no', label: T.bowlNo }], (k) => {
+        if (k !== 'yes') { this.setInputLocked(false); return; }
+        this.flags.bowl = true; this.disableInteractable('d7_bowl');
+        this.openMiniGame('BowlingScene', { place: 'seoul' });
+      });
+    });
+  }
+
   onMiniGameDone(key) {
+    if (key === 'BowlingScene') {
+      this.time.delayedCall(300, () => this.dialogue.play(DAY07.town.bowlAfter, () => this.setInputLocked(false)));
+      return;
+    }
     if (key !== 'NoticeScene') return;
+    if (!this.flags.bowl) this.enableInteractable('d7_bowl');
     this.flags.notice = true;
     this.disableInteractable('d7_notice');
     this.enableInteractable('d7_help');

@@ -22,6 +22,7 @@ window.PenaltyScene = class PenaltyScene extends MiniGameScene {
     this.G = { L: 74, R: W - 74, T: this.top + 120, B: this.top + 250 };
     this.SPOT = { x: W / 2, y: H - 150 };
 
+    this.place = (data && data.place) || 'church';     // church: 성당 뒤 운동장 · school: 점심시간 학교 운동장
     this.drawField();
     this.keeper = this.add.image(W / 2, this.G.B + 4, 'carlo_front').setOrigin(0.5, 1).setScale(1.7).setDepth(30);
     this.shooter = this.add.image(W / 2 + 34, this.SPOT.y + 40, 'player_back').setOrigin(0.5, 1).setScale(1.8).setDepth(60);
@@ -42,7 +43,7 @@ window.PenaltyScene = class PenaltyScene extends MiniGameScene {
 
     this.renderBoard();
     this.dialogue.play([
-      { t: '성당 뒤 작은 운동장. 골대 하나에 그물이 반쯤 찢어져 있다.' },
+      { t: this.place === 'school' ? '점심시간 운동장. 모래 위 골대 하나, 그물이 반쯤 찢어져 있다.' : '성당 뒤 작은 운동장. 골대 하나에 그물이 반쯤 찢어져 있다.' },
       { s: '가롤로', t: '승부차기 하자! 다섯 번씩. 네가 먼저 차.' },
       { s: '가롤로', t: '공에서 골대 쪽으로 휙 밀면 돼. 너무 세게 하면 하늘로 간다ㅋㅋ' }
     ], () => GameFX.countdown(this, () => { this.hud = this.ensureHud(); this.nextTurn(); }));
@@ -55,9 +56,16 @@ window.PenaltyScene = class PenaltyScene extends MiniGameScene {
     g.fillStyle(0x9cc6e0, 1); g.fillRect(0, 0, W, G.T - 10);
     g.fillStyle(0xc9b79a, 1); g.fillRect(0, G.T - 60, W, 56);
     g.fillStyle(0xb5a284, 1); for (let x = 0; x < W; x += 28) g.fillRect(x, G.T - 60, 2, 56);
-    g.fillStyle(0x8a6a50, 1); g.fillTriangle(W - 120, G.T - 60, W - 60, G.T - 110, W, G.T - 60);
-    g.fillStyle(0xa27c5c, 1); g.fillRect(W - 110, G.T - 60, 100, 40);
-    g.fillStyle(0xf2efe6, 1); g.fillRect(W - 62, G.T - 140, 4, 30); g.fillRect(W - 70, G.T - 132, 20, 4);
+    if (this.place === 'school') {
+      /* 학교 운동장 — 담 너머 교사동 */
+      g.fillStyle(0xe8dcc6, 1); g.fillRect(W - 170, G.T - 150, 170, 92);
+      g.fillStyle(0x9fb8cc, 1); for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) g.fillRect(W - 158 + c * 40, G.T - 138 + r * 40, 26, 24);
+      g.fillStyle(0x6f7f8c, 1); g.fillRect(W - 176, G.T - 156, 182, 8);
+    } else {
+      g.fillStyle(0x8a6a50, 1); g.fillTriangle(W - 120, G.T - 60, W - 60, G.T - 110, W, G.T - 60);
+      g.fillStyle(0xa27c5c, 1); g.fillRect(W - 110, G.T - 60, 100, 40);
+      g.fillStyle(0xf2efe6, 1); g.fillRect(W - 62, G.T - 140, 4, 30); g.fillRect(W - 70, G.T - 132, 20, 4);
+    }
     /* 잔디 — 줄무늬, 멀수록 좁게 */
     for (let i = 0; i < 14; i++) {
       const y0 = G.T - 4 + Math.pow(i / 14, 1.5) * (H - G.T + 4), y1 = G.T - 4 + Math.pow((i + 1) / 14, 1.5) * (H - G.T + 4);
@@ -301,7 +309,7 @@ window.PenaltyScene = class PenaltyScene extends MiniGameScene {
     const lines = [
       ko ? '나 ' + me + ' : ' + c + ' 가롤로.' : 'Me ' + me + ' : ' + c + ' Carlo.',
       me > c ? { s: '가롤로', t: '졌다! 마지막 거 진짜 못 막겠더라ㅋㅋ' } : me < c ? { s: '가롤로', t: '이번엔 내가 이겼네. 근데 너 막는 거 꽤 하던데?' } : { s: '가롤로', t: '비겼다! 이런 게 제일 좋아. 내일 또 하면 되니까.' },
-      { s: '가롤로', t: '공 차고 나면 같이 성당 들렀다 가자. 오늘 고마웠다고 말하게.' }
+      this.place === 'school' ? { s: '가롤로', t: '종 치기 전에 들어가자. 땀 좀 닦고.' } : { s: '가롤로', t: '공 차고 나면 같이 성당 들렀다 가자. 오늘 고마웠다고 말하게.' }
     ];
     this.complete(lines);
   }

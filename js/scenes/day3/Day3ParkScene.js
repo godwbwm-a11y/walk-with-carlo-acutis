@@ -54,6 +54,19 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
 
   onMiniGameDone(key) {
     if (key === 'HeartWordScene') this.time.delayedCall(400, () => this.prayer());
+    if (key === 'BikeScene') this.time.delayedCall(400, () => this.dialogue.play(DAY03.park.bikeAfter, () => this.toHome(true)));
+  }
+
+  /* 집에 가기 전 — 가롤로와 강변 자전거(하지 않아도 됩니다) */
+  askBike() {
+    const P = DAY03.park;
+    this.dialogue.play(P.bikeAsk, () => {
+      this.dialogue.choose(P.bikeAsk[P.bikeAsk.length - 1].t, [{ key: 'yes', label: P.bikeYes }, { key: 'no', label: P.bikeNo }], (k) => {
+        if (k !== 'yes') { this.toHome(true); return; }
+        this.scene.launch('BikeScene', { from: this.scene.key });
+        this.scene.pause();
+      });
+    });
   }
 
   /* 고른 한마디로 오늘의 기도가 만들어집니다 */
@@ -115,8 +128,9 @@ window.Day3ParkScene = class Day3ParkScene extends Phaser.Scene {
     this.libraryBtn = b;
   }
 
-  toHome() {
-    if (this.libraryBtn) this.libraryBtn.destroy();
+  toHome(asked) {
+    if (this.libraryBtn) { this.libraryBtn.destroy(); this.libraryBtn = null; }
+    if (!asked) { this.askBike(); return; }
     UI.fadeOut(this, 900, () => this.scene.start('Day3HomeScene'), [232, 200, 160]);
   }
 };

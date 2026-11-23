@@ -15,6 +15,7 @@ window.BowlingScene = class BowlingScene extends MiniGameScene {
       title: '가롤로와 볼링', hint: '레인 아래를 누른 채 뒤로 당겼다가 놓으면 굴러가요.'
     });
     const W = GAME.WIDTH, H = GAME.HEIGHT;
+    this.place = (data && data.place) || 'milano';     // milano: 2005 밀라노 · seoul: 우리 동네(DAY 7)
     this.makeTextures();
 
     /* 레인 — 미터 단위 */
@@ -58,7 +59,7 @@ window.BowlingScene = class BowlingScene extends MiniGameScene {
     this.state = 'wait';
     this.time.delayedCall(10, () => {
       this.dialogue.play([
-        { t: '토요일 오후, 밀라노의 작은 볼링장. 핀 쓰러지는 소리가 천장에 울린다.' },
+        { t: this.place === 'seoul' ? '목요일 오후, 동네 상가 지하의 작은 볼링장. 핀 쓰러지는 소리가 천장에 울린다.' : '토요일 오후, 밀라노의 작은 볼링장. 핀 쓰러지는 소리가 천장에 울린다.' },
         { s: '가롤로', t: '다섯 프레임만 하자. 내가 먼저 할까? 아니, 너 먼저!' },
         { s: '가롤로', t: '아래를 누르고 뒤로 쭉 당겼다가 놔. 새총처럼.' }
       ], () => this.startTurn());
@@ -144,7 +145,7 @@ window.BowlingScene = class BowlingScene extends MiniGameScene {
     g.fillStyle(0x0d0a12, 1); g.fillRect(0, this.boardY + 60, W, pit.y - (this.boardY + 60));
     g.fillStyle(0x15111d, 1); g.fillRect(pit.x - 6, pit.y - 34, pit2.x - pit.x + 12, 34);
     /* 위 간판 */
-    const neon = this.add.text(W / 2, this.boardY + 80, 'BOWLING · MILANO', UI.style(15, '#ff9ad0', { stroke: '#5a1a40', strokeThickness: 3 })).setOrigin(0.5).setDepth(-50);
+    const neon = this.add.text(W / 2, this.boardY + 80, (this.place === 'seoul' ? 'BOWLING · SEOUL' : 'BOWLING · MILANO'), UI.style(15, '#ff9ad0', { stroke: '#5a1a40', strokeThickness: 3 })).setOrigin(0.5).setDepth(-50);
     this.tweens.add({ targets: neon, alpha: 0.7, duration: 900, yoyo: true, repeat: -1 });
   }
 

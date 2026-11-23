@@ -25,9 +25,6 @@ window.ARCADE = {
     { key: 'ShelfScene', day: 1, title: '책장 정리', kind: '퍼즐', desc: '바닥의 책을 책장에 꽂아요' },
 
     { key: 'FortressScene', day: 'C', title: '한 시간의 게임', kind: '액션', desc: '각도와 바람을 읽고 포탄을 쏘는 포격 게임' },
-    { key: 'BowlingScene', day: 'C', title: '가롤로와 볼링', kind: '액션', fresh: true, desc: '새총처럼 당겼다 놓아 굴려요. 가롤로와 번갈아 다섯 프레임' },
-    { key: 'BikeScene', day: 'C', title: '가롤로와 자전거', kind: '액션', fresh: true, desc: '강변 자전거길을 나란히! 돌은 점프, 사람은 따르릉' },
-    { key: 'PenaltyScene', day: 'C', title: '가롤로와 승부차기', kind: '액션', fresh: true, desc: '휙 밀어 차고, 눌러서 막고! 가롤로와 다섯 번씩' },
     { key: 'MiracleMapScene', day: 'C', title: '성체 기적 지도', kind: '퍼즐', desc: '기적 카드를 지도 위 나라에 놓아요' },
     { key: 'NightShareScene', day: 'C', title: '밤거리에서', kind: '손놀이', desc: '수프·침낭·빵을 필요한 사람에게' },
 
@@ -38,12 +35,14 @@ window.ARCADE = {
     { key: 'HeavyBagScene', day: 2, title: '무거운 가방', kind: '손놀이', desc: '오늘 하나만 내려놓기' },
 
     { key: 'GlassPuzzleScene', day: 3, title: '빛의 조각', kind: '퍼즐', late: true, desc: '흩어진 스테인드글라스를 밀어 맞춰요' },
+    { key: 'BikeScene', day: 3, title: '가롤로와 자전거', kind: '액션', fresh: true, desc: '강변 자전거길을 나란히! 돌은 점프, 사람은 따르릉' },
     { key: 'ReadyScene', day: 3, title: '30분 전', kind: '액션', desc: '서둘러 나갈 준비!' },
     { key: 'LookAroundScene', day: 3, title: '기다리는 동안', kind: '손놀이', desc: '버스를 기다리며 둘러보기' },
 
     { key: 'OriginalScene', day: 4, title: '원본을 찾아라', kind: '퍼즐', late: true, desc: '똑같은 뒷모습들 사이에서 ‘나’를 찾아요' },
     { key: 'FeedScene', day: 4, title: '피드', kind: '손놀이', desc: '끝없이 넘어가는 화면' },
     { key: 'WordsScene', day: 4, title: '누가 원하는 걸까', kind: '퍼즐', desc: '내가 원하는 것, 남이 원하는 것' },
+    { key: 'PenaltyScene', day: 4, data: { place: 'school' }, title: '가롤로와 승부차기', kind: '액션', fresh: true, desc: '휙 밀어 차고, 눌러서 막고! 가롤로와 다섯 번씩' },
     { key: 'KindWordsScene', day: 4, title: '말 바꾸기', kind: '액션', fresh: true, desc: '상처 주는 말을 그어 터뜨리면 좋은 말로 바뀌어요' },
     { key: 'BrickScene', day: 4, title: '그 말들, 떨어뜨리기', kind: '액션', desc: '공을 튕겨 나를 덮은 말들을 깨요' },
 
@@ -62,6 +61,7 @@ window.ARCADE = {
     { key: 'MorningScene', day: 6, title: '아침이다!', kind: '퍼즐', desc: '뒤섞인 물건에서 내 것 찾기' },
 
     { key: 'LinkHeartScene', day: 7, title: '마음 잇기', kind: '퍼즐', late: true, desc: '길을 돌려 나와 친구들을 이어요' },
+    { key: 'BowlingScene', day: 7, data: { place: 'seoul' }, title: '가롤로와 볼링', kind: '액션', fresh: true, desc: '새총처럼 당겼다 놓아 굴려요. 동네 볼링장에서 가롤로와 번갈아 다섯 프레임' },
     { key: 'ExplainScene', day: 7, title: '같이 풀어보자', kind: '퍼즐', desc: '설명하는 순서 만들기' },
     { key: 'NoticeScene', day: 7, title: '천천히 바라보기', kind: '퍼즐', desc: '오래 보아야 보이는 필요' },
 

@@ -216,9 +216,9 @@ window.WorldScene = class WorldScene extends Phaser.Scene {
   }
 
   /* 미니게임은 이 장면 위에 잠깐 올라왔다 갑니다 */
-  openMiniGame(key) {
+  openMiniGame(key, extra) {
     if (this.stick) this.stick.reset();
-    this.scene.launch(key, { from: this.scene.key });
+    this.scene.launch(key, Object.assign({ from: this.scene.key }, extra || {}));
     this.scene.pause();
   }
 

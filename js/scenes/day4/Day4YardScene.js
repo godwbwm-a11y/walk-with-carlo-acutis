@@ -68,6 +68,18 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
     this.lonelyItem.enabled = false;
     if (this.lonelyItem.marker) this.lonelyItem.marker.setVisible(false);
 
+    /* 점심시간에 해 볼 수 있는 것들 — 하지 않아도 이야기는 이어집니다 */
+    this.goalItem = this.addInteractable({
+      id: 'd4_goal', x: 230, y: 600, label: DAY04.yard.goalLabel, range: 96, priority: 0, markerY: 380,
+      onInteract: () => this.askGoal()
+    });
+    this.disableInteractable('d4_goal');
+    this.papersItem = this.addInteractable({
+      id: 'd4_papers', x: 1000, y: 610, label: DAY04.yard.papersLabel, range: 80, priority: 0, markerY: 440,
+      onInteract: () => this.askPapers()
+    });
+    this.disableInteractable('d4_papers');
+
     this.exitItem = this.addInteractable({
       id: 'd4_exit', x: 1662, y: 600, label: '하교하기', range: 92, priority: 1, markerY: 540,
       onInteract: () => this.goScene('Day4StreetScene', {}, [232, 200, 160])
@@ -209,12 +221,17 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
       this.wallItem.enabled = true;
       if (this.wallItem.marker) this.wallItem.marker.setVisible(true);
       this.objective.setText(DAY04.bricks.objective);
+      if (!this.flags.goal) this.enableInteractable('d4_goal');
       this.setInputLocked(false);
 
+    } else if (key === 'PenaltyScene' || key === 'KindWordsScene') {
+      const after = key === 'PenaltyScene' ? DAY04.yard.goalAfter : DAY04.yard.papersAfter;
+      this.time.delayedCall(300, () => this.dialogue.play(after, () => this.setInputLocked(false)));
     } else if (key === 'BrickScene') {
       /* 떨어진 종이들이 담벼락 밑에 쌓입니다 */
       this.tweens.add({ targets: this.wall, alpha: 0.55, duration: 1200 });
       this.fallenPapers();
+      if (!this.flags.papers) this.enableInteractable('d4_papers');
       this.dialogue.play(DAY04.bricks.after, () => {
         this.lonelyItem.enabled = true;
         if (this.lonelyItem.marker) this.lonelyItem.marker.setVisible(true);
@@ -222,6 +239,30 @@ window.Day4YardScene = class Day4YardScene extends WorldScene {
         this.setInputLocked(false);
       });
     }
+  }
+
+  askGoal() {
+    const Y = DAY04.yard;
+    this.setInputLocked(true);
+    this.dialogue.play(Y.goalAsk, () => {
+      this.dialogue.choose(Y.goalAsk[Y.goalAsk.length - 1].t, [{ key: 'yes', label: Y.goalYes }, { key: 'no', label: Y.goalNo }], (k) => {
+        if (k !== 'yes') { this.setInputLocked(false); return; }
+        this.flags.goal = true; this.disableInteractable('d4_goal');
+        this.openMiniGame('PenaltyScene', { place: 'school' });
+      });
+    });
+  }
+
+  askPapers() {
+    const Y = DAY04.yard;
+    this.setInputLocked(true);
+    this.dialogue.play(Y.papersAsk, () => {
+      this.dialogue.choose(Y.papersAsk[Y.papersAsk.length - 1].t, [{ key: 'yes', label: Y.papersYes }, { key: 'no', label: Y.papersNo }], (k) => {
+        if (k !== 'yes') { this.setInputLocked(false); return; }
+        this.flags.papers = true; this.disableInteractable('d4_papers');
+        this.openMiniGame('KindWordsScene');
+      });
+    });
   }
 
   /* 떨어진 종이 몇 장이 담벼락 밑에 남습니다 */
