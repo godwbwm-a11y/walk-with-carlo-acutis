@@ -25,6 +25,8 @@ window.ARCADE = {
     { key: 'ShelfScene', day: 1, title: '책장 정리', kind: '퍼즐', desc: '바닥의 책을 책장에 꽂아요' },
 
     { key: 'FortressScene', day: 'C', title: '한 시간의 게임', kind: '액션', desc: '각도와 바람을 읽고 포탄을 쏘는 포격 게임' },
+    { key: 'BowlingScene', day: 'C', title: '가롤로와 볼링', kind: '액션', fresh: true, desc: '새총처럼 당겼다 놓아 굴려요. 가롤로와 번갈아 다섯 프레임' },
+    { key: 'BikeScene', day: 'C', title: '가롤로와 자전거', kind: '액션', fresh: true, desc: '강변 자전거길을 나란히! 돌은 점프, 사람은 따르릉' },
     { key: 'MiracleMapScene', day: 'C', title: '성체 기적 지도', kind: '퍼즐', desc: '기적 카드를 지도 위 나라에 놓아요' },
     { key: 'NightShareScene', day: 'C', title: '밤거리에서', kind: '손놀이', desc: '수프·침낭·빵을 필요한 사람에게' },
 
@@ -66,6 +68,7 @@ window.ARCADE = {
 
     { key: 'PassScene', day: 'E', title: '축구 한 판', kind: '액션', desc: '공을 뺏고 차고, 골대는 없어요' },
     { key: 'TailTagScene', day: 'E', title: '꼬리잡기', kind: '액션', fresh: true, desc: '세계 친구들과 두 줄로! 저쪽 꼬리를 잡고 우리 꼬리는 지켜요' },
+    { key: 'OXQuizScene', day: 'E', title: '교리 OX 퀴즈', kind: '퍼즐', fresh: true, desc: '맞으면 O, 틀리면 X 로 달려가요! 할 때마다 다른 교리 문제' },
     { key: 'JegiScene', day: 'E', title: '제기차기', kind: '액션', desc: '떨어지는 제기를 발로 톡' },
     { key: 'GonggiScene', day: 'E', title: '공기놀이', kind: '액션', desc: '튀어 오른 돌을 때맞춰 잡기' },
     { key: 'PoseScene', day: 'E', title: '사진 찍기', kind: '손놀이', desc: '다 같이 포즈!' },

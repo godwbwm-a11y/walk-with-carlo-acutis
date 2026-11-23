@@ -7,7 +7,13 @@
    - 줄은 머리가 지나간 길을 그대로 따라옵니다 — 휙 돌면 꼬리가 크게 휘둘립니다.
    - 꼬리를 잡으면 잡힌 친구가 잡은 쪽 줄 끝에 붙습니다. 줄이 길어질수록 내 꼬리를 지키기 어려워집니다.
    - 한쪽 줄이 머리만 남거나, 시간이 다 되면 한 판이 끝납니다.
-   마지막에는 두 줄이 하나로 이어져 마당을 한 바퀴 돕니다. */
+   마지막에는 두 줄이 하나로 이어져 마당을 한 바퀴 돕니다.
+
+   난이도 —
+   - 쉬움: 두 줄. 저쪽 머리는 우리 꼬리만 쫓습니다.
+   - 보통: 세 줄! 저쪽 줄들끼리도 서로 꼬리를 잡고, 줄마다 움직임이 다릅니다
+           (꼬리 뒤로 파고들기 · 옆으로 돌아 들어오기 · 지그재그로 꼬리 흔들기, 그리고 가끔 헛걸음).
+   - 어려움: 보통과 같고, 저쪽 머리들이 더 빠르고 더 날쌔게 돕니다. */
 
 window.TailTagScene = class TailTagScene extends MiniGameScene {
   constructor() { super('TailTagScene'); }
@@ -40,11 +46,14 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
 
     /* 사람들 — 두 줄 모두 나라와 본당이 섞여 있습니다 */
     this.SP = 30;                     // 앞사람과의 간격
-    this.lines = [
-      this.makeLine('A', ['player', 'epi_kid1', 'epi_leo', 'epi_fra'], 0xf2a03a, 0xe8505a, W / 2 - 70, this.F.B - 150, -1),
-      this.makeLine('B', ['epi_ita', 'epi_kid2', 'epi_phi', 'epi_bra'], 0x4f8fd8, 0x3fa0e0, W / 2 + 70, this.F.T + 150, 1)
-    ];
-    this.A = this.lines[0]; this.B = this.lines[1];
+    this.LV = {
+      easy: { name: '쉬움', desc: '두 줄. 처음 하는 꼬리잡기', teams: 2, speed: 140, turn: 3.1, dash: 0.22, patterns: ['chase'] },
+      normal: { name: '보통', desc: '세 줄! 줄마다 움직임이 달라요', teams: 3, speed: 140, turn: 3.4, dash: 0.2, patterns: ['chase', 'flank', 'zigzag'] },
+      hard: { name: '어려움', desc: '세 줄, 더 빠르고 날쌔게', teams: 3, speed: 157, turn: 3.8, dash: 0.16, patterns: ['chase', 'flank', 'zigzag'] }
+    };
+    this.level = this.level || 'easy';
+    this.lines = [];
+    this.buildLines();
 
     /* 조작 — 마당 어디든 밀어서 */
     this.stick = new Joystick(this, { zoneTop: top, radius: 46, noTap: true });
@@ -54,22 +63,72 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     this.busy = true;
     this.started = false;
     this.hud = null; this.timeText = null; this._flash = null;
-    this.cool = 0;
     this.myCatch = 0; this.theirCatch = 0;
-    this.aiHeading = Math.PI / 2;
-    this.aiSpeed = 140;
     this.ending = false;
+    this.levelUI = null;
     this.roundText = null;
     this.placeAll(true);
 
-    this.dialogue.play(T.open, () => GameFX.countdown(this, () => this.go()));
+    this.dialogue.play(T.open, () => this.pickLevel());
   }
 
-  /* 한 줄 — 머리에서 뒤로 곧게 늘어선 채로 시작합니다 */
-  makeLine(team, keys, ring, tail, x, y, dirY) {
-    const line = { team: team, ring: ring, tail: tail, members: [], trail: [] };
-    keys.forEach((k, i) => line.members.push(this.makeMember(k, team, x, y - dirY * i * this.SP)));
-    for (let d = keys.length * this.SP + 60; d >= 0; d -= 3) line.trail.push({ x: x, y: y - dirY * d });
+  /* ── 줄 세우기 — 난이도에 따라 두 줄 또는 세 줄 ── */
+  buildLines() {
+    const W = GAME.WIDTH, F = this.F, L = this.LV[this.level];
+    this.lines.forEach((line) => line.members.forEach((m) => { m.img.destroy(); m.shadow.destroy(); m.ring.destroy(); }));
+    this.lines = [this.makeLine('A', ['player', 'epi_kid1', 'epi_leo', 'epi_fra'], 0xf2a03a, 0xe8505a, W / 2 - 70, F.B - 150, 0, -1)];
+    if (L.teams === 2) {
+      this.lines.push(this.makeLine('B', ['epi_ita', 'epi_kid2', 'epi_phi', 'epi_bra'], 0x4f8fd8, 0x3fa0e0, W / 2 + 70, F.T + 150, 0, 1));
+    } else {
+      this.lines.push(this.makeLine('B', ['epi_ita', 'epi_kid2', 'epi_phi', 'epi_bra'], 0x4f8fd8, 0x3fa0e0, W / 2 - 60, F.T + 130, 0, 1));
+      this.lines.push(this.makeLine('C', ['epi_spa', 'epi_kid3', 'epi_kid4', 'epi_kid5'], 0x58b06a, 0x2fae6a, W / 2 + 40, (F.T + F.B) / 2 + 10, -1, 0));
+    }
+    this.A = this.lines[0];
+    /* 저쪽 머리들 — 줄마다 다른 버릇 */
+    const pats = Phaser.Utils.Array.Shuffle(L.patterns.slice());
+    this.lines.slice(1).forEach((line, i) => {
+      line.ai = { heading: Math.atan2(line.dirY, line.dirX), speed: L.speed, pattern: pats[i % pats.length], prey: null, preyT: 0, feint: 0, feintT: 2 + Math.random() * 3, fx: 0, fy: 0, t: Math.random() * 6 };
+    });
+    this.lines.forEach((line) => { line.cool = 0; });
+    this.placeAll(true);
+  }
+
+  /* ── 난이도 고르기 ── */
+  pickLevel() {
+    const W = GAME.WIDTH;
+    this.busy = true;
+    this.clearLevelUI();
+    const c = this.add.container(0, 0).setDepth(720);
+    const dim = this.add.graphics(); dim.fillStyle(0x15110c, 0.6); dim.fillRect(0, 0, W, GAME.HEIGHT);
+    c.add(dim);
+    c.add(this.add.text(W / 2, 250, '난이도를 골라요', UI.style(22, PAL.cream, { stroke: '#2a1e10', strokeThickness: 4 })).setOrigin(0.5));
+    ['easy', 'normal', 'hard'].forEach((k, i) => {
+      const L = this.LV[k], y = 330 + i * 118;
+      c.add(UI.button(this, W / 2, y, 270, 64, L.name, () => this.startLevel(k), { size: FONT.label, fill: k === this.level ? PAL.sun : PAL.paper }));
+      c.add(this.add.text(W / 2, y + 40, L.desc, UI.style(14, '#f2e8d4', { align: 'center', stroke: '#2a1e10', strokeThickness: 3, wordWrap: { width: W - 60 } })).setOrigin(0.5, 0));
+    });
+    c.setAlpha(0);
+    this.tweens.add({ targets: c, alpha: 1, duration: 260 });
+    this.levelUI = c;
+  }
+
+  clearLevelUI() { if (this.levelUI) { this.levelUI.destroy(); this.levelUI = null; } }
+
+  startLevel(k) {
+    this.clearLevelUI();
+    this.clearRound();
+    this.level = k;
+    this.buildLines();
+    AudioSystem.select();
+    if (!this.started) GameFX.countdown(this, () => this.go());
+    else { this.timeLeft = 75; this.busy = false; this.lines.forEach((l) => { l.cool = 900; }); }
+  }
+
+  /* 한 줄 — 머리에서 뒤로 곧게 늘어선 채로 시작합니다(dirX, dirY 는 머리가 보는 쪽) */
+  makeLine(team, keys, ring, tail, x, y, dirX, dirY) {
+    const line = { team: team, ring: ring, tail: tail, members: [], trail: [], dirX: dirX, dirY: dirY };
+    keys.forEach((k, i) => line.members.push(this.makeMember(k, team, x - dirX * i * this.SP, y - dirY * i * this.SP)));
+    for (let d = keys.length * this.SP + 60; d >= 0; d -= 3) line.trail.push({ x: x - dirX * d, y: y - dirY * d });
     line.trail.push({ x: x, y: y });
     return line;
   }
@@ -89,7 +148,7 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     this.timeLeft = 75;
     this.timeText = this.add.text(GAME.WIDTH - 82, 24, '', UI.style(17, '#ffe7a8')).setOrigin(0.5).setDepth(880);
     this.busy = false;
-    this.cool = 600;
+    this.lines.forEach((l) => { l.cool = 600; });
   }
 
   update(time, delta) {
@@ -99,15 +158,15 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     if (this.ending) { this.circleLap(dt); this.placeAll(); this.draw(time); return; }
 
     if (!this.busy && !this.dialogue.isOpen) {
-      this.cool -= delta;
+      this.lines.forEach((l) => { l.cool -= delta; });
       /* 나 — 우리 줄 머리 */
       const v = this.stick.read();
       const sp = 152 * (v.run ? 1.15 : 1);
       this.moveHead(this.A, v.x * sp * dt, v.y * sp * dt);
       this.myMoving = Math.hypot(v.x, v.y) > 0.3;
       this.myDir = v;
-      /* 저쪽 줄 머리 */
-      this.steerAI(dt);
+      /* 저쪽 줄 머리들 */
+      this.lines.forEach((l) => { if (l.ai) this.steerAI(l, dt); });
       this.checkCatch();
       /* 남은 시간 */
       this.timeLeft = Math.max(0, this.timeLeft - dt);
@@ -136,39 +195,78 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     }
   }
 
-  /* ── 저쪽 머리 — 우리 꼬리를 쫓되, 자기 꼬리가 위험하면 몸을 틀어 휘둘러 피합니다 ── */
-  steerAI(dt) {
-    const B = this.B, A = this.A, F = this.F;
-    const head = B.members[0], myHead = A.members[0];
-    const myTail = A.members[A.members.length - 1], theirTail = B.members[B.members.length - 1];
+  /* ── 저쪽 머리 — 누군가의 꼬리를 쫓되, 자기 꼬리가 위험하면 몸을 틀어 휘둘러 피합니다 ── */
+  steerAI(B, dt) {
+    const F = this.F, ai = B.ai, L = this.LV[this.level];
+    const head = B.members[0], theirTail = B.members[B.members.length - 1];
+    ai.t += dt;
+    /* 쫓을 줄 — 꼬리가 가까운 줄(내 줄을 조금 더 좋아합니다). 너무 자주 바꾸지 않아요 */
+    ai.preyT -= dt;
+    if (!ai.prey || ai.preyT <= 0 || ai.prey.members.length <= 1) {
+      let best = null, bd = 1e9;
+      this.lines.forEach((o) => {
+        if (o === B || o.members.length <= 1) return;
+        const t = o.members[o.members.length - 1];
+        const d = Phaser.Math.Distance.Between(head.x, head.y, t.x, t.y) * (o === this.A ? 0.8 : 1);
+        if (d < bd) { bd = d; best = o; }
+      });
+      ai.prey = best || this.A; ai.preyT = 1.6;
+    }
+    const P = ai.prey, pHead = P.members[0], pTail = P.members[P.members.length - 1];
     let dx = 0, dy = 0;
-    this.aiDash = 0;
-    if (this.cool > 0) {
+    let dash = 0;
+    if (B.cool > 0) {
       /* 잡고 잡힌 직후에는 잠깐 물러납니다 */
-      dx = head.x - myHead.x; dy = head.y - myHead.y;
+      dx = head.x - pHead.x; dy = head.y - pHead.y;
+    } else if (ai.feint > 0) {
+      /* 헛걸음 — 엉뚱한 쪽으로 몇 걸음 */
+      ai.feint -= dt;
+      dx = ai.fx - head.x; dy = ai.fy - head.y;
     } else {
-      /* 우리 꼬리를 쫓습니다 — 내 머리 반대편(꼬리 뒤쪽)으로 파고듭니다 */
-      if (A.members.length > 1) {
-        const bx = myTail.x - myHead.x, by = myTail.y - myHead.y, bl = Math.hypot(bx, by) || 1;
+      ai.feintT -= dt;
+      if (this.level !== 'easy' && ai.feintT <= 0) {
+        ai.feint = 0.6 + Math.random() * 0.5; ai.feintT = 4 + Math.random() * 4;
+        ai.fx = Phaser.Math.Between(F.L + 40, F.R - 40); ai.fy = Phaser.Math.Between(F.T + 40, F.B - 40);
+      }
+      const td = Phaser.Math.Distance.Between(head.x, head.y, pTail.x, pTail.y);
+      if (P.members.length > 1) {
+        const bx = pTail.x - pHead.x, by = pTail.y - pHead.y, bl = Math.hypot(bx, by) || 1;
         /* 멀리서는 꼬리 뒤로 돌아 들어가고, 가까우면 곧장 손을 뻗습니다 */
-        const far = Phaser.Math.Clamp((Phaser.Math.Distance.Between(head.x, head.y, myTail.x, myTail.y) - 50) / 80, 0, 1) * 40;
-        dx = myTail.x + bx / bl * far - head.x; dy = myTail.y + by / bl * far - head.y;
-      } else { dx = myHead.x - head.x; dy = myHead.y - head.y; }
-      const cl = Math.hypot(dx, dy) || 1; dx /= cl; dy /= cl;
-      /* 내 머리 가까이는 가지 않습니다 — 자기 줄이 그 길을 그대로 따라오니까요 */
-      const rx = head.x - myHead.x, ry = head.y - myHead.y, rd = Math.hypot(rx, ry) || 1;
-      const td = Phaser.Math.Distance.Between(head.x, head.y, myTail.x, myTail.y);
+        const far = Phaser.Math.Clamp((td - 50) / 80, 0, 1);
+        let tx = pTail.x + bx / bl * far * 40, ty = pTail.y + by / bl * far * 40;
+        if (ai.pattern === 'flank') {
+          /* 옆으로 크게 돌아 들어오기 — 멀수록 옆으로 비켜 섭니다 */
+          const side = Math.sin(ai.t * 0.5) >= 0 ? 1 : -1;
+          tx += -by / bl * far * 90 * side; ty += bx / bl * far * 90 * side;
+        }
+        dx = tx - head.x; dy = ty - head.y;
+      } else { dx = pHead.x - head.x; dy = pHead.y - head.y; }
+      let cl = Math.hypot(dx, dy) || 1; dx /= cl; dy /= cl;
+      if (ai.pattern === 'zigzag') {
+        /* 지그재그 — 몸을 흔들어 자기 꼬리를 휘두릅니다 */
+        const w = Math.sin(ai.t * 5.2) * 0.75;
+        const ndx = dx - dy * w, ndy = dy + dx * w; cl = Math.hypot(ndx, ndy) || 1; dx = ndx / cl; dy = ndy / cl;
+      }
+      /* 쫓는 줄의 머리 가까이는 가지 않습니다 — 자기 줄이 그 길을 그대로 따라오니까요 */
+      const rx = head.x - pHead.x, ry = head.y - pHead.y, rd = Math.hypot(rx, ry) || 1;
       if (rd < 80 && rd < td) { const k2 = (80 - rd) / 80 * 1.3; dx += rx / rd * k2; dy += ry / rd * k2; }
-      /* 내 머리가 저쪽 꼬리에 가까우면 — 꼬리를 바깥으로 휘두르는 쪽으로 몸을 틉니다 */
+      /* 누군가의 머리가 내 꼬리로 오고 있으면 — 꼬리를 바깥으로 휘두르는 쪽으로 몸을 틉니다 */
       if (B.members.length > 1) {
-        const ax = theirTail.x - myHead.x, ay = theirTail.y - myHead.y;
-        const d = Math.hypot(ax, ay) || 1;
-        /* 내 머리가 꼬리 쪽으로 오고 있을 때만 — 가만히 선 머리는 위협이 아니에요 */
-        const mv = this.myDir || { x: 0, y: 0 }, ml = Math.hypot(mv.x, mv.y);
-        const threat = ml > 0.3 ? Phaser.Math.Clamp(((mv.x * ax + mv.y * ay) / (ml * d) + 0.2) / 1.2, 0, 1) : 0;
-        const k = Phaser.Math.Clamp((175 - d) / 110, 0, 1) * threat;
+        let k = 0, ax = 0, ay = 0, d = 1;
+        this.lines.forEach((o) => {
+          if (o === B) return;
+          const oh = o.members[0];
+          const ox = theirTail.x - oh.x, oy = theirTail.y - oh.y, od = Math.hypot(ox, oy) || 1;
+          let mv;
+          if (o === this.A) mv = this.myMoving ? (this.myDir || { x: 0, y: 0 }) : { x: 0, y: 0 };
+          else mv = { x: Math.cos(o.ai.heading), y: Math.sin(o.ai.heading) };
+          const ml = Math.hypot(mv.x, mv.y);
+          const threat = ml > 0.3 ? Phaser.Math.Clamp(((mv.x * ox + mv.y * oy) / (ml * od) + 0.2) / 1.2, 0, 1) : 0;
+          const kk = Phaser.Math.Clamp((175 - od) / 110, 0, 1) * threat;
+          if (kk > k) { k = kk; ax = ox; ay = oy; d = od; }
+        });
         if (k > 0) {
-          this.aiDash = k;                     // 위험하면 발을 재촉합니다
+          dash = k;                              // 위험하면 발을 재촉합니다
           let px = -ay / d, py = ax / d;
           /* 마당 가운데 쪽으로 도는 방향을 고릅니다 */
           const cx = (F.L + F.R) / 2 - head.x, cy = (F.T + F.B) / 2 - head.y;
@@ -186,44 +284,56 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     if (head.y > F.B - wall) dy -= (head.y - (F.B - wall)) / wall;
     /* 사람처럼 — 한 번에 확 돌지 못하고 둥글게 돕니다 */
     const want = Math.atan2(dy, dx);
-    let diff = Phaser.Math.Angle.Wrap(want - this.aiHeading);
-    const turn = 3.1 * dt;
-    this.aiHeading += Phaser.Math.Clamp(diff, -turn, turn);
-    const sp = this.aiSpeed * (this.cool > 0 ? 1.05 : 1 + 0.22 * this.aiDash);
-    this.moveHead(B, Math.cos(this.aiHeading) * sp * dt, Math.sin(this.aiHeading) * sp * dt);
+    const diff = Phaser.Math.Angle.Wrap(want - ai.heading);
+    const turn = L.turn * dt;
+    ai.heading += Phaser.Math.Clamp(diff, -turn, turn);
+    const sp = ai.speed * (B.cool > 0 ? 1.05 : 1 + L.dash * dash);
+    this.moveHead(B, Math.cos(ai.heading) * sp * dt, Math.sin(ai.heading) * sp * dt);
   }
 
   /* ── 잡았다 / 잡혔다 ── */
   checkCatch() {
-    if (this.cool > 0) return;
-    const A = this.A, B = this.B;
     const reach = (h, t) => Phaser.Math.Distance.Between(h.x, h.y - 18, t.x, t.y - 24) < 25;
-    /* 손을 뻗어야 잡힙니다 — 가만히 서 있는 머리에 꼬리가 스쳐 지나간 건 치지 않아요 */
-    if (B.members.length > 1 && this.myMoving && reach(A.members[0], B.members[B.members.length - 1])) this.caught(B, A, true);
-    else if (A.members.length > 1 && reach(B.members[0], A.members[A.members.length - 1])) this.caught(A, B, false);
+    for (let i = 0; i < this.lines.length; i++) {
+      const H = this.lines[i];
+      if (H.cool > 0) continue;
+      /* 손을 뻗어야 잡힙니다 — 가만히 서 있는 내 머리에 꼬리가 스쳐 지나간 건 치지 않아요 */
+      if (H === this.A && !this.myMoving) continue;
+      for (let j = 0; j < this.lines.length; j++) {
+        const P = this.lines[j];
+        if (P === H || P.cool > 0 || P.members.length <= 1) continue;
+        if (reach(H.members[0], P.members[P.members.length - 1])) { this.caught(P, H); return; }
+      }
+    }
   }
 
-  caught(from, to, mine) {
+  caught(from, to) {
     const T = EPI.tag;
     const m = from.members.pop();
+    const mine = to === this.A, lost = from === this.A;
     /* 잡힌 친구는 잡은 줄 끝으로 달려가 붙습니다 */
     m.join = 1; m.fx = m.x; m.fy = m.y;
     to.members.push(m);
-    this.cool = 1300;
+    from.cool = 1300; to.cool = 1300;
     if (mine) {
       this.myCatch++;
-      this.hud.hit(50, m.x, m.y - 50, T.caught);
+      this.hud.hit(this.level === 'hard' ? 80 : this.level === 'normal' ? 60 : 50, m.x, m.y - 50, T.caught);
       AudioSystem.chime();
       GameFX.burst(this, m.x, m.y - 30, { count: 18, speed: 150 });
       this.flash(T.caughtLine);
-      this.aiSpeed += 6;                       // 잡힐수록 저쪽이 조금 더 빨라집니다
-    } else {
+      from.ai.speed += 6;                       // 잡힐수록 저쪽이 조금 더 빨라집니다
+    } else if (lost) {
       this.theirCatch++;
       this.hud.miss(m.x, m.y - 40);
       this.flash(T.lostLine);
+    } else {
+      AudioSystem.blip();
+      this.flash(T.otherLine);
     }
     this.tweens.add({ targets: m.img, scaleY: 1.42, duration: 120, yoyo: true });
-    if (from.members.length <= 1) this.time.delayedCall(700, () => this.roundOver(mine ? 'mine' : 'theirs'));
+    /* 판이 끝났나 — 내 줄이 머리만 남거나, 저쪽 줄들이 모두 머리만 남으면 */
+    if (this.A.members.length <= 1) this.time.delayedCall(700, () => this.roundOver('theirs'));
+    else if (this.lines.every((l) => l === this.A || l.members.length <= 1)) this.time.delayedCall(700, () => this.roundOver('mine'));
   }
 
   flash(msg) {
@@ -319,7 +429,10 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     });
   }
 
-  gameStars() { return this.A.members.length >= 8 ? 3 : this.myCatch >= 3 ? 2 : 1; }
+  gameStars() {
+    const total = this.lines.reduce((n, l) => n + l.members.length, 0) || 8;
+    return this.A.members.length >= total * 0.75 ? 3 : this.myCatch >= 3 ? 2 : 1;
+  }
 
   /* ── 한 판이 끝났습니다 ── */
   roundOver(kind) {
@@ -334,31 +447,24 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
       .setOrigin(0.5).setDepth(700).setAlpha(0);
     this.tweens.add({ targets: this.roundText, alpha: 1, duration: 600 });
     this.time.delayedCall(900, () => {
-      this.againBtn = UI.button(this, W / 2, 640, 250, 62, T.againBtn, () => this.playAgain(), { size: FONT.label, fill: PAL.sun });
-      this.stopBtn = UI.button(this, W / 2, 716, 250, 56, T.stopBtn, () => this.finish(), { size: FONT.small });
-      [this.againBtn, this.stopBtn].forEach(b => b.setDepth(700).setAlpha(0));
-      this.tweens.add({ targets: [this.againBtn, this.stopBtn], alpha: 1, duration: 500 });
+      this.againBtn = UI.button(this, W / 2, 610, 250, 62, T.againBtn, () => this.playAgain(), { size: FONT.label, fill: PAL.sun });
+      this.levelBtn = UI.button(this, W / 2, 684, 250, 54, T.levelBtn, () => { this.clearRound(); this.pickLevel(); }, { size: FONT.small });
+      this.stopBtn = UI.button(this, W / 2, 752, 250, 54, T.stopBtn, () => this.finish(), { size: FONT.small });
+      [this.againBtn, this.levelBtn, this.stopBtn].forEach(b => b.setDepth(700).setAlpha(0));
+      this.tweens.add({ targets: [this.againBtn, this.levelBtn, this.stopBtn], alpha: 1, duration: 500 });
     });
   }
 
   clearRound() {
-    ['againBtn', 'stopBtn', 'roundText'].forEach((k) => { if (this[k]) { this[k].destroy(); this[k] = null; } });
+    ['againBtn', 'levelBtn', 'stopBtn', 'roundText'].forEach((k) => { if (this[k]) { this[k].destroy(); this[k] = null; } });
   }
 
   /* 한 판 더 — 처음 짝으로 다시 섭니다 */
   playAgain() {
     this.clearRound();
-    const W = GAME.WIDTH;
-    const all = this.A.members.concat(this.B.members);
-    all.forEach((m) => { m.img.destroy(); m.shadow.destroy(); m.ring.destroy(); });
-    this.lines = [
-      this.makeLine('A', ['player', 'epi_kid1', 'epi_leo', 'epi_fra'], 0xf2a03a, 0xe8505a, W / 2 - 70, this.F.B - 150, -1),
-      this.makeLine('B', ['epi_ita', 'epi_kid2', 'epi_phi', 'epi_bra'], 0x4f8fd8, 0x3fa0e0, W / 2 + 70, this.F.T + 150, 1)
-    ];
-    this.A = this.lines[0]; this.B = this.lines[1];
-    this.aiHeading = Math.PI / 2; this.aiSpeed = 140 + 6;
-    this.timeLeft = 75; this.cool = 900;
-    this.placeAll(true);
+    this.buildLines();
+    this.lines.forEach((l) => { if (l.ai) l.ai.speed += 6; l.cool = 900; });
+    this.timeLeft = 75;
     AudioSystem.select();
     this.busy = false;
   }
@@ -370,8 +476,10 @@ window.TailTagScene = class TailTagScene extends MiniGameScene {
     if (this.stick) { this.stick.reset(); if (this.stick.hint) this.stick.hint.setVisible(false); }
     if (this.timeText) this.timeText.setVisible(false);
     /* 저쪽 줄 사람들이 우리 줄 끝에 차례로 붙습니다 */
-    const rest = this.B.members.splice(0);
-    rest.forEach((m) => { m.join = 1; m.fx = m.x; m.fy = m.y; this.A.members.push(m); });
+    this.lines.forEach((l) => {
+      if (l === this.A) return;
+      l.members.splice(0).forEach((m) => { m.join = 1; m.fx = m.x; m.fy = m.y; this.A.members.push(m); });
+    });
     this.lines = [this.A];
     this.A.ring = 0xf2c06a;
     this.ending = true;

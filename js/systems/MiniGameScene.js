@@ -10,6 +10,7 @@ window.MiniGameScene = class MiniGameScene extends Phaser.Scene {
     this.from = opt.from || null;
     this.cardId = opt.card || null;
     this.finished = false;
+    this.hud = null;                       // 장면을 다시 열면 지난 판의 점수판은 사라진 뒤입니다
     /* 미니게임 모음에서 불렀는지 — 그렇다면 연습 모드로 놀고 목록으로 돌아갑니다 */
     this.startData = this.sys.settings.data || {};
     this.arcade = !!this.startData.arcade;

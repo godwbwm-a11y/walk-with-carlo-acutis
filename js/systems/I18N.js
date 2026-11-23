@@ -127,12 +127,12 @@ window.I18N = (function () {
         const whole = one(line);
         if (whole !== undefined) return whole;
         let out = frag ? line.replace(frag, function (m) { return dict[m]; }) : line;
-        /* 남은 한 글자짜리 낱말(켬·끔 같은) */
-        out = out.replace(/[\uac00-\ud7a3]+/g, function (m) { return dict[m] !== undefined ? dict[m] : m; });
-        /* 숫자에 붙은 단위 */
+        /* 숫자에 붙은 단위 — 낱말 바꾸기보다 먼저(‘3개’의 ‘개’가 강아지가 되지 않게) */
         out = out.replace(/(\d+)\s*초/g, '$1s').replace(/(\d+)\s*번째/g, '#$1')
           .replace(/(\d+)\s*번/g, '$1×').replace(/(\d+)\s*개/g, '$1').replace(/(\d+)\s*명/g, '$1')
           .replace(/(\d+)\s*장/g, '$1').replace(/(\d+)\s*권/g, '$1').replace(/(\d+)\s*가지/g, '$1');
+        /* 남은 한 글자짜리 낱말(켬·끔 같은) */
+        out = out.replace(/[\uac00-\ud7a3]+/g, function (m) { return dict[m] !== undefined ? dict[m] : m; });
         return out;
       });
       r = lines.join('\n');

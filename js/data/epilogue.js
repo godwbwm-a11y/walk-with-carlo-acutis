@@ -130,7 +130,8 @@ window.EPI = {
       { id: 'photo', icon: '📷', label: '사진', scene: 'PoseScene', done: '한 명이 완전히 다른 포즈를 했다.' },
       { id: 'dance', icon: '🎵', label: '음악', scene: 'FollowScene', done: '여러 나라가 같은 동작을 하고 있었다.' },
       { id: 'snack', icon: '🍪', label: '간식', scene: 'TasteScene', done: '“SPICY! VERY GOOD!”' },
-      { id: 'tag', icon: '🎀', label: '꼬리잡기', scene: 'TailTagScene', done: '줄은 하나가 되었고, 누가 머리였는지는 아무도 기억하지 않았다.' }
+      { id: 'tag', icon: '🎀', label: '꼬리잡기', scene: 'TailTagScene', done: '줄은 하나가 되었고, 누가 머리였는지는 아무도 기억하지 않았다.' },
+      { id: 'ox', icon: '⭕', label: '교리 OX 퀴즈', scene: 'OXQuizScene', done: '틀린 쪽에 서 있던 친구들이 제일 크게 웃었다.' }
     ],
     enough: '이제 그만 놀고 쉬기',
     enoughHint: '충분히 놀았다면 언제든 자리에 앉아도 됩니다.',
@@ -157,6 +158,8 @@ window.EPI = {
     caught: '꼬리!',
     caughtLine: '잡힌 친구가 우리 줄 끝에 붙었다.',
     lostLine: '앗, 우리 꼬리가 저쪽 줄 끝으로 갔다.',
+    otherLine: '저쪽 줄끼리 꼬리를 잡았다!',
+    levelBtn: '난이도 바꾸기',
     winMine: '저쪽 줄이 모두 우리 줄로 왔다!\n이제 머리 하나만 남았다.',
     winTheirs: '우리 줄이 모두 저쪽으로 갔다!\n…그래도 다들 웃고 있다.',
     timeUp: '숨이 턱까지 찼다.\n누가 이겼는지는 아무도 세지 않았다.',

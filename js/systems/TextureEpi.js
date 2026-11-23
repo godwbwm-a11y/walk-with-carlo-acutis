@@ -58,6 +58,10 @@ TextureFactory.createEpi = function (scene) {
   /* 본당 주일학교 친구 둘 — 성별을 가리지 않는 평범한 옷차림 */
   if (TextureFactory.walker) {
     TextureFactory.walker(scene, 'epi_kid1', { skin: 0xf1cfae, hair: 0x2a1f19, shirt: 0xe9eef2, pants: 0x2f3d5c, shoes: 0xf4efe6, hairStyle: 'bob', stripe: 0x3f74b8 }, { back: true });
+    /* 셋째 줄(보통·어려움)에 서는 주일학교 친구들 */
+    TextureFactory.walker(scene, 'epi_kid3', { skin: 0xf3d2b4, hair: 0x1f1a16, shirt: 0x7ac0a0, pants: 0x3a4a5c, shoes: 0xf4efe6, hairStyle: 'short' }, { back: true });
+    TextureFactory.walker(scene, 'epi_kid4', { skin: 0xe9c4a2, hair: 0x4a3426, shirt: 0xf2d06a, pants: 0x4a4f6a, shoes: 0xe8e2d6, hairStyle: 'long' }, { back: true });
+    TextureFactory.walker(scene, 'epi_kid5', { skin: 0xd9a988, hair: 0x2a2018, shirt: 0xb88ad8, pants: 0x34384a, shoes: 0x30343a, hairStyle: 'bob', hoodie: true, longSleeve: true }, { back: true });
     TextureFactory.walker(scene, 'epi_kid2', { skin: 0xeac2a0, hair: 0x3a2a20, shirt: 0xf09a6a, pants: 0x5a5148, shoes: 0x30343a, hairStyle: 'shag', hoodie: true, longSleeve: true }, { back: true });
   }
 
@@ -69,6 +73,17 @@ TextureFactory.createEpi = function (scene) {
     g.fillStyle(0xf47a82, 1); g.fillTriangle(6, 13, 18, 6, 20, 13);
     g.fillStyle(0x3fa0e0, 1); g.fillTriangle(22, 16, 42, 8, 38, 19);
     g.fillStyle(0x7cc2ee, 1); g.fillTriangle(26, 15, 39, 10, 36, 17);
+  });
+
+  /* 교리 OX 퀴즈 칠판 — 이젤 위의 작은 초록 칠판 */
+  make(scene, 'epi_ox_board', 56, 66, function (g) {
+    g.fillStyle(0x000000, 0.14); g.fillEllipse(28, 62, 44, 7);
+    g.lineStyle(4, 0x8a6a44, 1);
+    g.lineBetween(12, 62, 20, 30); g.lineBetween(44, 62, 36, 30); g.lineBetween(28, 60, 28, 34);
+    g.fillStyle(0x8a6a44, 1); g.fillRoundedRect(2, 4, 52, 36, 4);
+    g.fillStyle(0x2f4a3c, 1); g.fillRoundedRect(5, 7, 46, 30, 3);
+    g.lineStyle(3, 0x9fe0b0, 1); g.strokeCircle(17, 22, 7);
+    g.lineStyle(3, 0xffb0b0, 1); g.lineBetween(33, 15, 45, 29); g.lineBetween(45, 15, 33, 29);
   });
 
   /* 루르드 성모당 — 작은 바위 굴과 흰 상 */

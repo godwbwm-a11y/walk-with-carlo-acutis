@@ -88,6 +88,11 @@ window.EpYardScene = class EpYardScene extends WorldScene {
       id: 'ep_tag', x: 420, y: 636, texture: 'epi_tag_scarf', label: '꼬리잡기', scale: 1.3,
       markerY: 560, priority: 1, onInteract: () => this.play('tag')
     });
+    /* 교리 OX 퀴즈 — 주일학교 선생님이 세워 둔 작은 칠판 */
+    this.addInteractable({
+      id: 'ep_ox', x: 268, y: 628, texture: 'epi_ox_board', label: '교리 OX 퀴즈', scale: 1.2,
+      markerY: 548, onInteract: () => this.play('ox')
+    });
     [[384, 600, 'epi_kid1_front'], [452, 596, 'epi_kid2_front']].forEach((p) => {
       if (!this.textures.exists(p[2])) return;
       const kid = this.add.image(p[0], p[1], p[2]).setDepth(p[1]).setScale(1.24);

@@ -4,7 +4,10 @@
 
    과녁 두 개를 맞히면 이야기는 이어질 수 있지만, 더 하고 싶으면
    원하는 만큼 더 할 수 있습니다. 난이도도 그때마다 고를 수 있습니다.
-   그만두는 것은 언제나 플레이어가 정합니다 — 가롤로가 그랬던 것처럼. */
+   그만두는 것은 언제나 플레이어가 정합니다 — 가롤로가 그랬던 것처럼.
+
+   판마다 맵이 바뀝니다 — 언덕, 사막, 설원, 바다 섬, 밤의 성, 달.
+   맵마다 땅 모양과 바람, 무게(중력), 장애물, 과녁(서 있는 상자 · 움직이는 상자 · 풍선)이 다릅니다. */
 
 window.FortressScene = class FortressScene extends MiniGameScene {
   constructor() { super('FortressScene'); }
@@ -57,18 +60,8 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     bezel.fillStyle(HEX('#2a3550'), 1);
     bezel.fillRoundedRect(20, this.PLAY_TOP - 8, W - 40, this.PLAY_BOT - this.PLAY_TOP + 16, 10);
 
-    /* 게임 속 하늘 */
-    const sky = this.add.graphics().setDepth(-5);
-    sky.fillStyle(HEX('#79b3d8'), 1);
-    sky.fillRect(24, this.PLAY_TOP - 4, W - 48, this.PLAY_BOT - this.PLAY_TOP + 8);
-    sky.fillStyle(HEX('#a9d2e8'), 1);
-    sky.fillRect(24, this.PLAY_TOP - 4, W - 48, 90);
-    for (let i = 0; i < 4; i++) {
-      sky.fillStyle(0xffffff, 0.55);
-      const cx = 60 + i * 78, cy = this.PLAY_TOP + 24 + (i % 2) * 34;
-      sky.fillEllipse(cx, cy, 54, 20);
-      sky.fillEllipse(cx - 14, cy + 4, 32, 15);
-    }
+    /* 게임 속 하늘 — 맵마다 다시 그립니다(drawMap) */
+    this.skyG = this.add.graphics().setDepth(-5);
 
     /* 주사선 — 옛날 화면 느낌 */
     const scan = this.add.graphics().setDepth(120);
@@ -91,45 +84,163 @@ window.FortressScene = class FortressScene extends MiniGameScene {
 
     this.scoreText = this.add.text(W - 34, this.PLAY_TOP + 12, '', UI.style(FONT.small, PAL.ink))
       .setOrigin(1, 0.5).setDepth(123);
+    this.mapText = this.add.text(32, this.PLAY_BOT - 6, '', UI.style(13, '#ffffff', { backgroundColor: '#00000055', padding: { x: 7, y: 2 } }))
+      .setOrigin(0, 1).setDepth(123);
   }
 
-  /* ── 언덕 ───────────────────────────────────── */
+  /* ── 맵 ─────────────────────────────────────── */
+  mapDefs() {
+    const G = this.GROUND;
+    const bump = (x, c, w) => Math.abs(x - c) < w ? Math.pow(Math.cos((x - c) / w * Math.PI / 2), 2) : 0;
+    return {
+      hills: {
+        name: '언덕', sky: ['#79b3d8', '#a9d2e8'], ground: ['#6f9457', '#87ab68', '#5b7d47'], wind: 1, grav: 300, deco: 'clouds',
+        h: (x) => G - 26 * Math.sin(x / 96 + 0.6) - 14 * Math.sin(x / 41 + 1.9) - 8 * Math.sin(x / 23),
+        line: '언덕 맵. 기본이지.'
+      },
+      desert: {
+        name: '사막', sky: ['#e9a868', '#f6d8a8'], ground: ['#c99a5a', '#dcb173', '#b0834a'], wind: 1.15, grav: 300, deco: 'sun',
+        h: (x) => G + 6 - 38 * Math.sin(x / 118 + 0.2) - 9 * Math.sin(x / 47 + 1),
+        cactus: [150, 330], line: '사막이다. 모래바람 세게 불어.'
+      },
+      snow: {
+        name: '설원', sky: ['#a9bfd8', '#e2ebf4'], ground: ['#dfe8f2', '#ffffff', '#b9c7d6'], wind: 1.4, grav: 300, deco: 'snow',
+        h: (x) => G - 18 * Math.sin(x / 70 + 1) - 12 * Math.sin(x / 31) - 20 * bump(x, 200, 70),
+        pines: [120, 360], balloon: true, line: '설원! 과녁이 풍선에 매달려 있어.'
+      },
+      sea: {
+        name: '바다 섬', sky: ['#6fbde6', '#bfe4f4'], ground: ['#d6bf86', '#e8d7a2', '#b9a46c'], wind: 1, grav: 300, deco: 'clouds',
+        water: G - 2,
+        h: (x) => G + 34 - 74 * bump(x, 62, 78) - 78 * bump(x, 292, 96),
+        palms: [40, 340], line: '섬이야. 짧으면 바다에 풍덩.'
+      },
+      castle: {
+        name: '밤의 성', sky: ['#18213e', '#33406a'], ground: ['#45533a', '#57674a', '#36402c'], wind: 0.8, grav: 300, deco: 'stars',
+        h: (x) => G - 8 * Math.sin(x / 60) - 6 * Math.sin(x / 27 + 2),
+        wall: { x: 176, w: 30, hgt: 92 }, line: '성벽 너머야. 높이 쏴.'
+      },
+      moon: {
+        name: '달', sky: ['#05070f', '#141a30'], ground: ['#8e9096', '#a9abb1', '#6f7178'], wind: 0, grav: 150, deco: 'earth',
+        h: (x) => G - 12 * Math.sin(x / 50) + 14 * bump(x, 150, 26) + 12 * bump(x, 262, 22) - 10 * bump(x, 320, 40),
+        moving: true, line: '달이다! 바람은 없고 둥둥 떠.'
+      }
+    };
+  }
+
   buildTerrain() {
-    const W = GAME.WIDTH;
-    this.hAt = (x) => this.GROUND
-      - 26 * Math.sin(x / 96 + 0.6)
-      - 14 * Math.sin(x / 41 + 1.9)
-      - 8 * Math.sin(x / 23);
-
-    const g = this.add.graphics().setDepth(-4);
-    g.fillStyle(HEX('#6f9457'), 1);
-    g.beginPath();
-    g.moveTo(24, this.PLAY_BOT + 4);
-    for (let x = 24; x <= W - 24; x += 4) g.lineTo(x, this.hAt(x));
-    g.lineTo(W - 24, this.PLAY_BOT + 4);
-    g.closePath();
-    g.fillPath();
-
-    g.fillStyle(HEX('#87ab68'), 1);
-    g.beginPath();
-    g.moveTo(24, this.PLAY_BOT + 4);
-    for (let x = 24; x <= W - 24; x += 4) g.lineTo(x, this.hAt(x) + 8);
-    g.lineTo(W - 24, this.PLAY_BOT + 4);
-    g.closePath();
-    g.fillPath();
-
-    g.fillStyle(HEX('#5b7d47'), 1);
-    for (let x = 30; x < W - 30; x += 17) g.fillRect(x, this.hAt(x) + 10, 2, 6);
-
-    this.terrainG = g;
+    this.MAPS = this.mapDefs();
+    this.mapOrder = ['hills', 'desert', 'snow', 'sea', 'castle', 'moon'];
+    this.terrainG = this.add.graphics().setDepth(-4);
     this.terrainG.setMask(this.playMask);
+    this.decoG = this.add.graphics().setDepth(-3);
+    this.decoG.setMask(this.playMask);
+    this.waterG = this.add.graphics().setDepth(21);
+    this.waterG.setMask(this.playMask);
 
     /* 내 대포 */
     this.cannonX = 66;
-    this.cannon = this.add.image(this.cannonX, this.hAt(this.cannonX) + 4, 'cannon_carlo')
-      .setOrigin(0.5, 1).setDepth(20).setScale(1.1);
+    this.cannon = this.add.image(this.cannonX, 0, 'cannon_carlo').setOrigin(0.5, 1).setDepth(20).setScale(1.1);
     this.barrel = this.add.graphics().setDepth(19);
+    this.useMap('hills');
+  }
+
+  useMap(key) {
+    this.mapKey = key;
+    this.map = this.MAPS[key];
+    this.hAt = this.map.h;
+    this.drawMap();
+    this.cannon.setY(this.hAt(this.cannonX) + 4);
     this.drawBarrel();
+    this.mapText.setText(this.map.name);
+    /* 밤하늘·우주에서는 바람과 점수 글씨를 밝게 */
+    const dark = this.map.deco === 'stars' || this.map.deco === 'earth';
+    [this.windText, this.scoreText].forEach((t) => t.setColor(dark ? '#f4ead2' : PAL.ink));
+  }
+
+  /* 맵을 그립니다 — 하늘, 땅, 장식 */
+  drawMap() {
+    const W = GAME.WIDTH, M = this.map, T = this.PLAY_TOP, B = this.PLAY_BOT;
+    const L = 24, R = W - 24;
+    const sky = this.skyG; sky.clear();
+    /* 위는 짙게, 땅 쪽으로 갈수록 옅게 */
+    const c0 = Phaser.Display.Color.HexStringToColor(M.sky[0]), c1 = Phaser.Display.Color.HexStringToColor(M.sky[1]);
+    const n = 24, hh = (B - T + 8) / n;
+    for (let i = 0; i < n; i++) {
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(c0, c1, n - 1, i);
+      sky.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b), 1);
+      sky.fillRect(L, T - 4 + i * hh, R - L, hh + 1);
+    }
+    const rnd = new Phaser.Math.RandomDataGenerator([M.name]);
+    if (M.deco === 'clouds' || M.deco === 'snow') {
+      for (let i = 0; i < 4; i++) {
+        sky.fillStyle(0xffffff, 0.55);
+        const cx = 60 + i * 78, cy = T + 24 + (i % 2) * 34;
+        sky.fillEllipse(cx, cy, 54, 20); sky.fillEllipse(cx - 14, cy + 4, 32, 15);
+      }
+    }
+    if (M.deco === 'sun') {
+      sky.fillStyle(0xfff1c8, 0.35); sky.fillCircle(300, T + 70, 40);
+      sky.fillStyle(0xfff3d0, 1); sky.fillCircle(300, T + 70, 24);
+    }
+    if (M.deco === 'stars' || M.deco === 'earth') {
+      for (let i = 0; i < 46; i++) { sky.fillStyle(0xffffff, rnd.realInRange(0.3, 0.9)); sky.fillCircle(rnd.between(L, R), rnd.between(T, B - 120), rnd.realInRange(0.6, 1.5)); }
+    }
+    if (M.deco === 'stars') {
+      sky.fillStyle(0xfff6d8, 0.25); sky.fillCircle(290, T + 72, 30);
+      sky.fillStyle(0xfff6d8, 1); sky.fillCircle(290, T + 72, 18);
+      sky.fillStyle(HEX(M.sky[0]), 1); sky.fillCircle(298, T + 66, 15);
+    }
+    if (M.deco === 'earth') {
+      sky.fillStyle(0x3f7fd0, 1); sky.fillCircle(296, T + 76, 22);
+      sky.fillStyle(0x5ca35a, 1); sky.fillEllipse(288, T + 70, 16, 12); sky.fillEllipse(304, T + 86, 12, 8);
+      sky.fillStyle(0xffffff, 0.5); sky.fillEllipse(300, T + 62, 18, 5);
+    }
+
+    const g = this.terrainG; g.clear();
+    const fillLand = (off, col) => {
+      g.fillStyle(HEX(col), 1);
+      g.beginPath(); g.moveTo(L, B + 4);
+      for (let x = L; x <= R; x += 4) g.lineTo(x, this.hAt(x) + off);
+      g.lineTo(R, B + 4); g.closePath(); g.fillPath();
+    };
+    fillLand(0, M.ground[0]);
+    fillLand(8, M.ground[1]);
+    g.fillStyle(HEX(M.ground[2]), 1);
+    for (let x = 30; x < R - 6; x += 17) g.fillRect(x, this.hAt(x) + 10, 2, 6);
+    if (this.mapKey === 'moon') {
+      [[110, 16], [200, 10], [300, 13]].forEach(([cx, r]) => { g.fillStyle(HEX(M.ground[2]), 1); g.fillEllipse(cx, this.hAt(cx) + 22, r * 2, r * 0.7); });
+    }
+
+    const d = this.decoG; d.clear();
+    (M.cactus || []).forEach((x) => {
+      const y = this.hAt(x) + 4;
+      d.fillStyle(0x4f8a46, 1); d.fillRoundedRect(x - 4, y - 30, 8, 30, 4);
+      d.fillRoundedRect(x - 12, y - 22, 6, 12, 3); d.fillRoundedRect(x + 6, y - 26, 6, 12, 3);
+      d.fillRect(x - 12, y - 14, 10, 4); d.fillRect(x + 2, y - 18, 10, 4);
+    });
+    (M.pines || []).forEach((x) => {
+      const y = this.hAt(x) + 4;
+      d.fillStyle(0x6a4a30, 1); d.fillRect(x - 2, y - 10, 4, 10);
+      d.fillStyle(0x2f5a46, 1);
+      d.fillTriangle(x - 14, y - 8, x + 14, y - 8, x, y - 30); d.fillTriangle(x - 11, y - 20, x + 11, y - 20, x, y - 40);
+      d.fillStyle(0xffffff, 0.9); d.fillTriangle(x - 5, y - 33, x + 5, y - 33, x, y - 40);
+    });
+    (M.palms || []).forEach((x) => {
+      const y = this.hAt(x) + 4;
+      d.lineStyle(5, 0x8a6a44, 1); d.beginPath(); d.moveTo(x, y); d.lineTo(x + 4, y - 18); d.lineTo(x + 2, y - 36); d.strokePath();
+      d.fillStyle(0x3f8a4a, 1);
+      [-1, 1].forEach((k) => { d.fillEllipse(x + 2 + k * 12, y - 36, 26, 7); d.fillEllipse(x + 2 + k * 9, y - 31, 20, 6); });
+    });
+    if (M.deco === 'snow') {
+      for (let i = 0; i < 40; i++) { d.fillStyle(0xffffff, 0.8); d.fillCircle(rnd.between(L, R), rnd.between(T + 30, B - 40), rnd.realInRange(1, 2.2)); }
+    }
+
+    const w = this.waterG; w.clear();
+    if (M.water) {
+      w.fillStyle(0x3f86c0, 0.92); w.fillRect(L, M.water, R - L, B - M.water + 6);
+      w.fillStyle(0xffffff, 0.35);
+      for (let x = L + 6; x < R; x += 22) w.fillRect(x, M.water + 3, 10, 2);
+    }
   }
 
   drawBarrel() {
@@ -230,9 +341,22 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.showAgain();
   }
 
-  /* ── 전봇대 ─────────────────────────────────── */
+  /* ── 장애물 — 어려움의 전봇대, 성의 성벽 ── */
   buildPole() {
     this.clearPole();
+    const wall = this.map.wall;
+    if (wall) {
+      const x = wall.x, gy = this.hAt(x), top = gy - wall.hgt;
+      const g = this.add.graphics().setDepth(18);
+      g.fillStyle(0x6d6a72, 1); g.fillRect(x - wall.w / 2, top, wall.w, wall.hgt + 10);
+      for (let i = 0; i < 3; i++) g.fillRect(x - wall.w / 2 + i * 11, top - 8, 8, 8);
+      g.fillStyle(0x56535a, 1);
+      for (let y = top + 8; y < gy; y += 12) g.fillRect(x - wall.w / 2, y, wall.w, 2);
+      g.fillStyle(0xf2c86a, 0.85); g.fillRect(x - 3, top + 24, 6, 10);
+      g.setMask(this.playMask);
+      this.pole = { g: g, x: x, top: top - 8, halfW: wall.w / 2 + 2 };
+      return;
+    }
     if (!this.LEVELS[this.level].pole) return;
     const x = 196, top = 392;
     const groundY = this.hAt(x);
@@ -291,7 +415,8 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     AudioSystem.boom();
 
     const rad = Phaser.Math.DegToRad(this.angle);
-    const speed = 130 + this.power * 230;
+    /* 가벼운 곳(달)에서는 같은 힘으로도 천천히, 높이 납니다 — 닿는 거리는 같게 */
+    const speed = (130 + this.power * 230) * Math.sqrt(this.map.grav / 300);
     this.shell = this.add.image(this.muzzle.x, this.muzzle.y, 'shell_ball').setDepth(60).setScale(1.1);
     this.shell.setMask(this.playMask);
     this.vx = Math.cos(rad) * speed;
@@ -318,23 +443,78 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.locked = false;
     this.round++;
     this.roundShots = 0;
-    this.wind = Phaser.Math.FloatBetween(-L.wind, L.wind);
+
+    /* 맵 — 첫 판은 언덕, 그다음부터는 지난 판과 다른 맵을 골라요 */
+    let key = 'hills';
+    if (this.round > 1) {
+      const opts = this.mapOrder.filter((k) => k !== this.mapKey);
+      key = opts[Phaser.Math.Between(0, opts.length - 1)];
+    }
+    this.useMap(key);
+    const M = this.map;
+    this.wind = Phaser.Math.FloatBetween(-L.wind, L.wind) * M.wind;
     this.drawWind();
     this.buildPole();
 
-    const tx = Phaser.Math.Between(L.near, L.far);
+    /* 과녁 자리 — 물 위나 성벽 바로 뒤는 피합니다 */
+    let tx = Phaser.Math.Between(L.near, L.far);
+    for (let i = 0; i < 40; i++) {
+      const ok = (!M.water || this.hAt(tx) < M.water - 10) && (!M.wall || tx > M.wall.x + 40);
+      if (ok) break;
+      tx = Phaser.Math.Between(Math.min(L.near + 20, 300), Math.max(L.far, 320));
+    }
+    if (M.water && this.hAt(tx) >= M.water - 10) tx = 292;
     this.targetX = tx;
     this.targetY = this.hAt(tx);
-    if (this.target) this.target.destroy();
-    this.target = this.add.image(tx, this.targetY + 4, 'target_box')
-      .setOrigin(0.5, 1).setDepth(22).setScale(this.level === 'easy' ? 1.25 : 1.05);
+    this.clearTarget();
+    /* 과녁 모양 — 서 있는 상자, 움직이는 상자(달·가끔), 풍선(설원·가끔) */
+    let kind = 'box';
+    if (M.balloon) kind = 'balloon';
+    else if (M.moving) kind = 'move';
+    else if (this.freeMode && this.level !== 'easy' && Math.random() < 0.3) kind = Math.random() < 0.5 ? 'move' : 'balloon';
+    this.targetKind = kind;
+    const sc = this.level === 'easy' ? 1.25 : 1.05;
+    if (kind === 'balloon') {
+      const c = this.add.container(tx, this.targetY - 110).setDepth(22);
+      const g = this.add.graphics();
+      g.lineStyle(1.5, 0x5a4a3a, 1); g.lineBetween(0, -10, 0, 22);
+      g.fillStyle(0xe8505a, 1); g.fillEllipse(0, -26, 30, 36);
+      g.fillStyle(0xffffff, 0.45); g.fillEllipse(-6, -34, 8, 12);
+      g.fillStyle(0xe8505a, 1); g.fillTriangle(-4, -8, 4, -8, 0, -4);
+      const box = this.add.image(0, 40, 'target_box').setOrigin(0.5, 1).setScale(sc * 0.8);
+      c.add([g, box]);
+      this.target = c;
+      this.tweens.add({ targets: c, y: c.y - 46, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    } else {
+      this.target = this.add.image(tx, this.targetY + 4, 'target_box').setOrigin(0.5, 1).setDepth(22).setScale(sc);
+      this.tweens.add({ targets: this.target, angle: 3, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      if (kind === 'move') {
+        const span = this.level === 'hard' ? 46 : 32;
+        this.target.x = tx - span;
+        this.tweens.add({
+          targets: this.target, x: Math.min(GAME.WIDTH - 40, tx + span), duration: this.level === 'hard' ? 1500 : 2100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+          onUpdate: () => { if (this.target && this.target.active) this.target.y = this.hAt(this.target.x) + 4; }
+        });
+      }
+    }
     this.target.setAlpha(0);
-    this.tweens.add({ targets: this.target, alpha: 1, y: this.targetY + 4, duration: 500 });
-    this.tweens.add({ targets: this.target, angle: 3, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: this.target, alpha: 1, duration: 500 });
 
     this.updateScore();
-    if (this.freeMode) this.say(L.pole ? '전봇대 넘겨야 돼. 각도!' : '가자, 한 판 더.');
-    else this.say(this.round === 1 ? '바람 잘 봐. 그게 반이야.' : '한 번 더. 이번엔 바람이 반대야.');
+    if (this.freeMode) this.say(L.pole && !M.wall ? '전봇대 넘겨야 돼. 각도!' : M.line);
+    else this.say(this.round === 1 ? '바람 잘 봐. 그게 반이야.' : M.line);
+  }
+
+  clearTarget() {
+    if (this.target) { this.tweens.killTweensOf(this.target); this.target.destroy(); this.target = null; }
+  }
+
+  /* 포탄이 닿아야 할 곳 */
+  hitPoint() {
+    const t = this.target;
+    if (!t) return null;
+    if (this.targetKind === 'balloon') return { x: t.x, y: t.y + 10 };
+    return { x: t.x, y: t.y - 24 };
   }
 
   updateScore() {
@@ -348,16 +528,17 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     this.windBar.clear();
     this.windBar.fillStyle(0xffffff, 0.55);
     this.windBar.fillRoundedRect(cx - 42, this.PLAY_TOP + 4, 84, 18, 9);
-    const len = Phaser.Math.Clamp(Math.abs(this.wind) / this.LEVELS[this.level].wind, 0.1, 1) * 34;
+    const len = this.wind === 0 ? 0 : Phaser.Math.Clamp(Math.abs(this.wind) / (this.LEVELS[this.level].wind * 1.4), 0.1, 1) * 34;
     this.windBar.fillStyle(HEX(PAL.clay), 1);
+    if (len === 0) { this.windBar.fillCircle(cx, this.PLAY_TOP + 13, 3); }
     const dir = this.wind >= 0 ? 1 : -1;
     this.windBar.fillRect(cx, this.PLAY_TOP + 11, len * dir, 4);
-    this.windBar.fillTriangle(
+    if (len > 0) this.windBar.fillTriangle(
       cx + len * dir, this.PLAY_TOP + 7,
       cx + len * dir, this.PLAY_TOP + 17,
       cx + (len + 8) * dir, this.PLAY_TOP + 12
     );
-    this.windText.setText('바람 ' + (this.wind >= 0 ? '→ ' : '← ') + Math.round(Math.abs(this.wind)));
+    this.windText.setText(Math.round(Math.abs(this.wind)) === 0 ? '바람 없음' : '바람 ' + (this.wind >= 0 ? '→ ' : '← ') + Math.round(Math.abs(this.wind)));
     this.windText.setPosition(cx, this.PLAY_TOP + 34);
   }
 
@@ -380,7 +561,7 @@ window.FortressScene = class FortressScene extends MiniGameScene {
 
     if (!this.flying || !this.shell) return;
 
-    this.vy += 300 * dt;
+    this.vy += this.map.grav * dt;
     this.vx += this.wind * dt;
     this.shell.x += this.vx * dt;
     this.shell.y += this.vy * dt;
@@ -395,20 +576,24 @@ window.FortressScene = class FortressScene extends MiniGameScene {
 
     /* 과녁에 닿았는지 — 그 판에서 여러 번 빗나가면 조금 너그러워집니다 */
     const reach = this.LEVELS[this.level].reach + Math.min(18, Math.max(0, this.roundShots - 3) * 4);
-    if (this.target && this.target.active &&
-        Phaser.Math.Distance.Between(this.shell.x, this.shell.y, this.targetX, this.targetY - 20) < reach) {
+    const hp = this.hitPoint();
+    if (hp && this.target.active && Phaser.Math.Distance.Between(this.shell.x, this.shell.y, hp.x, hp.y) < reach) {
       this.hitTarget();
       return;
     }
 
     /* 전봇대 */
     if (this.pole && Math.abs(this.shell.x - this.pole.x) < this.pole.halfW && this.shell.y > this.pole.top) {
-      this.missed('전봇대에 맞았다. 더 높이 쏴 봐.');
+      this.missed(this.map.wall ? '성벽에 맞았다. 더 높이!' : '전봇대에 맞았다. 더 높이 쏴 봐.');
       return;
     }
 
     /* 땅이나 화면 밖 */
     const W = GAME.WIDTH;
+    if (this.map.water && this.shell.y > this.map.water && this.shell.y < this.hAt(this.shell.x)) {
+      this.splash();
+      return;
+    }
     if (this.shell.y > this.hAt(this.shell.x) || this.shell.x > W - 22 || this.shell.x < 22 || this.shell.y > this.PLAY_BOT) {
       this.missed();
     }
@@ -439,9 +624,10 @@ window.FortressScene = class FortressScene extends MiniGameScene {
 
     if (reason) this.say(reason);
     else {
-      const near = Math.abs(x - this.targetX);
+      const tx = this.target ? this.target.x : this.targetX;
+      const near = Math.abs(x - tx);
       if (near < 40) this.say('아 아깝다ㅋㅋ 조금만 더.');
-      else if (x < this.targetX) this.say('짧았어. 힘을 조금 더.');
+      else if (x < tx) this.say('짧았어. 힘을 조금 더.');
       else this.say('넘어갔어. 힘을 조금 줄여봐.');
     }
 
@@ -450,14 +636,32 @@ window.FortressScene = class FortressScene extends MiniGameScene {
     }
   }
 
+  /* 바다에 빠졌을 때 — 물보라 */
+  splash() {
+    const x = this.shell.x, y = this.map.water;
+    this.shell.destroy(); this.shell = null;
+    this.flying = false;
+    this.roundShots++;
+    if (this.hud) { this.hud.combo = 0; AudioSystem.gMiss(); }
+    AudioSystem.swipe();
+    for (let i = 0; i < 12; i++) {
+      const c = this.add.circle(x, y, Phaser.Math.Between(2, 5), 0xdff1ff, 0.9).setDepth(70);
+      c.setMask(this.playMask);
+      this.tweens.add({ targets: c, x: x + Phaser.Math.Between(-22, 22), y: y - Phaser.Math.Between(16, 46), alpha: 0, duration: 700, ease: 'Quad.easeOut', onComplete: () => c.destroy() });
+    }
+    this.say('풍덩! 바다에 빠졌다. 조금 더 멀리.');
+  }
+
   hitTarget() {
     this.shell.destroy(); this.shell = null;
     this.flying = false;
     this.locked = true;
     this.hits++;
     /* 적게 쏘고 맞힐수록 큰 점수 */
-    this.ensureHud().hit(50 + Math.max(0, 40 - this.roundShots * 10), this.targetX, this.targetY - 60, this.roundShots === 0 ? '한 방에!' : '명중!');
-    this.boomAt(this.targetX, this.targetY - 18, true);
+    const hp = this.hitPoint();
+    const bonus = this.targetKind === 'box' ? 0 : 30;      // 움직이는 과녁·풍선은 덤
+    this.ensureHud().hit(50 + bonus + Math.max(0, 40 - this.roundShots * 10), hp.x, hp.y - 40, this.roundShots === 0 ? '한 방에!' : '명중!');
+    this.boomAt(hp.x, hp.y + 6, true);
     AudioSystem.found();
 
     const t = this.target;

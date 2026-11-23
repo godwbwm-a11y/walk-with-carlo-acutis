@@ -9,7 +9,22 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
   constructor() { super('CrosswordScene'); }
 
   create(data) {
-    const C = DAY06.crossword;
+    /* 문제지 — 이야기에서 처음 만날 때는 원래 문제지, 그다음부터는 여러 장 가운데 하나(js/data/crosswords.js) */
+    const base = DAY06.crossword;
+    const arcade = !!(data && data.arcade);
+    let C = base;
+    if (arcade || this._played) {
+      /* 아직 안 푼 문제지부터 — 다 풀었으면 처음부터 다시 섞습니다 */
+      const seen = CROSSWORDS.seen || (CROSSWORDS.seen = []);
+      let all = [{ id: 'day6' }].concat(CROSSWORDS.sheets).filter((x) => seen.indexOf(x.id) < 0 && x.id !== CROSSWORDS.last);
+      if (!all.length) { seen.length = 0; all = [{ id: 'day6' }].concat(CROSSWORDS.sheets).filter((x) => x.id !== CROSSWORDS.last); }
+      const pick = all[Math.floor(Math.random() * all.length)];
+      CROSSWORDS.last = pick.id;
+      seen.push(pick.id);
+      if (pick.id !== 'day6') C = Object.assign({}, base, pick, { open: CROSSWORDS.openAgain, done: CROSSWORDS.doneAgain });
+    } else CROSSWORDS.last = 'day6';
+    this._played = true;
+    this.C = C;
     this.buildFrame({
       from: (data && data.from) || null, card: null, bg: '#4b5a48', warm: true,
       title: C.title, hint: C.hint
@@ -104,7 +119,7 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
 
   /* ── 다음 문제 ───────────────────────────────── */
   nextClue() {
-    const C = DAY06.crossword;
+    const C = this.C;
     if (this.idx >= C.entries.length) { this.allDone(); return; }
     const e = C.entries[this.idx];
     this.tries = 0;
@@ -125,13 +140,13 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
   }
 
   updateProgress() {
-    const C = DAY06.crossword;
-    this.progress.setText(C.progress + '  ' + this.idx + ' / ' + C.entries.length);
+    const C = this.C;
+    this.progress.setText((C.name ? C.name + '  ·  ' : '') + C.progress + '  ' + this.idx + ' / ' + C.entries.length);
   }
 
   /* ── 답을 적습니다 ───────────────────────────── */
   ask() {
-    const C = DAY06.crossword;
+    const C = this.C;
     const e = C.entries[this.idx];
     this.askBtn.setVisible(false);
 
@@ -150,7 +165,7 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
 
   /* 두 번 헤매면 보기 중에서 고릅니다 */
   pickFromList() {
-    const e = DAY06.crossword.entries[this.idx];
+    const e = this.C.entries[this.idx];
     const opts = [e.answer].concat(e.decoys || [])
       .map((t) => ({ key: t, label: t }));
     Phaser.Utils.Array.Shuffle(opts);
@@ -160,7 +175,7 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
   }
 
   check(v, fromList) {
-    const C = DAY06.crossword;
+    const C = this.C;
     const e = C.entries[this.idx];
     const said = String(v == null ? '' : v).replace(/\s/g, '');
 
@@ -194,7 +209,7 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
 
     /* 설명은 한 마디일 수도, 여러 마디일 수도 있습니다 */
     const explain = Array.isArray(e.explain) ? e.explain : [e.explain];
-    const lines = [{ s: '주교님', t: DAY06.crossword.right }]
+    const lines = [{ s: '주교님', t: this.C.right }]
       .concat(explain.map((t) => ({ s: '주교님', t: t })));
     this.dialogue.play(lines, () => this.nextClue());
   }
@@ -221,7 +236,7 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
     this.clueText.setText('');
     AudioSystem.chime();
 
-    const t = this.add.text(W / 2, this.clueY + 10, DAY06.crossword.filled,
+    const t = this.add.text(W / 2, this.clueY + 10, this.C.filled,
       UI.style(22, PAL.sun, { align: 'center' })).setOrigin(0.5, 0).setDepth(30).setAlpha(0);
     this.tweens.add({ targets: t, alpha: 1, duration: 800 });
 
@@ -230,6 +245,6 @@ window.CrosswordScene = class CrosswordScene extends MiniGameScene {
       this.tweens.add({ targets: c, scale: 1.16, duration: 220, delay: i * 40, yoyo: true });
     });
 
-    this.time.delayedCall(1900, () => this.complete(DAY06.crossword.done));
+    this.time.delayedCall(1900, () => this.complete(this.C.done));
   }
 };

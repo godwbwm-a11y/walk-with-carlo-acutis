@@ -20,13 +20,12 @@ window.HomeworkScene = class HomeworkScene extends MiniGameScene {
     for (let i = 0; i < 11; i++) page.lineBetween(44, 228 + i * 40, W - 44, 228 + i * 40);
     page.lineStyle(2, HEX(PAL.clay), 0.5); page.lineBetween(62, 158, 62, 654);
 
-    this.questions = [
-      { q: '17 + 25 = ?', a: ['42', '32', '45'], correct: 0 },
-      { q: "'설레다'의 바른 표기는?", a: ['설레이다', '설레다', '설레임'], correct: 1 },
-      { q: "'감사합니다'를 영어로 하면?", a: ['Thanks giving', 'Thank your', 'Thank you'], correct: 2 }
-    ];
+    /* 할 때마다 과목을 섞어 새로 뽑습니다(js/data/homework.js) */
+    this.questions = HOMEWORK.draw(6);
+    this.firstTry = true;
     this.qIndex = 0;
 
+    this.subj = this.add.text(W - 50, 176, '', UI.style(FONT.small, '#ffffff', { backgroundColor: '#7d93b8', padding: { x: 10, y: 3 } })).setOrigin(1, 0.5).setDepth(10);
     this.qText = this.add.text(W / 2, 206, '', UI.style(21, PAL.ink, {
       align: 'center', wordWrap: { width: W - 90 }
     })).setOrigin(0.5, 0).setDepth(10);
@@ -49,8 +48,11 @@ window.HomeworkScene = class HomeworkScene extends MiniGameScene {
     this.buttons.forEach(b => b.destroy());
     this.buttons = [];
     const q = this.questions[this.qIndex];
-    this.qText.setText('문제 ' + (this.qIndex + 1) + '.\n' + q.q);
-    this.progress.setText('문제 ' + (this.qIndex + 1) + ' / ' + this.questions.length);
+    const Q = I18N.lang === 'ko' ? '문제 ' : 'Question ';
+    this.qText.setText(Q + (this.qIndex + 1) + '.\n' + I18N.tr(q.q));
+    this.subj.setText(q.s);
+    this.firstTry = true;
+    this.progress.setText(Q + (this.qIndex + 1) + ' / ' + this.questions.length);
     this.feedback.setText('');
 
     q.a.forEach((label, i) => {
@@ -66,6 +68,8 @@ window.HomeworkScene = class HomeworkScene extends MiniGameScene {
     if (i === q.correct) {
       AudioSystem.found();
       this.feedback.setColor(PAL.leaf).setText('맞았다!');
+      const hud = this.ensureHud();
+      if (this.firstTry) hud.hit(100, GAME.WIDTH / 2, 300); else hud.add(30);
       this.qIndex++;
       this.time.delayedCall(700, () => {
         if (this.qIndex >= this.questions.length) {
@@ -84,6 +88,7 @@ window.HomeworkScene = class HomeworkScene extends MiniGameScene {
     } else {
       AudioSystem.back();
       this.feedback.setColor(PAL.clay).setText('음… 다시 볼까?');
+      if (this.firstTry) { this.firstTry = false; this.ensureHud().miss(GAME.WIDTH / 2, 300); }
       const b = this.buttons[i];
       this.tweens.add({ targets: b, x: b.x + 8, duration: 60, yoyo: true, repeat: 3 });
     }
