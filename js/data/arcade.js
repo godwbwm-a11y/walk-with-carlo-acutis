@@ -27,6 +27,7 @@ window.ARCADE = {
     { key: 'FortressScene', day: 'C', title: '한 시간의 게임', kind: '액션', desc: '각도와 바람을 읽고 포탄을 쏘는 포격 게임' },
     { key: 'BowlingScene', day: 'C', title: '가롤로와 볼링', kind: '액션', fresh: true, desc: '새총처럼 당겼다 놓아 굴려요. 가롤로와 번갈아 다섯 프레임' },
     { key: 'BikeScene', day: 'C', title: '가롤로와 자전거', kind: '액션', fresh: true, desc: '강변 자전거길을 나란히! 돌은 점프, 사람은 따르릉' },
+    { key: 'PenaltyScene', day: 'C', title: '가롤로와 승부차기', kind: '액션', fresh: true, desc: '휙 밀어 차고, 눌러서 막고! 가롤로와 다섯 번씩' },
     { key: 'MiracleMapScene', day: 'C', title: '성체 기적 지도', kind: '퍼즐', desc: '기적 카드를 지도 위 나라에 놓아요' },
     { key: 'NightShareScene', day: 'C', title: '밤거리에서', kind: '손놀이', desc: '수프·침낭·빵을 필요한 사람에게' },
 
@@ -43,6 +44,7 @@ window.ARCADE = {
     { key: 'OriginalScene', day: 4, title: '원본을 찾아라', kind: '퍼즐', late: true, desc: '똑같은 뒷모습들 사이에서 ‘나’를 찾아요' },
     { key: 'FeedScene', day: 4, title: '피드', kind: '손놀이', desc: '끝없이 넘어가는 화면' },
     { key: 'WordsScene', day: 4, title: '누가 원하는 걸까', kind: '퍼즐', desc: '내가 원하는 것, 남이 원하는 것' },
+    { key: 'KindWordsScene', day: 4, title: '말 바꾸기', kind: '액션', fresh: true, desc: '상처 주는 말을 그어 터뜨리면 좋은 말로 바뀌어요' },
     { key: 'BrickScene', day: 4, title: '그 말들, 떨어뜨리기', kind: '액션', desc: '공을 튕겨 나를 덮은 말들을 깨요' },
 
     { key: 'HelloMatchScene', day: 5, title: '인사 짝 맞추기', kind: '퍼즐', late: true, desc: '세계의 인사와 그 나라 말을 짝지어요' },

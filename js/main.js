@@ -68,7 +68,7 @@
       EpIntroScene, EpYardScene, EpDinnerScene, EpCarloScene,
       EpChurchScene, EpPrayerScene, EpPhotoScene, EpWalkScene,
       EpPhotoBookScene, EpCreditsScene, EpFinalScene,
-      PassScene, TailTagScene, OXQuizScene, BowlingScene, BikeScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene,
+      PassScene, TailTagScene, OXQuizScene, BowlingScene, BikeScene, PenaltyScene, KindWordsScene, JegiScene, GonggiScene, PoseScene, FollowScene, TasteScene, TwoWordsScene,
       StarCatchScene, WayHomeScene, GlassPuzzleScene, OriginalScene, HelloMatchScene, WaterShareScene, LinkHeartScene, MemoryWalkScene
     ]
   };
